@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,8 @@ import { FileQuestion, MoveLeft, Home } from "lucide-react";
 
 export default function NotFound() {
   const router = useRouter();
+
+  const t = useTranslations("NotFound");
 
   return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-background text-foreground animate-in fade-in zoom-in duration-500">
@@ -19,14 +22,13 @@ export default function NotFound() {
         {/* Tiêu đề & Nội dung */}
         <div className="space-y-2">
           <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
-            404
+            {t("title")}
           </h1>
           <h2 className="text-2xl font-semibold tracking-tight">
-            Trang không tìm thấy
+            {t("heading")}
           </h2>
-          <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-            Xin lỗi, chúng tôi không thể tìm thấy trang bạn đang tìm kiếm. Có
-            thể trang đã bị xóa hoặc đường dẫn không chính xác.
+          <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed text-balance">
+            {t("description")}
           </p>
         </div>
 
@@ -38,21 +40,21 @@ export default function NotFound() {
             className="gap-2"
           >
             <MoveLeft className="h-4 w-4" />
-            Quay lại
+            {t("back")}
           </Button>
 
           <Button asChild className="gap-2">
             <Link href="/">
               <Home className="h-4 w-4" />
-              Về trang chủ
+              {t("home")}
             </Link>
           </Button>
         </div>
       </div>
 
-      {/* Footer nhỏ (Optional) */}
+      {/* Footer nhỏ */}
       <div className="absolute bottom-8 text-xs text-muted-foreground">
-        Hệ thống Socius Web
+        {t("footer")}
       </div>
     </div>
   );

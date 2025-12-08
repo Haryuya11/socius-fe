@@ -1,6 +1,5 @@
 "use client";
 
-// 1. Import trực tiếp từ 'react'
 import { useEffect, useState } from "react";
 import { Moon, Sun, SunMoon } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -17,7 +16,6 @@ import { cn } from "@/lib/utils";
 export function ThemeToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme();
 
-  // 2. Sử dụng useState trực tiếp
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
