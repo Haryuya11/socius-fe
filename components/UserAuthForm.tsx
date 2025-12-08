@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -14,6 +15,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const { instance } = useMsal();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const router = useRouter();
+
+  const t = useTranslations("Auth");
 
   const login = async () => {
     setIsLoading(true);
@@ -23,12 +26,13 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       });
 
       console.log("Login success:", res);
-      toast.success(`Chào mừng trở lại, ${res.account?.name || "User"}!`);
+
+      toast.success(t("login_success", { name: res.account?.name || "User" }));
 
       router.push("/dashboard");
     } catch (err) {
       console.error(err);
-      toast.error("Đăng nhập thất bại. Vui lòng thử lại.");
+      toast.error(t("login_failed"));
     } finally {
       setIsLoading(false);
     }
@@ -41,14 +45,14 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         type="button"
         disabled={isLoading}
         onClick={login}
-        className="h-12 w-full font-medium"
+        className="h-12 w-full font-medium transition-all duration-200 hover:scale-[1.02] hover:bg-accent/50 hover:text-accent-foreground active:scale-[0.98]"
       >
         {isLoading ? (
           <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
         ) : (
           <Icons.microsoft className="mr-2 h-4 w-4" />
         )}
-        Đăng nhập với Microsoft
+        {t("login_with_microsoft")}
       </Button>
 
       <div className="relative">
@@ -57,7 +61,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-background px-2 text-muted-foreground">
-            Hệ thống Socius Web
+            {t("system_name")}
           </span>
         </div>
       </div>

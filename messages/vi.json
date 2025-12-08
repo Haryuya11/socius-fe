@@ -1,0 +1,22 @@
+{
+  "Auth": {
+    "help": "Trợ giúp?",
+    "welcome": "Chào mừng trở lại",
+    "instruction": "Vui lòng đăng nhập bằng tài khoản tổ chức của bạn để tiếp tục.",
+    "agreement": "Bằng cách tiếp tục, bạn đồng ý với <terms>Điều khoản dịch vụ</terms> và <privacy>Chính sách bảo mật</privacy>.",
+    "slogan": "Kết nối con người, quản lý nhân sự hiệu quả và xây dựng cộng đồng vững mạnh cùng Socius.",
+    "team": "Socius Team",
+    "login_with_microsoft": "Đăng nhập với Microsoft",
+    "system_name": "Hệ thống Socius Web",
+    "login_success": "Chào mừng trở lại, {name}!",
+    "login_failed": "Đăng nhập thất bại. Vui lòng thử lại."
+  },
+  "NotFound": {
+    "title": "404",
+    "heading": "Trang không tìm thấy",
+    "description": "Xin lỗi, chúng tôi không thể tìm thấy trang bạn đang tìm kiếm. Có thể trang đã bị xóa hoặc đường dẫn không chính xác.",
+    "back": "Quay lại",
+    "home": "Về trang chủ",
+    "footer": "Hệ thống Socius Web"
+  }
+}
