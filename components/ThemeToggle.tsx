@@ -1,6 +1,9 @@
 "use client";
 
+// 1. Import trực tiếp từ 'react'
+import { useEffect, useState } from "react";
 import { Moon, Sun, SunMoon } from "lucide-react";
+import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -9,28 +12,32 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export function ThemeToggle() {
-  const { theme, setTheme, resolvedTheme, systemTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
+
+  // 2. Sử dụng useState trực tiếp
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line
     setMounted(true);
   }, []);
 
-  if (!mounted) return null;
+  if (!mounted) {
+    return (
+      <Button variant="ghost" size="icon" className="h-9 w-9" disabled>
+        <SunMoon className="h-[1.2rem] w-[1.2rem] text-muted-foreground" />
+        <span className="sr-only">Loading theme</span>
+      </Button>
+    );
+  }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-9 w-9 cursor-pointer"
-        >
+        <Button variant="ghost" size="icon" className="h-9 w-9 cursor-pointer">
           {resolvedTheme === "dark" ? (
             <Moon className="h-[1.2rem] w-[1.2rem] text-foreground" />
           ) : (
@@ -44,31 +51,31 @@ export function ThemeToggle() {
           onClick={() => setTheme("light")}
           className={cn(
             "flex items-center gap-2 cursor-pointer",
-            theme === "light" && "font-medium"
+            theme === "light" && "bg-accent font-medium"
           )}
         >
-          <Sun className=" h-4 w-4" />
-          Light
+          <Sun className="h-4 w-4" />
+          <span>Light</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTheme("dark")}
           className={cn(
             "flex items-center gap-2 cursor-pointer",
-            theme === "dark" && "font-medium"
+            theme === "dark" && "bg-accent font-medium"
           )}
         >
           <Moon className="h-4 w-4" />
-          Dark
+          <span>Dark</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTheme("system")}
           className={cn(
             "flex items-center gap-2 cursor-pointer",
-            (theme === "system" || !theme) && "font-medium"
+            theme === "system" && "bg-accent font-medium"
           )}
         >
           <SunMoon className="h-4 w-4" />
-          System
+          <span>System</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

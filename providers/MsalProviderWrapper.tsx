@@ -2,7 +2,7 @@
 
 import { MsalProvider } from "@azure/msal-react";
 import { PublicClientApplication } from "@azure/msal-browser";
-import { msalConfig } from "@/lib/msalConfig";
+import { msalConfig } from "@/lib/msal-config";
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
