@@ -5,7 +5,7 @@ import Link from "next/link";
 import { UserAuthForm } from "@/components/UserAuthForm";
 import SociusLogo from "@/components/SociusLogo";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { GridPattern } from "@/components/ui/GridPattern";
+import { GridPattern } from "@/components/GridPattern";
 import { DashboardMockup } from "@/components/DashboardMockup";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { TypewriterText } from "@/components/ui/typewriter-text";
@@ -53,7 +53,7 @@ export default function AuthenticationPage() {
                 bg-size-[200%_auto] 
                 animate-shimmer"
                 speed={0.02}
-                delay={0.5} 
+                delay={0.5}
               />
 
               <footer className="text-sm text-muted-foreground">
@@ -63,8 +63,18 @@ export default function AuthenticationPage() {
           </div>
         </div>
 
-        <div className="lg:p-8 bg-background h-full flex items-center">
-          <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+        <div className="lg:p-8 h-full flex items-center relative overflow-hidden">
+          <div
+            className="absolute inset-0 h-full w-full bg-background 
+            bg-[radial-gradient(#a1a1aa_1px,transparent_1px)] 
+            dark:bg-[radial-gradient(#52525b_1px,transparent_1px)] 
+            bg-size-[20px_20px]
+            opacity-100 
+            pointer-events-none -z-20"
+          />
+
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--background)_30%,transparent_100%)] pointer-events-none -z-10" />
+          <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px] z-10 relative">
             <div className="flex flex-col space-y-2 text-center">
               <h1 className="text-2xl font-semibold tracking-tight text-foreground">
                 {t("welcome")}

@@ -5,9 +5,10 @@ import { useMsal } from "@azure/msal-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Icons } from "@/components/icons";
+import { Icons } from "@/components/ui/icons";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { authUtils, UserInfo } from "@/lib/auth-helpers";
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -15,7 +16,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const { instance } = useMsal();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const router = useRouter();
-
   const t = useTranslations("Auth");
 
   const login = async () => {
@@ -25,11 +25,20 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         scopes: ["openid", "profile", "email"],
       });
 
-      console.log("Login success:", res);
+      if (res.account && res.idToken) {
+        const userInfo: UserInfo = {
+          id: res.account.localAccountId || res.uniqueId,
+          name: res.account.name || "User",
+          email: res.account.username,
+          username: res.account.username,
+        };
+
+        authUtils.setAuth(res.idToken, res.accessToken, userInfo);
+      }
 
       toast.success(t("login_success", { name: res.account?.name || "User" }));
 
-      router.push("/dashboard");
+      router.push("/");
     } catch (err) {
       console.error(err);
       toast.error(t("login_failed"));
