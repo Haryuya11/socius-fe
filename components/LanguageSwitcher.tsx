@@ -12,14 +12,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { useMounted } from "@/hooks/useMounted";
 
 export function LanguageSwitcher() {
   const locale = useLocale(); // Lấy ngôn ngữ hiện tại (vi hoặc en-US)
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   const switchLanguage = (newLocale: string) => {
     // 1. Lấy pathname hiện tại

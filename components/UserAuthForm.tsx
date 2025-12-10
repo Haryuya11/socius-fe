@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import * as React from "react";
@@ -26,6 +27,9 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       });
 
       if (res.account && res.idToken) {
+
+        const tokenExpiresAt = new Date((res.idTokenClaims as any).exp * 1000);
+
         const userInfo: UserInfo = {
           id: res.account.localAccountId || res.uniqueId,
           name: res.account.name || "User",
@@ -33,9 +37,16 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           username: res.account.username,
         };
 
-        authUtils.setAuth(res.idToken, res.accessToken, userInfo);
+        authUtils.setAuth(
+          res.idToken,
+          res.accessToken,
+          userInfo,
+          tokenExpiresAt
+        );
+        console.log("Session will expire at:", tokenExpiresAt.toLocaleString());
       }
 
+      console.log(res);
       toast.success(t("login_success", { name: res.account?.name || "User" }));
 
       router.push("/");
