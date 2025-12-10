@@ -45,21 +45,41 @@
   --animate-gradient-slow: gradient-move 15s ease infinite;
   --animate-shimmer: shimmer 3s linear infinite;
   --animate-float: float 10s ease-in-out infinite;
-  
+
+
+
   @keyframes gradient-move {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
   }
 
   @keyframes shimmer {
-    from { background-position: 0 0; }
-    to { background-position: -200% 0; }
+    from {
+      background-position: 0 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
   }
 
   @keyframes float {
-    0% { transform: translateY(0px) scale(1); opacity: 0.5; }
-    50% { transform: translateY(-20px) scale(1.1); opacity: 0.8; }
-    100% { transform: translateY(0px) scale(1); opacity: 0.5; }
+    0% {
+      transform: translateY(0px) scale(1);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translateY(-20px) scale(1.1);
+      opacity: 0.8;
+    }
+    100% {
+      transform: translateY(0px) scale(1);
+      opacity: 0.5;
+    }
   }
 }
 
@@ -139,5 +159,24 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+  }
+
+  .h-content-screen {
+    height: calc(100vh - 4rem);
+  }
+  
+  .min-h-content-screen {
+    min-height: calc(100vh - 4rem);
   }
 }

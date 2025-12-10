@@ -1,4 +1,4 @@
-import type { Configuration, PopupRequest } from "@azure/msal-browser";
+import { PublicClientApplication, type Configuration, type PopupRequest } from "@azure/msal-browser";
 
 const clientId = process.env.NEXT_PUBLIC_AZURE_CLIENT_ID || "";
 const redirectUri =
@@ -24,3 +24,5 @@ export const loginRequest = {
     "email",
   ],
 };
+
+export const msalInstance = new PublicClientApplication(msalConfig);

@@ -12,14 +12,21 @@ export interface UserInfo {
 }
 
 export const authUtils = {
-  // Lưu thông tin Auth 
-  setAuth: (token: string, msGraphToken: string, user: UserInfo) => {
-    // Lưu ID Token (Session chính) - 30 ngày
-    Cookies.set(TOKEN_KEY, token, { expires: 30, path: "/" });
+  // Lưu thông tin Auth
+  setAuth: (
+    token: string,
+    msGraphToken: string,
+    user: UserInfo,
+    expiresAt: Date
+  ) => {
+    Cookies.set(TOKEN_KEY, token, { expires: expiresAt, path: "/" });
 
-    // Lưu Graph Token - 1 ngày 
+    // Lưu Graph Token - 1 ngày
     // Lưu ý: Token này dùng để gọi API Microsoft Graph
-    Cookies.set(MS_GRAPH_TOKEN_KEY, msGraphToken, { expires: 1, path: "/" });
+    Cookies.set(MS_GRAPH_TOKEN_KEY, msGraphToken, {
+      expires: expiresAt,
+      path: "/",
+    });
 
     if (typeof window !== "undefined") {
       localStorage.setItem(USER_KEY, JSON.stringify(user));
