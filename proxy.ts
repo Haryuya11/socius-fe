@@ -8,7 +8,7 @@ const publicPages = [
   "/examples/authentication",
 ];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { nextUrl } = request;
 
   // Get ID Token (Session)

@@ -1,4 +1,13 @@
 {
+  "Dashboard": {
+    "welcome": "Chào mừng trở lại!",
+    "email": "Email",
+    "departments": "Phòng ban",
+    "teams": "Nhóm",
+    "token": "Token",
+    "token_copied": "Đã copy token!",
+    "logout": "Đăng xuất"
+  },
   "Auth": {
     "help": "Trợ giúp?",
     "welcome": "Chào mừng trở lại",
@@ -9,7 +18,8 @@
     "login_with_microsoft": "Đăng nhập với Microsoft",
     "system_name": "Hệ thống Socius Web",
     "login_success": "Chào mừng trở lại, {name}!",
-    "login_failed": "Đăng nhập thất bại. Vui lòng thử lại."
+    "login_failed": "Đăng nhập thất bại. Vui lòng thử lại.",
+    "session_expired": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại."
   },
   "NotFound": {
     "title": "404",

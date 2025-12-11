@@ -3,6 +3,7 @@ import axios from "axios";
 import { authUtils } from "@/lib/auth-helpers";
 import { toast } from "sonner";
 import { msalInstance, loginRequest } from "./msal-config";
+import { getTranslations } from "next-intl/server";
 
 let msalInitPromise: Promise<void> | null = null;
 
@@ -11,12 +12,12 @@ async function getValidToken() {
   if (typeof window === "undefined") return null;
 
   // check if msal is initialized
- if (!msalInitPromise) {
-   msalInitPromise = msalInstance.initialize();
- }
- 
- // wait for msal to initialize
- await msalInitPromise;
+  if (!msalInitPromise) {
+    msalInitPromise = msalInstance.initialize();
+  }
+
+  // wait for msal to initialize
+  await msalInitPromise;
 
   // get all accounts
   const accounts = msalInstance.getAllAccounts();
@@ -45,27 +46,16 @@ async function getValidToken() {
         "New token is different from current token, updating token in cookie..."
       );
 
-      let userInfo = authUtils.getUserInfo();
+      const exp =
+        response.idTokenClaims &&
+        typeof response.idTokenClaims === "object" &&
+        "exp" in response.idTokenClaims
+          ? (response.idTokenClaims as { exp: number }).exp
+          : Math.floor(Date.now() / 1000) + 3600;
 
-      if (!userInfo && response.account) {
-        userInfo = {
-          id: response.account.localAccountId,
-          name: response.account.name || "User",
-          username: response.account.username,
-          email: response.account.username,
-        };
-      }
+      const expiresAt = new Date(exp * 1000);
 
-      if (userInfo) {
-        const expiresAt = new Date((response.idTokenClaims as any).exp * 1000);
-
-        authUtils.setAuth(
-          response.idToken,
-          response.accessToken,
-          userInfo,
-          expiresAt
-        );
-      }
+      authUtils.setAuth(response.idToken, response.accessToken, expiresAt);
     }
 
     return response.idToken;
@@ -110,8 +100,9 @@ http.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error) => {
+  async (error) => {
     if (error.response?.status === 401) {
+      const t = await getTranslations("Auth");
       const loginPath = "/login";
 
       if (
@@ -120,7 +111,7 @@ http.interceptors.response.use(
       ) {
         // clear auth
         authUtils.clearAuth();
-        toast.error("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại");
+        toast.error(t("session_expired"));
 
         // redirect to login
         window.location.href = loginPath;

@@ -1,4 +1,13 @@
 {
+  "Dashboard": {
+    "welcome": "Welcome back!",
+    "email": "Email",
+    "departments": "Departments",
+    "teams": "Teams",
+    "token": "Token",
+    "token_copied": "Token copied!",
+    "logout": "Logout"
+  },
   "Auth": {
     "help": "Help",
     "welcome": "Welcome back",
@@ -9,7 +18,8 @@
     "login_with_microsoft": "Login with Microsoft",
     "system_name": "Socius Web System",
     "login_success": "Welcome back, {name}!",
-    "login_failed": "Login failed. Please try again."
+    "login_failed": "Login failed. Please try again.",
+    "session_expired": "Your session has expired, please log in again."
   },
   "NotFound": {
     "title": "404",

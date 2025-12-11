@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import ThemeProvider from "@/providers/theme-provider";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import { AuthProvider } from "@/providers/auth-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
+        suppressHydrationWarning={true}
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider
@@ -43,11 +45,11 @@ export default async function RootLayout({
         >
           <MsalProviderWrapper>
             <NextIntlClientProvider messages={messages}>
-              {children}
+              <AuthProvider>{children}</AuthProvider>
             </NextIntlClientProvider>
           </MsalProviderWrapper>
         </ThemeProvider>
-        <Toaster richColors/>
+        <Toaster richColors />
       </body>
     </html>
   );
