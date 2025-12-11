@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { useEffect, useState } from "react";
 import { Check, Languages } from "lucide-react"; 
 import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -15,17 +14,14 @@ import { cn } from "@/lib/utils";
 import { useMounted } from "@/hooks/useMounted";
 
 export function LanguageSwitcher() {
-  const locale = useLocale(); // Lấy ngôn ngữ hiện tại (vi hoặc en-US)
+  const locale = useLocale();
   const mounted = useMounted();
 
   const switchLanguage = (newLocale: string) => {
-    // 1. Lấy pathname hiện tại
     const pathname = window.location.pathname;
 
-    // 2. Lấy các params hiện tại (ví dụ: ?page=2)
     const params = new URLSearchParams(window.location.search);
 
-    // 3. Thêm hoặc cập nhật param 'lang' vào danh sách params
     params.set("lang", newLocale);
 
     window.location.href = `${pathname}?${params.toString()}`;

@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { authUtils } from "@/lib/auth-helpers";
 import { toast } from "sonner";
 import { msalInstance, loginRequest } from "./msal-config";
-import { getTranslations } from "next-intl/server";
 
 let msalInitPromise: Promise<void> | null = null;
 
@@ -102,7 +100,6 @@ http.interceptors.response.use(
   },
   async (error) => {
     if (error.response?.status === 401) {
-      const t = await getTranslations("Auth");
       const loginPath = "/login";
 
       if (
@@ -111,7 +108,7 @@ http.interceptors.response.use(
       ) {
         // clear auth
         authUtils.clearAuth();
-        toast.error(t("session_expired"));
+        toast.error("Session expired. Please log in again.");
 
         // redirect to login
         window.location.href = loginPath;

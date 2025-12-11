@@ -28,5 +28,11 @@
     "back": "Go back",
     "home": "Home",
     "footer": "Socius Web System"
+  },
+  "Profile": {
+    "my_profile": "My Profile",
+    "settings": "Settings",
+    "logout": "Log out",
+    "logged_out_success": "Logged out successfully"
   }
 }

@@ -14,6 +14,7 @@ import { SociusLogo } from "./ui/logo";
 import { cn } from "@/lib/utils";
 import SidebarNav from "./SidebarNav";
 import { useMounted } from "@/hooks/useMounted";
+import { ProfileMenu } from "./profile";
 
 export default function Header({
   className,
@@ -98,6 +99,7 @@ export default function Header({
           <ThemeToggle />
           <LanguageSwitcher />
           <Separator orientation="vertical" className="h-6 bg-border" />
+          <ProfileMenu />
         </div>
       </div>
     </header>
