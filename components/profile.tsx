@@ -13,35 +13,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/auth-provider";
 import { toast } from "sonner";
-import { getFullName, getInitials } from "@/utils/name-utils";
 import { useTranslations } from "next-intl";
-
-const PLACEHOLDER_AVATARS = [
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-1.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-2.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-3.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-4.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-5.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-6.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-7.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-8.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-9.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-10.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-11.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-12.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-13.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-14.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-15.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-16.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-17.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-18.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-19.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-20.png",
-];
+import { getAvatarInfo } from "@/utils/avatar-utils";
+import { UserProfile } from "@/types/user";
 
 export function ProfileMenu() {
   const [open, setOpen] = useState(false);
@@ -49,24 +27,9 @@ export function ProfileMenu() {
   const { user, logout } = useAuth();
   const t = useTranslations("Profile");
 
-  // get display avatar
-  const displayAvatar = useMemo(() => {
-    if (!user) return "";
-
-    if (user.imageUrl) return user.imageUrl;
-
-    const sum = user.userId
-      .split("")
-      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    const index = sum % PLACEHOLDER_AVATARS.length;
-
-    return PLACEHOLDER_AVATARS[index];
-  }, [user]);
+  const { fullName, initials, avatarUrl } = getAvatarInfo(user as UserProfile);
 
   if (!user) return null;
-
-  const fullName = getFullName(user.firstName, user.lastName);
-  const initials = getInitials(user.firstName, user.lastName);
 
   const handleLogout = () => {
     toast.success(t("logged_out_success"));
@@ -82,11 +45,7 @@ export function ProfileMenu() {
           className="relative h-10 w-10 rounded-full focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary transition-all hover:bg-accent/50"
         >
           <Avatar className="h-9 w-9 border border-border/50 transition-all duration-200 hover:border-primary/50 hover:shadow-md">
-            <AvatarImage
-              src={displayAvatar || "/placeholder.svg"}
-              alt={fullName}
-              className="object-cover"
-            />
+            <AvatarImage src={avatarUrl || "/placeholder.svg"} alt={fullName} />
             <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
               {initials}
             </AvatarFallback>
@@ -100,9 +59,8 @@ export function ProfileMenu() {
             <div className="flex items-center gap-3">
               <Avatar className="h-11 w-11 border-2 border-primary/20 shadow-sm">
                 <AvatarImage
-                  src={displayAvatar || "/placeholder.svg"}
+                  src={avatarUrl || "/placeholder.svg"}
                   alt={fullName}
-                  className="object-cover"
                 />
                 <AvatarFallback className="bg-primary/15 text-primary font-bold text-sm">
                   {initials}

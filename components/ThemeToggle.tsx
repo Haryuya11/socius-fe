@@ -13,10 +13,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useMounted } from "@/hooks/useMounted";
+import { useTranslations } from "next-intl";
 
 export function ThemeToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const mounted = useMounted();
+  const t = useTranslations("Theme");
 
   if (!mounted) {
     return (
@@ -36,7 +38,7 @@ export function ThemeToggle() {
           ) : (
             <Sun className="h-[1.2rem] w-[1.2rem] text-foreground" />
           )}
-          <span className="sr-only">Toggle theme</span>
+          <span className="sr-only">{t("toggle")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -48,7 +50,7 @@ export function ThemeToggle() {
           )}
         >
           <Sun className="h-4 w-4" />
-          <span>Light</span>
+          <span>{t("light")}</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTheme("dark")}
@@ -58,7 +60,7 @@ export function ThemeToggle() {
           )}
         >
           <Moon className="h-4 w-4" />
-          <span>Dark</span>
+          <span>{t("dark")}</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTheme("system")}
@@ -68,7 +70,7 @@ export function ThemeToggle() {
           )}
         >
           <SunMoon className="h-4 w-4" />
-          <span>System</span>
+          <span>{t("system")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

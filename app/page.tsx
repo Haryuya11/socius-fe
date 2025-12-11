@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTranslations } from "next-intl";
 
 export default function HomePage() {
-  const t = useTranslations("Dashboard"); // 👈 nhóm i18n mới
+  const t = useTranslations("Dashboard");
   const { user, isLoading, logout } = useAuth();
   const [copied, setCopied] = useState(false);
 

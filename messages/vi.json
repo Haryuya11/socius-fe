@@ -1,4 +1,25 @@
 {
+  "Metadata": {
+    "default": {
+      "site_name": "Socius",
+      "description": "Hệ thống quản lý nhân sự hiệu quả và xây dựng cộng đồng vững mạnh."
+    },
+    "auth": {
+      "title": "Đăng nhập",
+      "description": "Đăng nhập với hệ thống Socius."
+    },
+    "profile": {
+      "title": "Hồ sơ cá nhân",
+      "description": "Xem và quản lý thông tin hồ sơ cá nhân của bạn trên Socius."
+    },
+    "dashboard": {
+      "title": "Bảng điều khiển",
+      "description": "Tổng quan hoạt động và thông tin nhân sự."
+    },
+    "not_found": {
+      "title": "404 - Không tìm thấy trang"
+    }
+  },
   "Dashboard": {
     "welcome": "Chào mừng trở lại!",
     "email": "Email",
@@ -34,5 +55,12 @@
     "settings": "Cài đặt",
     "logout": "Đăng xuất",
     "logged_out_success": "Đăng xuất thành công"
+  },
+  "Theme": {
+    "toggle": "Chuyển giao diện",
+    "loading": "Đang tải giao diện",
+    "light": "Sáng",
+    "dark": "Tối",
+    "system": "Hệ thống"
   }
 }

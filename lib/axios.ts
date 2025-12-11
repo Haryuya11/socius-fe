@@ -3,9 +3,16 @@ import { authUtils } from "@/lib/auth-helpers";
 import { toast } from "sonner";
 import { msalInstance, loginRequest } from "./msal-config";
 
+// axios config
+declare module "axios" {
+  export interface InternalAxiosRequestConfig {
+    _retry?: boolean;
+  }
+}
+
 let msalInitPromise: Promise<void> | null = null;
 
-async function getValidToken() {
+async function getValidToken(forceRefresh = false) {
   // if running in server (SSR), return null
   if (typeof window === "undefined") return null;
 
@@ -33,6 +40,7 @@ async function getValidToken() {
     const response = await msalInstance.acquireTokenSilent({
       ...loginRequest,
       account: account,
+      forceRefresh: forceRefresh,
     });
 
     // check if new token is different from current token
@@ -99,6 +107,32 @@ http.interceptors.response.use(
     return response;
   },
   async (error) => {
+    const originalRequest = error.config;
+
+    // only intercept 401 errors if the request hasn't already been retried
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      // set _retry to true so we don't enter an infinite loop
+      originalRequest._retry = true;
+
+      try {
+        console.log("Token expired (401). Attempting silent refresh...");
+
+        // force refresh: force to get a new token from MSAL
+        const newToken = await getValidToken(true);
+
+        if (newToken) {
+          console.log("Refresh success. Retrying original request...");
+
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
+          // retry the original request
+          return http(originalRequest);
+        }
+      } catch (refreshError) {
+        console.error("Retry failed:", refreshError);
+      }
+    }
+
     if (error.response?.status === 401) {
       const loginPath = "/login";
 
@@ -108,7 +142,7 @@ http.interceptors.response.use(
       ) {
         // clear auth
         authUtils.clearAuth();
-        toast.error("Session expired. Please log in again.");
+        toast.error("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại.");
 
         // redirect to login
         window.location.href = loginPath;

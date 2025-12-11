@@ -1,4 +1,25 @@
 {
+  "Metadata": {
+    "default": {
+      "site_name": "Socius",
+      "description": "Effective HR management system and community building."
+    },
+    "auth": {
+      "title": "Login",
+      "description": "Login to Socius System."
+    },
+    "profile": {
+      "title": "Profile",
+      "description": "View and manage your profile on Socius."
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "description": "Activity overview and HR information."
+    },
+    "not_found": {
+      "title": "404 - Page Not Found"
+    }
+  },
   "Dashboard": {
     "welcome": "Welcome back!",
     "email": "Email",
@@ -34,5 +55,12 @@
     "settings": "Settings",
     "logout": "Log out",
     "logged_out_success": "Logged out successfully"
+  },
+  "Theme": {
+    "toggle": "Toggle theme",
+    "loading": "Loading theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
   }
 }
