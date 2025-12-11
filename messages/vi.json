@@ -28,5 +28,11 @@
     "back": "Quay lại",
     "home": "Về trang chủ",
     "footer": "Hệ thống Socius Web"
+  },
+  "Profile": {
+    "my_profile": "Trang cá nhân",
+    "settings": "Cài đặt",
+    "logout": "Đăng xuất",
+    "logged_out_success": "Đăng xuất thành công"
   }
 }
