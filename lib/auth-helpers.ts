@@ -1,39 +1,26 @@
 import Cookies from "js-cookie";
+import { UserProfile } from "@/types/user";
 
-const TOKEN_KEY = "session_token"; // ID Token (Auth chính)
-const MS_GRAPH_TOKEN_KEY = "ms_graph_token"; // Access Token (Gọi Graph API)
-const USER_KEY = "user_info"; // Info hiển thị UI
-
-export interface UserInfo {
-  id: string;
-  name: string;
-  email: string;
-  username: string;
-}
+const TOKEN_KEY = "session_token";
+const MS_GRAPH_TOKEN_KEY = "ms_graph_token";
+const USER_KEY = "user_profile";
 
 export const authUtils = {
-  // Lưu thông tin Auth
+  // save token and user info to localStorage
   setAuth: (
     token: string,
     msGraphToken: string,
-    user: UserInfo,
     expiresAt: Date
   ) => {
     Cookies.set(TOKEN_KEY, token, { expires: expiresAt, path: "/" });
 
-    // Lưu Graph Token - 1 ngày
-    // Lưu ý: Token này dùng để gọi API Microsoft Graph
     Cookies.set(MS_GRAPH_TOKEN_KEY, msGraphToken, {
       expires: expiresAt,
       path: "/",
     });
-
-    if (typeof window !== "undefined") {
-      localStorage.setItem(USER_KEY, JSON.stringify(user));
-    }
   },
 
-  // 2. Xóa sạch mọi thứ khi Logout
+  // remove token and user info from localStorage
   clearAuth: () => {
     Cookies.remove(TOKEN_KEY, { path: "/" });
     Cookies.remove(MS_GRAPH_TOKEN_KEY, { path: "/" });
@@ -43,20 +30,31 @@ export const authUtils = {
     }
   },
 
-  // 3. Lấy Session Token (ID Token)
+  // get access token from localStorage
   getToken: () => {
     return Cookies.get(TOKEN_KEY);
   },
 
-  // 4. Lấy Microsoft Graph Token (access token)
+  // get ms graph token
   getMsGraphToken: () => {
     return Cookies.get(MS_GRAPH_TOKEN_KEY);
   },
 
-  // 5. Lấy User Info
-  getUserInfo: (): UserInfo | null => {
+  // save user info to localStorage
+  saveUserProfile: (user: UserProfile) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(USER_KEY, JSON.stringify(user));
+    }
+  },
+
+  // get user info from localStorage
+  getUserProfile: (): UserProfile | null => {
     if (typeof window === "undefined") return null;
-    const userData = localStorage.getItem(USER_KEY);
-    return userData ? (JSON.parse(userData) as UserInfo) : null;
+    const data = localStorage.getItem(USER_KEY);
+    try {
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
+    }
   },
 };

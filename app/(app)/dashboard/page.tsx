@@ -1,125 +1,130 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { useEffect, useState } from "react";
-import { useMsal } from "@azure/msal-react";
-import { authUtils, UserInfo } from "@/lib/auth-helpers";
+import { useAuth } from "@/providers/auth-provider";
+import { authUtils } from "@/lib/auth-helpers";
 import { Button } from "@/components/ui/button";
 import { Check, Copy } from "lucide-react";
 import { toast } from "sonner";
+import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useTranslations } from "next-intl";
 
 export default function HomePage() {
-  const { instance } = useMsal();
-  const [user, setUser] = useState<UserInfo | null>(null);
-  const [mounted, setMounted] = useState(false);
+  const t = useTranslations("Dashboard"); // 👈 nhóm i18n mới
+  const { user, isLoading, logout } = useAuth();
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-    const userInfo = authUtils.getUserInfo();
-    if (userInfo) {
-      setUser(userInfo);
-    }
-  }, []);
-
-  const handleLogout = () => {
-    authUtils.clearAuth();
-    const currentOrigin = window.location.origin;
-    const loginPage = "/login";
-
-    instance.logoutRedirect({
-      postLogoutRedirectUri: `${currentOrigin}${loginPage}`,
-    });
-  };
-
-  // 4. Hàm xử lý copy token
   const handleCopyToken = () => {
     const token = authUtils.getToken();
     if (token) {
       navigator.clipboard.writeText(token);
       setCopied(true);
-      toast.success("Đã copy token vào clipboard!");
-
-      setTimeout(() => {
-        setCopied(false);
-      }, 2000);
-    } else {
-      toast.error("Không tìm thấy token!");
+      toast.success(t("token_copied"));
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
-  if (!mounted) return null;
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!user) return null;
 
   return (
-    <div className="flex h-content-screen w-full flex-col items-center justify-center gap-6 bg-muted/20">
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-3xl font-bold tracking-tight">Welcome back!</h1>
+    <div className="flex h-content-screen w-full flex-col items-center justify-center gap-6 bg-muted/20 p-8">
+      <div className="flex flex-col items-center gap-4 text-center max-w-2xl w-full">
+        <h1 className="text-3xl font-bold tracking-tight">{t("welcome")}</h1>
 
-        {user ? (
-          <div className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm animate-in fade-in zoom-in duration-300">
-            <div className="space-y-4 text-left min-w-[300px]">
-              {/* Thông tin User */}
-              <div className="space-y-2">
-                <div className="grid grid-cols-[80px_1fr] gap-2 items-center">
-                  <span className="font-semibold text-muted-foreground">
-                    Tên:
+        <div className="w-full rounded-xl border bg-card p-6 text-card-foreground shadow-sm animate-in fade-in zoom-in duration-300">
+          {/* Header Profile */}
+          <div className="flex items-center gap-4 border-b pb-4 mb-4">
+            <Avatar className="h-16 w-16">
+              <AvatarImage src={user.imageUrl} />
+              <AvatarFallback>
+                {user.firstName[0]}
+                {user.lastName[0]}
+              </AvatarFallback>
+            </Avatar>
+            <div className="text-left">
+              <h2 className="text-xl font-bold">
+                {user.firstName} {user.lastName}
+              </h2>
+              <p className="text-sm text-muted-foreground">{user.systemRole}</p>
+            </div>
+          </div>
+
+          <div className="space-y-4 text-left">
+            <div className="grid grid-cols-[100px_1fr] gap-2 items-center">
+              <span className="font-semibold text-muted-foreground">
+                {t("email")}
+              </span>
+              <span className="font-medium">{user.userId}</span>
+            </div>
+
+            <div className="grid grid-cols-[100px_1fr] gap-2 items-start">
+              <span className="font-semibold text-muted-foreground mt-1">
+                {t("departments")}
+              </span>
+              <div className="flex flex-wrap gap-1">
+                {user.departments.map((dept) => (
+                  <span
+                    key={dept.departmentCode}
+                    className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full"
+                  >
+                    {dept.departmentName} ({dept.roleName})
                   </span>
-                  <span className="font-medium truncate">{user.name}</span>
-                </div>
-                <div className="grid grid-cols-[80px_1fr] gap-2 items-center">
-                  <span className="font-semibold text-muted-foreground">
-                    Email:
-                  </span>
-                  <span className="font-medium truncate">{user.email}</span>
-                </div>
-                <div className="grid grid-cols-[80px_1fr] gap-2 items-center">
-                  <span className="font-semibold text-muted-foreground">
-                    ID:
-                  </span>
-                  <span className="font-medium text-xs text-muted-foreground truncate font-mono bg-muted p-1 rounded">
-                    {user.id}
-                  </span>
-                </div>
+                ))}
               </div>
+            </div>
 
-              <div className="border-t pt-4 mt-4">
-                <div className="flex flex-col gap-2">
-                  <span className="font-semibold text-muted-foreground text-sm">
-                    Access Token:
+            <div className="grid grid-cols-[100px_1fr] gap-2 items-start">
+              <span className="font-semibold text-muted-foreground mt-1">
+                {t("teams")}
+              </span>
+              <div className="flex flex-wrap gap-1">
+                {user.teams.map((team) => (
+                  <span
+                    key={team.teamCode}
+                    className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full"
+                  >
+                    {team.teamName} {team.isLeader && "👑"}
                   </span>
-                  <div className="flex items-center gap-2">
-                    <code className="flex-1 bg-muted p-2 rounded text-xs text-muted-foreground font-mono truncate max-w-[250px]">
-                      {authUtils.getToken()}
-                    </code>
+                ))}
+              </div>
+            </div>
 
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-8 w-8 shrink-0"
-                      onClick={handleCopyToken}
-                    >
-                      {copied ? (
-                        <Check className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
-                      <span className="sr-only">Copy Token</span>
-                    </Button>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground italic">
-                    *Token này dùng để test API trên Postman/Swagger
-                  </p>
-                </div>
+            <div className="grid grid-cols-[100px_1fr] gap-2 items-center pt-2">
+              <span className="font-semibold text-muted-foreground">
+                {t("token")}
+              </span>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 bg-muted p-1.5 rounded text-xs text-muted-foreground font-mono truncate">
+                  {authUtils.getToken()?.slice(0, 20)}...
+                </code>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  onClick={handleCopyToken}
+                >
+                  {copied ? (
+                    <Check className="h-3 w-3 text-green-500" />
+                  ) : (
+                    <Copy className="h-3 w-3" />
+                  )}
+                </Button>
               </div>
             </div>
           </div>
-        ) : (
-          <p className="text-muted-foreground">Đang tải thông tin...</p>
-        )}
+        </div>
       </div>
 
-      <Button variant="destructive" size="lg" onClick={handleLogout}>
-        Đăng xuất
+      <Button variant="destructive" onClick={logout}>
+        {t("logout")}
       </Button>
     </div>
   );

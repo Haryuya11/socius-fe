@@ -1,58 +1,30 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import * as React from "react";
-import { useMsal } from "@azure/msal-react";
-import { toast } from "sonner";
+import { useAuth } from "@/providers/auth-provider"; // 1. Import Context
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Icons } from "@/components/ui/icons";
+import { Icons } from "@/components/ui/icons"; // Đảm bảo đường dẫn icon đúng
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { authUtils, UserInfo } from "@/lib/auth-helpers";
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const { instance } = useMsal();
+  const { login } = useAuth();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const router = useRouter();
   const t = useTranslations("Auth");
 
-  const login = async () => {
+  const handleLogin = async () => {
+    if (isLoading) return;
+    
     setIsLoading(true);
     try {
-      const res = await instance.loginPopup({
-        scopes: ["openid", "profile", "email"],
-      });
-
-      if (res.account && res.idToken) {
-
-        const tokenExpiresAt = new Date((res.idTokenClaims as any).exp * 1000);
-
-        const userInfo: UserInfo = {
-          id: res.account.localAccountId || res.uniqueId,
-          name: res.account.name || "User",
-          email: res.account.username,
-          username: res.account.username,
-        };
-
-        authUtils.setAuth(
-          res.idToken,
-          res.accessToken,
-          userInfo,
-          tokenExpiresAt
-        );
-        console.log("Session will expire at:", tokenExpiresAt.toLocaleString());
-      }
-
-      console.log(res);
-      toast.success(t("login_success", { name: res.account?.name || "User" }));
-
-      router.push("/");
+      await login();
+      router.push("/dashboard");
     } catch (err) {
-      console.error(err);
-      toast.error(t("login_failed"));
+      console.error("Login trigger error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -64,7 +36,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         variant="outline"
         type="button"
         disabled={isLoading}
-        onClick={login}
+        onClick={handleLogin}
         className="h-12 w-full font-medium transition-all duration-200 hover:scale-[1.02] hover:bg-accent/50 hover:text-accent-foreground active:scale-[0.98]"
       >
         {isLoading ? (
