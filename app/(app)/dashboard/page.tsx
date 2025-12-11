@@ -8,11 +8,14 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTranslations } from "next-intl";
+import { getAvatarInfo } from "@/utils/avatar-utils";
+import { UserProfile } from "@/types/user";
 
 export default function HomePage() {
-  const t = useTranslations("Dashboard"); // 👈 nhóm i18n mới
+  const t = useTranslations("Dashboard");
   const { user, isLoading, logout } = useAuth();
   const [copied, setCopied] = useState(false);
+  const { fullName, initials, avatarUrl } = getAvatarInfo(user as UserProfile);
 
   const handleCopyToken = () => {
     const token = authUtils.getToken();
@@ -43,11 +46,11 @@ export default function HomePage() {
           {/* Header Profile */}
           <div className="flex items-center gap-4 border-b pb-4 mb-4">
             <Avatar className="h-16 w-16">
-              <AvatarImage src={user.imageUrl} />
-              <AvatarFallback>
-                {user.firstName[0]}
-                {user.lastName[0]}
-              </AvatarFallback>
+              <AvatarImage
+                src={avatarUrl || "/placeholder.svg"}
+                alt={fullName}
+              />
+              <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
             <div className="text-left">
               <h2 className="text-xl font-bold">

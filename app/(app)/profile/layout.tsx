@@ -8,7 +8,7 @@ type Props = {
 export async function generateMetadata({
   params: { locale },
 }: Omit<Props, "children">) {
-  const t = await getTranslations({ locale, namespace: "Metadata.auth" });
+  const t = await getTranslations({ locale, namespace: "Metadata.profile" });
 
   const tGlobal = await getTranslations({
     locale,
@@ -16,12 +16,12 @@ export async function generateMetadata({
   });
 
   return {
-    title: `${t("title")} | ${tGlobal("site_name")}`, 
+    title: `${t("title")} | ${tGlobal("site_name")}`,
     description: t("description"),
   };
 }
 
-export default function AuthenticationLayout({
+export default function ProfileLayout({
   children,
 }: {
   children: React.ReactNode;
