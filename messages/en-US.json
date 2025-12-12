@@ -20,6 +20,19 @@
       "title": "404 - Page Not Found"
     }
   },
+  "Common": {
+    "pagination": {
+      "page": "Page",
+      "of": "of",
+      "showing": "Showing",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "status": {
+      "loading": "Loading...",
+      "no_data": "No data found"
+    }
+  },
   "Dashboard": {
     "welcome": "Welcome back!",
     "email": "Email",
@@ -54,7 +67,93 @@
     "my_profile": "My Profile",
     "settings": "Settings",
     "logout": "Log out",
-    "logged_out_success": "Logged out successfully"
+    "logged_out_success": "Logged out successfully",
+    "employee_profile": "Employee Profile",
+    "back": "Back",
+    "export": "Export",
+    "edit_profile": "Edit Profile",
+    "nav": {
+      "overview": "Overview",
+      "details": "Personal Details",
+      "organization": "Organization",
+      "compensation": "Compensation"
+    },
+    "stats": {
+      "annual_salary": "Annual Salary",
+      "departments": "Departments",
+      "teams": "Teams"
+    },
+    "details": {
+      "title": "Personal Details",
+      "client_id": "Client ID",
+      "unique_identifier": "Unique Identifier",
+      "system_role": "System Role",
+      "access_level": "Access Level",
+      "email": "Email Address",
+      "primary_contact": "Primary Contact",
+      "compensation": "Annual Compensation",
+      "base_salary": "Base Salary"
+    },
+    "org": {
+      "title": "Organization",
+      "departments": "Departments",
+      "teams": "Teams",
+      "primary_dept": "Primary Department",
+      "member": "Member",
+      "no_dept": "No departments assigned",
+      "team_leader": "Team Leader",
+      "active_member": "Active Member",
+      "no_team": "No teams assigned"
+    }
+  },
+  "Employees": {
+    "title": "Employee Directory",
+    "subtitle": "Manage and view your organization's workforce",
+    "total_label": "employees",
+    "add_new": "Add Employee",
+    "search_placeholder": "Search employees by name or email...",
+    "filter": "Filters",
+    "views": {
+      "table": "Table View",
+      "grid": "Grid View",
+      "tree": "Organization View"
+    },
+    "loading": "Loading employees...",
+    "empty": {
+      "title": "No employees found",
+      "desc_search": "No results for \"{query}\". Try adjusting your search.",
+      "desc_default": "Get started by adding your first employee."
+    },
+    "table": {
+      "employee": "Employee",
+      "system_role": "System Role",
+      "departments": "Departments",
+      "teams": "Teams",
+      "actions": "Actions"
+    },
+    "actions": {
+      "view_profile": "View profile",
+      "view_details": "View Details",
+      "details": "Details",
+      "edit_details": "Edit details"
+    },
+    "cards": {
+      "primary_dept": "Primary Department",
+      "not_assigned": "Not assigned",
+      "teams_count": "Teams ({count})",
+      "client_id": "Client ID",
+      "department_label": "{count, plural, =0 {Departments} one {Department} other {Departments}}",
+      "team_label": "{count, plural, =0 {Teams} one {Team} other {Teams}}",
+      "no_dept": "No departments assigned",
+      "no_team": "No teams assigned"
+    },
+    "org": {
+      "departments": "Departments",
+      "teams": "Teams",
+      "primary": "Primary",
+      "leader": "Leader",
+      "team_leader": "Team Leader"
+    }
   },
   "Theme": {
     "toggle": "Toggle theme",

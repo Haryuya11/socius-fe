@@ -16,6 +16,7 @@ async function getValidToken(forceRefresh = false) {
   // if running in server (SSR), return null
   if (typeof window === "undefined") return null;
 
+  try {
   // check if msal is initialized
   if (!msalInitPromise) {
     msalInitPromise = msalInstance.initialize();
@@ -25,15 +26,11 @@ async function getValidToken(forceRefresh = false) {
   await msalInitPromise;
 
   // get all accounts
-  const accounts = msalInstance.getAllAccounts();
-  if (accounts.length === 0) {
-    // if no accounts, return null
-    return null;
-  }
+  const account = msalInstance.getActiveAccount() || msalInstance.getAllAccounts()[0];
+  if (!account) {
+      return null;
+    }
 
-  const account = accounts[0];
-
-  try {
     // check if token is valid
     // if valid, return token
     // if not valid, refresh token
@@ -45,12 +42,8 @@ async function getValidToken(forceRefresh = false) {
 
     // check if new token is different from current token
     // if different, update token in cookie
-    const currentCookieToken = authUtils.getToken();
 
-    if (response.idToken !== currentCookieToken) {
-      console.log(
-        "New token is different from current token, updating token in cookie..."
-      );
+    if (response.idToken) {
 
       const exp =
         response.idTokenClaims &&
@@ -85,7 +78,7 @@ http.interceptors.request.use(
   async (config) => {
     if (typeof window !== "undefined") {
       // get token
-      const token = await getValidToken();
+      const token = await getValidToken(false);
 
       // if token is null, get token from cookie
       const finalToken = token || authUtils.getToken();
