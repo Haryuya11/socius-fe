@@ -3,10 +3,10 @@
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { UserAuthForm } from "@/components/UserAuthForm";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { GridPattern } from "@/components/GridPattern";
-import { DashboardMockup } from "@/components/DashboardMockup";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { GridPattern } from "@/components/grid-pattern";
+import { DashboardMockup } from "@/components/dashboard-mockup";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { TypewriterText } from "@/components/ui/typewriter-text";
 import { SociusLogo } from "@/components/ui/logo";
 
@@ -36,7 +36,10 @@ export default function AuthenticationPage() {
           <div className="absolute bottom-1/4 right-1/4 h-64 w-64 rounded-full bg-ring/30 blur-3xl animate-float [animation-delay:2s]" />
 
           <div className="relative z-20 flex items-center text-lg font-medium gap-2">
-            <SociusLogo variant="full" className="h-10 w-auto text-primary fill-current animate-pulse" />
+            <SociusLogo
+              variant="full"
+              className="h-10 w-auto text-primary fill-current animate-pulse"
+            />
           </div>
 
           <div className="relative z-10 flex-1 flex items-center justify-center w-full px-4 perspective-[1000px]">

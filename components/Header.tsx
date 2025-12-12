@@ -8,8 +8,8 @@ import { useState } from "react";
 import { Menu } from "lucide-react";
 import Link from "next/link";
 
-import { ThemeToggle } from "./ThemeToggle";
-import { LanguageSwitcher } from "./LanguageSwitcher";
+import { ThemeToggle } from "./theme-toggle";
+import { LanguageSwitcher } from "./language-switcher";
 import { SociusLogo } from "./ui/logo";
 import { cn } from "@/lib/utils";
 import SidebarNav from "./SidebarNav";
