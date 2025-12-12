@@ -1,13 +1,9 @@
 import { getTranslations } from "next-intl/server";
-
-type Props = {
-  children: React.ReactNode;
-  params: { locale: string };
-};
+import { LayoutProps } from "@/types/common";
 
 export async function generateMetadata({
   params: { locale },
-}: Omit<Props, "children">) {
+}: Omit<LayoutProps, "children">) {
   const t = await getTranslations({ locale, namespace: "Metadata.auth" });
 
   const tGlobal = await getTranslations({
@@ -16,15 +12,12 @@ export async function generateMetadata({
   });
 
   return {
-    title: `${t("title")} | ${tGlobal("site_name")}`, 
+    title: `${t("title")} | ${tGlobal("site_name")}`,
     description: t("description"),
   };
 }
 
-export default function AuthenticationLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AuthenticationLayout({ children }: LayoutProps) {
   return <>{children}</>;
 }
+
