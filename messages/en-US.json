@@ -111,8 +111,17 @@
     "subtitle": "Manage and view your organization's workforce",
     "total_label": "employees",
     "add_new": "Add Employee",
-    "search_placeholder": "Search employees by name or email...",
+    "search_placeholder": "Search by First Name...",
     "filter": "Filters",
+    "filters": {
+      "title": "Advanced Filters",
+      "user_id_label": "User ID / Email",
+      "last_name_label": "Last Name",
+      "first_name_label": "First Name",
+      "role_label": "System Role",
+      "select_role": "Select role",
+      "all_roles": "All Roles"
+    },
     "views": {
       "table": "Table View",
       "grid": "Grid View",
@@ -122,6 +131,7 @@
     "empty": {
       "title": "No employees found",
       "desc_search": "No results for \"{query}\". Try adjusting your search.",
+      "desc_filtered": "No employees match your active filters.",
       "desc_default": "Get started by adding your first employee."
     },
     "table": {
@@ -135,7 +145,10 @@
       "view_profile": "View profile",
       "view_details": "View Details",
       "details": "Details",
-      "edit_details": "Edit details"
+      "edit_details": "Edit details",
+      "apply": "Apply Filters",
+      "reset": "Reset",
+      "clear_filters": "Clear all filters"
     },
     "cards": {
       "primary_dept": "Primary Department",
@@ -161,5 +174,17 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System"
+  },
+  "Navigation": {
+    "dashboard": "Dashboard",
+    "my_team": "My Team",
+    "my_tasks": "My Tasks",
+    "calendar": "Calendar",
+    "messages": "Messages",
+    "notifications": "Notifications",
+    "directory": "Directory",
+    "documents": "Documents",
+    "settings": "Settings",
+    "employees": "Employees"
   }
 }

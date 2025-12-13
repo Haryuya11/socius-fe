@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import type React from "react";
@@ -8,23 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { Employee } from "@/types/employee";
-import { getFullName, getInitials } from "@/utils/name-utils";
 
-const PLACEHOLDER_AVATARS = [
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-3.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-6.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-5.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-16.png",
-];
-
-const getAvatarUrl = (user: Employee) => {
-  if (user.imageUrl) return user.imageUrl;
-  const sum = user.userId
-    .split("")
-    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const index = sum % PLACEHOLDER_AVATARS.length;
-  return PLACEHOLDER_AVATARS[index];
-};
+import { getAvatarInfo } from "@/utils/avatar-utils";
 
 interface Props {
   data: Employee[];
@@ -43,9 +29,7 @@ export function EmployeeTreeView({ data }: Props) {
 function EmployeeNode({ emp }: { emp: Employee }) {
   const t = useTranslations("Employees");
 
-  const fullName = getFullName(emp.firstName, emp.lastName);
-  const avatarUrl = getAvatarUrl(emp);
-  const initials = getInitials(emp.firstName, emp.lastName);
+  const { fullName, initials, avatarUrl } = getAvatarInfo(emp);
 
   const deptCount = emp.departments?.length || 0;
   const teamCount = emp.teams?.length || 0;
@@ -87,7 +71,6 @@ function EmployeeNode({ emp }: { emp: Employee }) {
               <Mail className="h-3.5 w-3.5 shrink-0" />
               <span className="truncate">{emp.userId}</span>
             </div>
-            {/* SỬA LỖI: Bỏ opacity /80 để text rõ hơn trong dark mode */}
             <div className="flex items-center text-xs text-muted-foreground gap-1.5 mt-1">
               <Briefcase className="h-3 w-3 shrink-0" />
               <span className="truncate font-mono">
@@ -100,7 +83,6 @@ function EmployeeNode({ emp }: { emp: Employee }) {
           <Button
             variant="outline"
             size="sm"
-            // SỬA LỖI: Đảm bảo hover text có độ tương phản cao
             className="h-9 hover:bg-primary hover:text-primary-foreground transition-colors border-border/50 bg-transparent dark:text-foreground"
           >
             {t("actions.view_details")}
@@ -118,177 +100,169 @@ function EmployeeNode({ emp }: { emp: Employee }) {
         </div>
       </div>
 
-      {/* Organizational Structure */}
       <div className="mt-6 pl-6 border-l-2 border-primary/20 space-y-6 relative">
-        {/* Departments Branch */}
-        <div className="relative">
-          <div className="absolute -left-[26px] top-4 h-0.5 w-4 bg-primary/20" />
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-linear-to-br from-blue-500 to-blue-600 rounded-lg shadow-md">
-                <Building2 className="h-4 w-4 text-white" />
-              </div>
-              <h4 className="text-sm font-bold text-foreground uppercase tracking-wide">
-                {t("org.departments")}
-              </h4>
-            </div>
-            <Badge variant="outline" className="text-xs font-semibold">
-              {t("cards.department_label", { count: deptCount })}
-            </Badge>
-          </div>
-          <div className="space-y-2 ml-1">
-            {emp.departments?.length > 0 ? (
-              emp.departments.map((dept, index) => (
-                <TreeItem
-                  key={dept.departmentCode}
-                  isLast={
-                    index === emp.departments.length - 1 &&
-                    (!emp.teams || emp.teams.length === 0)
-                  }
-                >
-                  {/* SỬA LỖI MÀU SẮC DEPARTMENT CARD */}
-                  <div
-                    className="group flex items-center gap-2 
-                    bg-linear-to-r from-blue-50 to-blue-50/50 
-                    dark:from-blue-900/40 dark:to-blue-900/20 
-                    px-4 py-3 rounded-lg 
-                    border border-blue-200 dark:border-blue-800 
-                    shadow-sm hover:shadow-md transition-all hover:scale-[1.02]"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        {/* SỬA: Text dark mode chuyển thành blue-100 để sáng hơn */}
-                        <span className="text-sm font-semibold text-blue-900 dark:text-blue-100">
-                          {dept.departmentName}
-                        </span>
-                        {dept.isPrimary && (
-                          <Badge className="text-[10px] h-5 px-1.5 bg-linear-to-r from-green-500 to-emerald-500 text-white border-0 shadow-sm">
-                            <Crown className="h-2.5 w-2.5 mr-0.5" />
-                            {t("org.primary")}
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {/* SỬA: Badge nền tối hơn, text sáng hơn */}
-                        <Badge
-                          variant="outline"
-                          className="text-[10px] h-5 font-medium bg-white dark:bg-blue-950 border-blue-300 dark:border-blue-700 dark:text-blue-200"
-                        >
-                          {dept.roleName}
-                        </Badge>
-                        {/* SỬA: Mã code dùng blue-300 để rõ hơn trên nền tối */}
-                        <span className="text-[10px] text-blue-600 dark:text-blue-300 font-mono">
-                          {dept.departmentCode}
-                        </span>
-                      </div>
-                    </div>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-7 px-2 opacity-0 group-hover:opacity-100 transition-opacity text-xs dark:text-blue-200 dark:hover:bg-blue-800/50"
-                    >
-                      {t("actions.details")}
-                    </Button>
-                  </div>
-                </TreeItem>
-              ))
-            ) : (
-              <TreeItem isLast={!emp.teams || emp.teams.length === 0}>
-                <div className="flex items-center gap-2 px-4 py-3 bg-muted/30 rounded-lg border border-dashed border-muted-foreground/20">
-                  <Building2 className="h-4 w-4 text-muted-foreground/50" />
-                  <span className="text-sm text-muted-foreground italic">
-                    {t("cards.no_dept")}
-                  </span>
-                </div>
-              </TreeItem>
-            )}
-          </div>
-        </div>
-
-        {/* Teams Branch */}
-        <div className="relative">
-          <div className="absolute -left-[26px] top-4 h-0.5 w-4 bg-primary/20" />
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-linear-to-br from-orange-500 to-orange-600 rounded-lg shadow-md">
-                <Users className="h-4 w-4 text-white" />
-              </div>
-              <h4 className="text-sm font-bold text-foreground uppercase tracking-wide">
-                {t("org.teams")}
-              </h4>
-            </div>
-            <Badge variant="outline" className="text-xs font-semibold">
-              {t("cards.team_label", { count: teamCount })}
-            </Badge>
-          </div>
-          <div className="space-y-2 ml-1">
-            {emp.teams?.length > 0 ? (
-              emp.teams.map((team, index) => (
-                <TreeItem
-                  key={team.teamCode}
-                  isLast={index === emp.teams.length - 1}
-                >
-                  {/* SỬA LỖI MÀU SẮC TEAM CARD */}
-                  <div
-                    className="group flex items-center gap-2 
-                    bg-linear-to-r from-orange-50 to-orange-50/50 
-                    dark:from-orange-900/40 dark:to-orange-900/20 
-                    px-4 py-3 rounded-lg 
-                    border border-orange-200 dark:border-orange-800 
-                    shadow-sm hover:shadow-md transition-all hover:scale-[1.02]"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        {/* SỬA: Text Orange-100 cho dark mode */}
-                        <span className="text-sm font-semibold text-orange-900 dark:text-orange-100">
-                          {team.teamName}
-                        </span>
-                        {team.isLeader && (
-                          <div
-                            className="flex items-center gap-0.5 px-1.5 py-0.5 bg-linear-to-r from-amber-400 to-yellow-400 rounded text-[10px] font-bold text-amber-900 shadow-sm"
-                            title={t("org.team_leader")}
-                          >
-                            <Crown className="h-3 w-3" />
-                            {t("org.leader")}
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge
-                          variant="outline"
-                          className="text-[10px] h-5 font-medium bg-white dark:bg-orange-950 border-orange-300 dark:border-orange-700 dark:text-orange-200"
-                        >
-                          {team.roleName}
-                        </Badge>
-                        <span className="text-[10px] text-orange-600 dark:text-orange-300 font-mono">
-                          {team.teamCode}
-                        </span>
-                      </div>
-                    </div>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-7 px-2 opacity-0 group-hover:opacity-100 transition-opacity text-xs dark:text-orange-200 dark:hover:bg-orange-800/50"
-                    >
-                      {t("actions.details")}
-                    </Button>
-                  </div>
-                </TreeItem>
-              ))
-            ) : (
-              <TreeItem isLast>
-                <div className="flex items-center gap-2 px-4 py-3 bg-muted/30 rounded-lg border border-dashed border-muted-foreground/20">
-                  <Users className="h-4 w-4 text-muted-foreground/50" />
-                  <span className="text-sm text-muted-foreground italic">
-                    {t("cards.no_team")}
-                  </span>
-                </div>
-              </TreeItem>
-            )}
-          </div>
-        </div>
+        {renderOrgStructure(emp, t, deptCount, teamCount)}
       </div>
     </Card>
+  );
+}
+
+function renderOrgStructure(
+  emp: Employee,
+  t: any,
+  deptCount: number,
+  teamCount: number
+) {
+  return (
+    <>
+      {/* Departments Branch */}
+      <div className="relative">
+        <div className="absolute -left-[26px] top-4 h-0.5 w-4 bg-primary/20" />
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 bg-linear-to-br from-blue-500 to-blue-600 rounded-lg shadow-md">
+              <Building2 className="h-4 w-4 text-white" />
+            </div>
+            <h4 className="text-sm font-bold text-foreground uppercase tracking-wide">
+              {t("org.departments")}
+            </h4>
+          </div>
+          <Badge variant="outline" className="text-xs font-semibold">
+            {t("cards.department_label", { count: deptCount })}
+          </Badge>
+        </div>
+        <div className="space-y-2 ml-1">
+          {emp.departments?.length > 0 ? (
+            emp.departments.map((dept, index) => (
+              <TreeItem
+                key={dept.departmentCode}
+                isLast={
+                  index === emp.departments.length - 1 &&
+                  (!emp.teams || emp.teams.length === 0)
+                }
+              >
+                <div className="group flex items-center gap-2 bg-linear-to-r from-blue-50 to-blue-50/50 dark:from-blue-900/40 dark:to-blue-900/20 px-4 py-3 rounded-lg border border-blue-200 dark:border-blue-800 shadow-sm hover:shadow-md transition-all hover:scale-[1.02]">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                        {dept.departmentName}
+                      </span>
+                      {dept.isPrimary && (
+                        <Badge className="text-[10px] h-5 px-1.5 bg-linear-to-r from-green-500 to-emerald-500 text-white border-0 shadow-sm">
+                          <Crown className="h-2.5 w-2.5 mr-0.5" />
+                          {t("org.primary")}
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] h-5 font-medium bg-white dark:bg-blue-950 border-blue-300 dark:border-blue-700 dark:text-blue-200"
+                      >
+                        {dept.roleName}
+                      </Badge>
+                      <span className="text-[10px] text-blue-600 dark:text-blue-300 font-mono">
+                        {dept.departmentCode}
+                      </span>
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 px-2 opacity-0 group-hover:opacity-100 transition-opacity text-xs dark:text-blue-200 dark:hover:bg-blue-800/50"
+                  >
+                    {t("actions.details")}
+                  </Button>
+                </div>
+              </TreeItem>
+            ))
+          ) : (
+            <TreeItem isLast={!emp.teams || emp.teams.length === 0}>
+              <div className="flex items-center gap-2 px-4 py-3 bg-muted/30 rounded-lg border border-dashed border-muted-foreground/20">
+                <Building2 className="h-4 w-4 text-muted-foreground/50" />
+                <span className="text-sm text-muted-foreground italic">
+                  {t("cards.no_dept")}
+                </span>
+              </div>
+            </TreeItem>
+          )}
+        </div>
+      </div>
+
+      {/* Teams Branch */}
+      <div className="relative">
+        <div className="absolute -left-[26px] top-4 h-0.5 w-4 bg-primary/20" />
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 bg-linear-to-br from-orange-500 to-orange-600 rounded-lg shadow-md">
+              <Users className="h-4 w-4 text-white" />
+            </div>
+            <h4 className="text-sm font-bold text-foreground uppercase tracking-wide">
+              {t("org.teams")}
+            </h4>
+          </div>
+          <Badge variant="outline" className="text-xs font-semibold">
+            {t("cards.team_label", { count: teamCount })}
+          </Badge>
+        </div>
+        <div className="space-y-2 ml-1">
+          {emp.teams?.length > 0 ? (
+            emp.teams.map((team, index) => (
+              <TreeItem
+                key={team.teamCode}
+                isLast={index === emp.teams.length - 1}
+              >
+                <div className="group flex items-center gap-2 bg-linear-to-r from-orange-50 to-orange-50/50 dark:from-orange-900/40 dark:to-orange-900/20 px-4 py-3 rounded-lg border border-orange-200 dark:border-orange-800 shadow-sm hover:shadow-md transition-all hover:scale-[1.02]">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sm font-semibold text-orange-900 dark:text-orange-100">
+                        {team.teamName}
+                      </span>
+                      {team.isLeader && (
+                        <div
+                          className="flex items-center gap-0.5 px-1.5 py-0.5 bg-linear-to-r from-amber-400 to-yellow-400 rounded text-[10px] font-bold text-amber-900 shadow-sm"
+                          title={t("org.team_leader")}
+                        >
+                          <Crown className="h-3 w-3" />
+                          {t("org.leader")}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] h-5 font-medium bg-white dark:bg-orange-950 border-orange-300 dark:border-orange-700 dark:text-orange-200"
+                      >
+                        {team.roleName}
+                      </Badge>
+                      <span className="text-[10px] text-orange-600 dark:text-orange-300 font-mono">
+                        {team.teamCode}
+                      </span>
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 px-2 opacity-0 group-hover:opacity-100 transition-opacity text-xs dark:text-orange-200 dark:hover:bg-orange-800/50"
+                  >
+                    {t("actions.details")}
+                  </Button>
+                </div>
+              </TreeItem>
+            ))
+          ) : (
+            <TreeItem isLast>
+              <div className="flex items-center gap-2 px-4 py-3 bg-muted/30 rounded-lg border border-dashed border-muted-foreground/20">
+                <Users className="h-4 w-4 text-muted-foreground/50" />
+                <span className="text-sm text-muted-foreground italic">
+                  {t("cards.no_team")}
+                </span>
+              </div>
+            </TreeItem>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
 

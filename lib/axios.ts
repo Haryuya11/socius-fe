@@ -102,31 +102,31 @@ http.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // only intercept 401 errors if the request hasn't already been retried
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      // set _retry to true so we don't enter an infinite loop
-      originalRequest._retry = true;
-
-      try {
-        console.log("Token expired (401). Attempting silent refresh...");
-
-        // force refresh: force to get a new token from MSAL
-        const newToken = await getValidToken(true);
-
-        if (newToken) {
-          console.log("Refresh success. Retrying original request...");
-
-          originalRequest.headers.Authorization = `Bearer ${newToken}`;
-
-          // retry the original request
-          return http(originalRequest);
-        }
-      } catch (refreshError) {
-        console.error("Retry failed:", refreshError);
-      }
-    }
-
     if (error.response?.status === 401) {
+      // only intercept 401 errors if the request hasn't already been retried
+      if (!originalRequest._retry) {
+        // set _retry to true so we don't enter an infinite loop
+        originalRequest._retry = true;
+
+        try {
+          console.log("Token expired (401). Attempting silent refresh...");
+
+          // force refresh: force to get a new token from MSAL
+          const newToken = await getValidToken(true);
+
+          if (newToken) {
+            console.log("Refresh success. Retrying original request...");
+
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
+            // retry the original request
+            return http(originalRequest);
+          }
+        } catch (refreshError) {
+          console.error("Retry failed:", refreshError);
+        }
+      }
+
       const loginPath = "/login";
 
       if (

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { Check, Languages } from "lucide-react"; 
+import { Check, Languages } from "lucide-react";
 import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { useMounted } from "@/hooks/useMounted";
+import { useMounted } from "@/hooks/use-mounted";
 
 export function LanguageSwitcher() {
   const locale = useLocale();

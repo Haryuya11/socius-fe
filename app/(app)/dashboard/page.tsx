@@ -9,13 +9,12 @@ import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTranslations } from "next-intl";
 import { getAvatarInfo } from "@/utils/avatar-utils";
-import { UserProfile } from "@/types/user";
 
 export default function HomePage() {
   const t = useTranslations("Dashboard");
   const { user, isLoading, logout } = useAuth();
   const [copied, setCopied] = useState(false);
-  const { fullName, initials, avatarUrl } = getAvatarInfo(user as UserProfile);
+  const { fullName, initials, avatarUrl } = getAvatarInfo(user);
 
   const handleCopyToken = () => {
     const token = authUtils.getToken();

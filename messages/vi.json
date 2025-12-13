@@ -111,8 +111,17 @@
     "subtitle": "Quản lý và xem nhân sự trong tổ chức của bạn",
     "total_label": "nhân viên",
     "add_new": "Thêm nhân viên",
-    "search_placeholder": "Tìm kiếm theo tên hoặc email...",
+    "search_placeholder": "Tìm kiếm theo Tên...",
     "filter": "Bộ lọc",
+    "filters": {
+      "title": "Bộ lọc nâng cao",
+      "user_id_label": "User ID / Email",
+      "last_name_label": "Họ",
+      "first_name_label": "Tên",
+      "role_label": "Vai trò hệ thống",
+      "select_role": "Chọn vai trò",
+      "all_roles": "Tất cả vai trò"
+    },
     "views": {
       "table": "Dạng bảng",
       "grid": "Dạng lưới",
@@ -122,6 +131,7 @@
     "empty": {
       "title": "Không tìm thấy nhân viên",
       "desc_search": "Không có kết quả cho \"{query}\". Hãy thử từ khóa khác.",
+      "desc_filtered": "Không có nhân viên nào khớp với bộ lọc hiện tại.",
       "desc_default": "Bắt đầu bằng cách thêm nhân viên đầu tiên của bạn."
     },
     "table": {
@@ -135,7 +145,10 @@
       "view_profile": "Xem hồ sơ",
       "view_details": "Xem chi tiết",
       "details": "Chi tiết",
-      "edit_details": "Chỉnh sửa"
+      "edit_details": "Chỉnh sửa",
+      "apply": "Áp dụng",
+      "reset": "Đặt lại",
+      "clear_filters": "Xóa bộ lọc"
     },
     "cards": {
       "primary_dept": "Phòng ban chính",
@@ -161,5 +174,17 @@
     "light": "Sáng",
     "dark": "Tối",
     "system": "Hệ thống"
+  },
+  "Navigation": {
+    "dashboard": "Bảng điều khiển",
+    "my_team": "Đội ngũ của tôi",
+    "my_tasks": "Công việc",
+    "calendar": "Lịch",
+    "messages": "Tin nhắn",
+    "notifications": "Thông báo",
+    "directory": "Danh bạ",
+    "documents": "Tài liệu",
+    "settings": "Cài đặt",
+    "employees": "Nhân viên"
   }
 }

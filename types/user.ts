@@ -13,3 +13,10 @@ export interface UserProfile {
   departments: DepartmentInfo[];
   teams: TeamInfo[];
 }
+
+export interface BasicUserInfo {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  imageUrl?: string | null;
+}

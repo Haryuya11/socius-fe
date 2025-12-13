@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { useMounted } from "@/hooks/useMounted";
+import { useMounted } from "@/hooks/use-mounted";
 import { useTranslations } from "next-intl";
 
 export function ThemeToggle() {

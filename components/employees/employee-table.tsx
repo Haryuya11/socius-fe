@@ -21,24 +21,9 @@ import { Card } from "@/components/ui/card";
 import { Building2, MoreHorizontal, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { getFullName, getInitials } from "@/utils/name-utils";
+// UPDATE: Import hàm tiện ích chung
+import { getAvatarInfo } from "@/utils/avatar-utils";
 import type { Employee } from "@/types/employee";
-
-const PLACEHOLDER_AVATARS = [
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-3.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-6.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-5.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-16.png",
-];
-
-const getAvatarUrl = (user: Employee) => {
-  if (user.imageUrl) return user.imageUrl;
-  const sum = user.userId
-    .split("")
-    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const index = sum % PLACEHOLDER_AVATARS.length;
-  return PLACEHOLDER_AVATARS[index];
-};
 
 interface EmployeeTableProps {
   data: Employee[];
@@ -69,9 +54,7 @@ export function EmployeeTable({ data }: EmployeeTableProps) {
         </TableHeader>
         <TableBody>
           {data.map((emp) => {
-            const fullName = getFullName(emp.firstName, emp.lastName);
-            const avatarUrl = getAvatarUrl(emp);
-            const initials = getInitials(emp.firstName, emp.lastName);
+            const { fullName, initials, avatarUrl } = getAvatarInfo(emp);
 
             return (
               <TableRow
@@ -115,7 +98,6 @@ export function EmployeeTable({ data }: EmployeeTableProps) {
                         <Badge
                           key={dept.departmentCode}
                           variant="outline"
-                          // SỬA: Dark mode text chuyển sang blue-200 cho sáng hơn
                           className="font-normal bg-blue-50 dark:bg-blue-500/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-200"
                         >
                           <Building2 className="mr-1 h-3 w-3" />
@@ -136,7 +118,6 @@ export function EmployeeTable({ data }: EmployeeTableProps) {
                         <Badge
                           key={team.teamCode}
                           variant="outline"
-                          // SỬA: Dark mode text chuyển sang orange-200
                           className="font-normal bg-orange-50 dark:bg-orange-500/20 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-200"
                         >
                           <Users className="mr-1 h-3 w-3" />

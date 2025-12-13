@@ -13,24 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Building2, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { getFullName, getInitials } from "@/utils/name-utils";
+import { getAvatarInfo } from "@/utils/avatar-utils";
 import type { Employee } from "@/types/employee";
-
-const PLACEHOLDER_AVATARS = [
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-3.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-6.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-5.png",
-  "https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-16.png",
-];
-
-const getAvatarUrl = (user: Employee) => {
-  if (user.imageUrl) return user.imageUrl;
-  const sum = user.userId
-    .split("")
-    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const index = sum % PLACEHOLDER_AVATARS.length;
-  return PLACEHOLDER_AVATARS[index];
-};
 
 interface EmployeeGridProps {
   data: Employee[];
@@ -42,9 +26,7 @@ export function EmployeeGrid({ data }: EmployeeGridProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {data.map((emp) => {
-        const fullName = getFullName(emp.firstName, emp.lastName);
-        const avatarUrl = getAvatarUrl(emp);
-        const initials = getInitials(emp.firstName, emp.lastName);
+        const { fullName, initials, avatarUrl } = getAvatarInfo(emp);
         const primaryDept = emp.departments?.find((d) => d.isPrimary);
 
         return (
@@ -96,7 +78,6 @@ export function EmployeeGrid({ data }: EmployeeGridProps) {
                   {primaryDept ? (
                     <Badge
                       variant="outline"
-                      // SỬA: Tăng độ sáng text dark mode
                       className="font-normal bg-blue-50 dark:bg-blue-500/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-200 text-xs"
                     >
                       {primaryDept.departmentName}
@@ -119,7 +100,6 @@ export function EmployeeGrid({ data }: EmployeeGridProps) {
                     <Badge
                       key={team.teamCode}
                       variant="outline"
-                      // SỬA: Tăng độ sáng text dark mode
                       className="text-[10px] px-1.5 py-0 h-5 font-normal bg-orange-50 dark:bg-orange-500/20 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-200"
                     >
                       {team.teamName}

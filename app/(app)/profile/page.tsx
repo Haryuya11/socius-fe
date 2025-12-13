@@ -16,48 +16,31 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
 import { useAuth } from "@/providers/auth-provider";
-import { UserProfile } from "@/types/user";
 import { getAvatarInfo } from "@/utils/avatar-utils";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
+import { ProfilePageSkeleton } from "@/components/skeleton/profile/profile-page-skeleton";
+
 export default function ProfilePage() {
-  const t = useTranslations("Profile"); 
+  const t = useTranslations("Profile");
   const { user } = useAuth();
-  const { fullName, initials, avatarUrl } = getAvatarInfo(user as UserProfile);
   const [activeSection, setActiveSection] = useState("overview");
 
-  const formattedSalary = new Intl.NumberFormat("vi", {
-    style: "currency",
-    currency: "VND",
-    maximumFractionDigits: 0,
-  }).format(user?.salary || 0);
-
-  const navItems = [
-    { id: "overview", label: t("nav.overview") },
-    { id: "details", label: t("nav.details") },
-    { id: "organization", label: t("nav.organization") },
-  ];
-
-  const scrollToSection = (
-    e: React.MouseEvent<HTMLAnchorElement>,
-    id: string
-  ) => {
-    e.preventDefault();
-    const element = document.getElementById(id);
-    if (element) {
-      const yOffset = -100;
-      const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
-
-      window.scrollTo({ top: y, behavior: "smooth" });
-      setActiveSection(id);
-    }
-  };
+  const navItems = useMemo(
+    () => [
+      { id: "overview", label: t("nav.overview") },
+      { id: "details", label: t("nav.details") },
+      { id: "organization", label: t("nav.organization") },
+    ],
+    [t]
+  );
 
   useEffect(() => {
+    if (!user) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -72,17 +55,49 @@ export default function ProfilePage() {
       }
     );
 
-    navItems.forEach((item) => {
-      const element = document.getElementById(item.id);
-      if (element) observer.observe(element);
-    });
+    const timer = setTimeout(() => {
+      navItems.forEach((item) => {
+        const element = document.getElementById(item.id);
+        if (element) observer.observe(element);
+      });
+    }, 100);
 
-    return () => observer.disconnect();
-  }, []);
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+    };
+  }, [navItems, user]); 
+
+  const scrollToSection = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    id: string
+  ) => {
+    e.preventDefault();
+    const element = document.getElementById(id);
+    if (element) {
+      const yOffset = -100;
+      const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+      setActiveSection(id);
+    }
+  };
+
+  if (!user) {
+    return <ProfilePageSkeleton />;
+  }
+
+  const { fullName, initials, avatarUrl } = getAvatarInfo(user);
+
+  const formattedSalary = new Intl.NumberFormat("vi", {
+    style: "currency",
+    currency: "VND",
+    maximumFractionDigits: 0,
+  }).format(user.salary || 0);
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background animate-in fade-in-0 duration-500">
       <div className="flex min-h-screen relative items-start">
+        {/* --- SIDEBAR --- */}
         <aside className="w-64 border-r border-border/40 bg-card/30 backdrop-blur-sm p-8 hidden lg:block sticky top-16 h-content-screen overflow-y-auto">
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-foreground mb-2">
@@ -112,7 +127,9 @@ export default function ProfilePage() {
           </nav>
         </aside>
 
+        {/* --- MAIN CONTENT --- */}
         <div className="flex-1 pb-32">
+          {/* HEADER SECTION */}
           <div
             id="overview"
             className="relative bg-linear-to-br from-primary/10 via-primary/5 to-background border-b border-border/40 scroll-mt-10"
@@ -120,11 +137,14 @@ export default function ProfilePage() {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.1),transparent_50%)]"></div>
             <div className="relative max-w-6xl mx-auto px-6 lg:px-12 py-12">
               <div className="flex items-start justify-between mb-8">
-                <Link href="/">
-                  <Button variant="ghost" size="sm" className="rounded-full">
-                    ← {t("back")}
-                  </Button>
-                </Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="rounded-full"
+                  onClick={() => history.back()}
+                >
+                  ← {t("back")}
+                </Button>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
@@ -140,7 +160,7 @@ export default function ProfilePage() {
               </div>
 
               <div className="flex flex-col md:flex-row items-start gap-8">
-                {/* Profile Avatar and Basic Info */}
+                {/* Profile Avatar */}
                 <div className="relative">
                   <Avatar className="h-32 w-32 border-4 border-background shadow-2xl">
                     <AvatarImage
@@ -154,34 +174,34 @@ export default function ProfilePage() {
                   </Avatar>
                 </div>
 
-                <div className="flex-1">
+                <div className="flex-1 w-full">
                   <div className="flex flex-wrap items-center gap-3 mb-4">
                     <h1 className="text-4xl font-bold text-foreground">
                       {fullName}
                     </h1>
                     <Badge className="bg-primary/15 text-primary border border-primary/30 px-3 py-1">
                       <Shield className="h-3.5 w-3.5 mr-1.5" />
-                      {user?.systemRole}
+                      {user.systemRole}
                     </Badge>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-6 text-muted-foreground mb-6">
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4" />
-                      <span className="text-sm">{user?.userId}</span>
+                      <span className="text-sm">{user.userId}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Building2 className="h-4 w-4" />
                       <span className="text-sm">
-                        {user?.departments[0]?.departmentName ||
+                        {user.departments[0]?.departmentName ||
                           t("org.no_dept")}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4" />
                       <span className="text-sm">
-                        {user?.teams.length}{" "}
-                        {user?.teams.length === 1
+                        {user.teams.length}{" "}
+                        {user.teams.length === 1
                           ? t("stats.teams")
                           : t("stats.teams")}
                       </span>
@@ -203,7 +223,7 @@ export default function ProfilePage() {
                         {t("stats.departments")}
                       </div>
                       <div className="text-xl font-bold text-foreground">
-                        {user?.departments.length}
+                        {user.departments.length}
                       </div>
                     </div>
                     <div className="bg-card/50 backdrop-blur-sm border border-border/40 rounded-xl px-5 py-3">
@@ -211,7 +231,7 @@ export default function ProfilePage() {
                         {t("stats.teams")}
                       </div>
                       <div className="text-xl font-bold text-foreground">
-                        {user?.teams.length}
+                        {user.teams.length}
                       </div>
                     </div>
                   </div>
@@ -219,8 +239,10 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
-          {/* Content Sections */}
+
+          {/* DETAILS & ORGANIZATION CONTENT */}
           <div className="max-w-6xl mx-auto px-6 lg:px-12 py-12">
+            {/* --- DETAILS SECTION --- */}
             <section id="details" className="mb-12 scroll-mt-10">
               <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
                 <div className="h-10 w-10 rounded-lg bg-linear-to-br from-primary/20 to-primary/10 flex items-center justify-center">
@@ -246,7 +268,7 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <p className="text-sm font-mono text-foreground bg-muted/50 px-4 py-3 rounded-lg border border-border/40 break-all">
-                      {user?.clientId}
+                      {user.clientId}
                     </p>
                   </div>
                 </Card>
@@ -267,7 +289,7 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <Badge className="bg-primary/15 text-primary border border-primary/30 px-4 py-2 text-sm">
-                      {user?.systemRole}
+                      {user.systemRole}
                     </Badge>
                   </div>
                 </Card>
@@ -287,7 +309,7 @@ export default function ProfilePage() {
                         </p>
                       </div>
                     </div>
-                    <p className="text-sm text-foreground">{user?.userId}</p>
+                    <p className="text-sm text-foreground">{user.userId}</p>
                   </div>
                 </Card>
 
@@ -314,7 +336,7 @@ export default function ProfilePage() {
               </div>
             </section>
 
-            {/* Organization Section */}
+            {/* --- ORGANIZATION SECTION --- */}
             <section id="organization" className="mb-12 scroll-mt-10">
               <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
                 <div className="h-10 w-10 rounded-lg bg-linear-to-br from-primary/20 to-primary/10 flex items-center justify-center">
@@ -333,12 +355,12 @@ export default function ProfilePage() {
                         {t("org.departments")}
                       </h3>
                       <Badge variant="secondary" className="rounded-full px-3">
-                        {user?.departments.length}
+                        {user.departments.length}
                       </Badge>
                     </div>
 
                     <div className="space-y-4">
-                      {user?.departments && user.departments.length > 0 ? (
+                      {user.departments && user.departments.length > 0 ? (
                         user.departments.map((dept) => (
                           <div
                             key={dept.departmentCode}
@@ -369,7 +391,6 @@ export default function ProfilePage() {
                               </Badge>
                             </div>
 
-                            {/* --- DARK MODE FIX FOR BADGES --- */}
                             <div className="flex items-center gap-2 pt-2 border-t border-border/20">
                               {dept.isPrimary ? (
                                 <Badge
@@ -411,12 +432,12 @@ export default function ProfilePage() {
                         {t("org.teams")}
                       </h3>
                       <Badge variant="secondary" className="rounded-full px-3">
-                        {user?.teams.length}
+                        {user.teams.length}
                       </Badge>
                     </div>
 
                     <div className="space-y-4">
-                      {user?.teams && user.teams.length > 0 ? (
+                      {user.teams && user.teams.length > 0 ? (
                         user.teams.map((team) => (
                           <div
                             key={team.teamCode}
@@ -447,7 +468,6 @@ export default function ProfilePage() {
                               </Badge>
                             </div>
 
-                            {/* --- DARK MODE FIX FOR BADGES --- */}
                             <div className="flex items-center gap-2 pt-2 border-t border-border/20">
                               {team.isLeader ? (
                                 <Badge
