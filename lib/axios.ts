@@ -16,6 +16,7 @@ async function getValidToken(forceRefresh = false) {
   // if running in server (SSR), return null
   if (typeof window === "undefined") return null;
 
+  try {
   // check if msal is initialized
   if (!msalInitPromise) {
     msalInitPromise = msalInstance.initialize();
@@ -25,15 +26,11 @@ async function getValidToken(forceRefresh = false) {
   await msalInitPromise;
 
   // get all accounts
-  const accounts = msalInstance.getAllAccounts();
-  if (accounts.length === 0) {
-    // if no accounts, return null
-    return null;
-  }
+  const account = msalInstance.getActiveAccount() || msalInstance.getAllAccounts()[0];
+  if (!account) {
+      return null;
+    }
 
-  const account = accounts[0];
-
-  try {
     // check if token is valid
     // if valid, return token
     // if not valid, refresh token
@@ -45,12 +42,8 @@ async function getValidToken(forceRefresh = false) {
 
     // check if new token is different from current token
     // if different, update token in cookie
-    const currentCookieToken = authUtils.getToken();
 
-    if (response.idToken !== currentCookieToken) {
-      console.log(
-        "New token is different from current token, updating token in cookie..."
-      );
+    if (response.idToken) {
 
       const exp =
         response.idTokenClaims &&
@@ -85,7 +78,7 @@ http.interceptors.request.use(
   async (config) => {
     if (typeof window !== "undefined") {
       // get token
-      const token = await getValidToken();
+      const token = await getValidToken(false);
 
       // if token is null, get token from cookie
       const finalToken = token || authUtils.getToken();
@@ -109,31 +102,31 @@ http.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // only intercept 401 errors if the request hasn't already been retried
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      // set _retry to true so we don't enter an infinite loop
-      originalRequest._retry = true;
-
-      try {
-        console.log("Token expired (401). Attempting silent refresh...");
-
-        // force refresh: force to get a new token from MSAL
-        const newToken = await getValidToken(true);
-
-        if (newToken) {
-          console.log("Refresh success. Retrying original request...");
-
-          originalRequest.headers.Authorization = `Bearer ${newToken}`;
-
-          // retry the original request
-          return http(originalRequest);
-        }
-      } catch (refreshError) {
-        console.error("Retry failed:", refreshError);
-      }
-    }
-
     if (error.response?.status === 401) {
+      // only intercept 401 errors if the request hasn't already been retried
+      if (!originalRequest._retry) {
+        // set _retry to true so we don't enter an infinite loop
+        originalRequest._retry = true;
+
+        try {
+          console.log("Token expired (401). Attempting silent refresh...");
+
+          // force refresh: force to get a new token from MSAL
+          const newToken = await getValidToken(true);
+
+          if (newToken) {
+            console.log("Refresh success. Retrying original request...");
+
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
+            // retry the original request
+            return http(originalRequest);
+          }
+        } catch (refreshError) {
+          console.error("Retry failed:", refreshError);
+        }
+      }
+
       const loginPath = "/login";
 
       if (

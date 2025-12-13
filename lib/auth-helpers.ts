@@ -12,10 +12,12 @@ export const authUtils = {
     msGraphToken: string,
     expiresAt: Date
   ) => {
-    Cookies.set(TOKEN_KEY, token, { expires: expiresAt, path: "/" });
+    const cookieExpiry = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+
+    Cookies.set(TOKEN_KEY, token, { expires: cookieExpiry, path: "/" });
 
     Cookies.set(MS_GRAPH_TOKEN_KEY, msGraphToken, {
-      expires: expiresAt,
+      expires: cookieExpiry,
       path: "/",
     });
   },

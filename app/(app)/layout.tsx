@@ -1,7 +1,7 @@
 "use client";
 
 import Header from "@/components/Header";
-import SidebarNav from "@/components/SidebarNav";
+import SidebarNav from "@/components/sidebar-nav";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +15,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       setIsSidebarActive(window.innerWidth >= 768);
     };
 
-    handleResize(); 
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);

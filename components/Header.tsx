@@ -12,8 +12,8 @@ import { ThemeToggle } from "./theme-toggle";
 import { LanguageSwitcher } from "./language-switcher";
 import { SociusLogo } from "./ui/logo";
 import { cn } from "@/lib/utils";
-import SidebarNav from "./SidebarNav";
-import { useMounted } from "@/hooks/useMounted";
+import SidebarNav from "./sidebar-nav";
+import { useMounted } from "@/hooks/use-mounted";
 import { ProfileMenu } from "./profile";
 
 export default function Header({
