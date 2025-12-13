@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useTranslations } from "next-intl";
-import { useRouter, usePathname, useSearchParams } from "next/navigation"; // 1. Import Next.js Navigation
+import { useTranslations } from "next-intl"; // Hook i18n
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Popover,
   PopoverContent,
@@ -37,7 +38,6 @@ import {
   type SearchCondition,
 } from "@/services/employee-service";
 
-// Components
 import { EmployeeTreeView } from "@/components/employees/employee-tree-view";
 import { PaginationControl } from "@/components/ui/pagination-control";
 import { EmployeeGrid } from "@/components/employees/employee-grid";
@@ -48,14 +48,17 @@ import { EmployeeTableSkeleton } from "@/components/skeleton/employees/employee-
 import { EmployeeTreeSkeleton } from "@/components/skeleton/employees/employee-tree-skeleton";
 
 import { useDebounce } from "@/hooks/use-debounce";
+import { useMounted } from "@/hooks/use-mounted";
 
 export default function EmployeesPage() {
-  const t = useTranslations("Employees");
+  const t = useTranslations("Employees"); // Namespace: Employees
 
+  const mounted = useMounted();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  // ... (Logic state giữ nguyên)
   const initialPage = Number(searchParams.get("page")) || 1;
   const initialCondition: SearchCondition = {
     userId: searchParams.get("userId") || "",
@@ -65,14 +68,11 @@ export default function EmployeesPage() {
   };
 
   const [viewMode, setViewMode] = useState<"table" | "grid" | "tree">("table");
-
   const [searchCondition, setSearchCondition] =
     useState<SearchCondition>(initialCondition);
-
   const [tempCondition, setTempCondition] =
     useState<SearchCondition>(initialCondition);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-
   const [data, setData] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(initialPage);
@@ -84,16 +84,13 @@ export default function EmployeesPage() {
   const updateUrl = useCallback(
     (newCondition: SearchCondition, newPage: number) => {
       const params = new URLSearchParams();
-
       if (newCondition.firstName)
         params.set("firstName", newCondition.firstName);
       if (newCondition.userId) params.set("userId", newCondition.userId);
       if (newCondition.lastName) params.set("lastName", newCondition.lastName);
       if (newCondition.systemRole)
         params.set("systemRole", newCondition.systemRole);
-
       if (newPage > 1) params.set("page", newPage.toString());
-
       router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     },
     [pathname, router]
@@ -119,18 +116,16 @@ export default function EmployeesPage() {
   }, [currentPage, debouncedCondition]);
 
   useEffect(() => {
-    fetchEmployees();
-  }, [fetchEmployees]);
+    if (mounted) fetchEmployees();
+  }, [fetchEmployees, mounted]);
 
-
+  // ... (Event handlers giữ nguyên)
   const handleQuickSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     const newCond = { ...searchCondition, firstName: val };
-
     setSearchCondition(newCond);
-    setTempCondition(newCond); 
+    setTempCondition(newCond);
     setCurrentPage(1);
-
     updateUrl(newCond, 1);
   };
 
@@ -167,6 +162,49 @@ export default function EmployeesPage() {
 
   const activeFiltersCount =
     Object.values(searchCondition).filter(Boolean).length;
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-background via-background to-muted/20 p-6 space-y-6">
+        <div className="max-w-[1600px] mx-auto space-y-6">
+          {/* Header Skeleton */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-border/50">
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-12 w-12 rounded-xl" />
+                <div className="space-y-2">
+                  <Skeleton className="h-8 w-48" />
+                  <Skeleton className="h-4 w-64" />
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-10 w-20" />
+              <Skeleton className="h-10 w-32" />
+            </div>
+          </div>
+          {/* Toolbar Skeleton */}
+          <Card className="shadow-sm border-border/50">
+            <CardContent className="p-4">
+              <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                <div className="flex items-center gap-2 w-full sm:w-auto flex-1">
+                  <Skeleton className="h-10 w-full sm:w-64" />
+                  <Skeleton className="h-10 w-24" />
+                </div>
+                <div className="flex gap-1">
+                  <Skeleton className="h-8 w-8" />
+                  <Skeleton className="h-8 w-8" />
+                  <Skeleton className="h-8 w-8" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          {/* Content Skeleton */}
+          <EmployeeTableSkeleton />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-linear-to-br from-background via-background to-muted/20 p-6 space-y-6">
@@ -209,9 +247,7 @@ export default function EmployeesPage() {
                 <div className="relative w-full sm:max-w-xs">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder={
-                      t("search_placeholder") || "Search by First Name..."
-                    }
+                    placeholder={t("search_placeholder")} // i18n
                     className="pl-9 h-10 bg-background border-border/50"
                     value={searchCondition.firstName}
                     onChange={handleQuickSearch}
@@ -239,7 +275,7 @@ export default function EmployeesPage() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h4 className="font-medium leading-none">
-                          {t("filters.title") || "Advanced Filters"}
+                          {t("filters.title")}
                         </h4>
                         {activeFiltersCount > 0 && (
                           <Button
@@ -248,14 +284,14 @@ export default function EmployeesPage() {
                             className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
                             onClick={resetFilter}
                           >
-                            Reset
+                            {t("actions.reset")}
                           </Button>
                         )}
                       </div>
                       <div className="grid gap-3">
                         <div className="grid gap-1.5">
                           <Label htmlFor="userId" className="text-xs">
-                            User ID / Email
+                            {t("filters.user_id_label")}
                           </Label>
                           <Input
                             id="userId"
@@ -269,7 +305,7 @@ export default function EmployeesPage() {
                         </div>
                         <div className="grid gap-1.5">
                           <Label htmlFor="lastName" className="text-xs">
-                            Last Name
+                            {t("filters.last_name_label")}
                           </Label>
                           <Input
                             id="lastName"
@@ -282,7 +318,7 @@ export default function EmployeesPage() {
                         </div>
                         <div className="grid gap-1.5">
                           <Label htmlFor="firstName" className="text-xs">
-                            First Name
+                            {t("filters.first_name_label")}
                           </Label>
                           <Input
                             id="firstName"
@@ -295,7 +331,7 @@ export default function EmployeesPage() {
                         </div>
                         <div className="grid gap-1.5">
                           <Label htmlFor="role" className="text-xs">
-                            System Role
+                            {t("filters.role_label")}
                           </Label>
                           <Select
                             value={tempCondition.systemRole}
@@ -307,21 +343,24 @@ export default function EmployeesPage() {
                             }
                           >
                             <SelectTrigger id="role" className="h-8">
-                              <SelectValue placeholder="Select role" />
+                              <SelectValue
+                                placeholder={t("filters.select_role")}
+                              />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="ALL">All Roles</SelectItem>
+                              <SelectItem value="ALL">
+                                {t("filters.all_roles")}
+                              </SelectItem>
                               <SelectItem value="SYS_ADMIN">
                                 System Admin
                               </SelectItem>
-                              <SelectItem value="MANAGER">Manager</SelectItem>
                               <SelectItem value="USER">User</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
                       </div>
                       <Button className="w-full h-8" onClick={applyFilter}>
-                        {t("actions.apply") || "Apply Filters"}
+                        {t("actions.apply")}
                       </Button>
                     </div>
                   </PopoverContent>
@@ -347,6 +386,7 @@ export default function EmployeesPage() {
                   size="sm"
                   className="h-8 w-8 p-0 hover:bg-background"
                   onClick={() => setViewMode("table")}
+                  title={t("views.table")}
                 >
                   <List className="h-4 w-4" />
                 </Button>
@@ -355,6 +395,7 @@ export default function EmployeesPage() {
                   size="sm"
                   className="h-8 w-8 p-0 hover:bg-background"
                   onClick={() => setViewMode("grid")}
+                  title={t("views.grid")}
                 >
                   <LayoutGrid className="h-4 w-4" />
                 </Button>
@@ -363,6 +404,7 @@ export default function EmployeesPage() {
                   size="sm"
                   className="h-8 w-8 p-0 hover:bg-background"
                   onClick={() => setViewMode("tree")}
+                  title={t("views.tree")}
                 >
                   <Network className="h-4 w-4" />
                 </Button>
@@ -385,8 +427,8 @@ export default function EmployeesPage() {
               <h3 className="font-semibold text-lg">{t("empty.title")}</h3>
               <p className="text-sm text-muted-foreground">
                 {activeFiltersCount > 0
-                  ? "No employees match your filters."
-                  : t("empty.desc_default")}
+                  ? t("empty.desc_filtered") // "No employees match your active filters."
+                  : t("empty.desc_default")}{" "}
               </p>
               {activeFiltersCount > 0 && (
                 <Button

@@ -107,7 +107,7 @@
     }
   },
   "Employees": {
-    "title": "Danh bạ nhân viên",
+    "title": "Danh sách nhân viên",
     "subtitle": "Quản lý và xem nhân sự trong tổ chức của bạn",
     "total_label": "nhân viên",
     "add_new": "Thêm nhân viên",

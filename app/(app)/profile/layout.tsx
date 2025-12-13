@@ -1,13 +1,17 @@
 import { getTranslations } from "next-intl/server";
-import { LayoutProps } from "@/types/common";
 
 export async function generateMetadata({
-  params: { locale },
-}: Omit<LayoutProps, "children">) {
-  const t = await getTranslations({ locale, namespace: "Metadata.profile" });
+  params,
+}: {
+  params: { locale: string };
+}) {
+  const t = await getTranslations({
+    locale: params.locale,
+    namespace: "Metadata.profile",
+  });
 
   const tGlobal = await getTranslations({
-    locale,
+    locale: params.locale,
     namespace: "Metadata.default",
   });
 
@@ -17,6 +21,10 @@ export async function generateMetadata({
   };
 }
 
-
-export default function ProfileLayout({ children }: LayoutProps) {  return <>{children}</>;
+export default function ProfileLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <>{children}</>;
 }
