@@ -7,11 +7,7 @@ const USER_KEY = "user_profile";
 
 export const authUtils = {
   // save token and user info to localStorage
-  setAuth: (
-    token: string,
-    msGraphToken: string,
-    expiresAt: Date
-  ) => {
+  setAuth: (token: string, msGraphToken: string) => {
     const cookieExpiry = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
 
     Cookies.set(TOKEN_KEY, token, { expires: cookieExpiry, path: "/" });
@@ -58,5 +54,32 @@ export const authUtils = {
     } catch {
       return null;
     }
+  },
+
+  hasPermission: (
+    permissionCode: string,
+    scopeCode?: string | null
+  ): boolean => {
+    if (typeof window === "undefined") return false;
+    const user = authUtils.getUserProfile();
+    if (!user || !user.permissions) return false;
+
+    if (user.systemRole === "SYS_ADMIN") return true;
+
+    for (const scopeGroup of user.permissions) {
+      if (
+        scopeCode &&
+        scopeGroup.scopeCode !== scopeCode &&
+        scopeGroup.scope !== "SYSTEM"
+      ) {
+        continue;
+      }
+
+      const found = scopeGroup.permissions.find(
+        (p) => p.permissionCode === permissionCode
+      );
+      if (found) return true;
+    }
+    return false;
   },
 };

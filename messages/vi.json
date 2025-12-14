@@ -104,6 +104,27 @@
       "team_leader": "Trưởng nhóm",
       "active_member": "Thành viên",
       "no_team": "Chưa thuộc nhóm nào"
+    },
+    "change_password": {
+      "button_label": "Đổi mật khẩu",
+      "title": "Đổi mật khẩu",
+      "description": "Để bảo mật, vui lòng không chia sẻ mật khẩu của bạn cho người khác.",
+      "current_password": "Mật khẩu hiện tại",
+      "new_password": "Mật khẩu mới",
+      "confirm_password": "Xác nhận mật khẩu",
+      "cancel": "Hủy",
+      "update": "Cập nhật",
+      "success_msg": "Đổi mật khẩu thành công!",
+      "error_generic": "Đã có lỗi xảy ra."
+    },
+    "validation": {
+      "current_password_required": "Vui lòng nhập mật khẩu hiện tại",
+      "new_password_min": "Mật khẩu mới phải có ít nhất 6 ký tự",
+      "password_uppercase": "Cần ít nhất 1 chữ hoa",
+      "password_number": "Cần ít nhất 1 số",
+      "password_special": "Cần ít nhất 1 ký tự đặc biệt",
+      "confirm_password_required": "Vui lòng xác nhận mật khẩu mới",
+      "passwords_not_match": "Mật khẩu xác nhận không khớp"
     }
   },
   "Employees": {
@@ -186,5 +207,12 @@
     "documents": "Tài liệu",
     "settings": "Cài đặt",
     "employees": "Nhân viên"
+  },
+  "PasswordStrength": {
+    "label": "Độ mạnh:",
+    "weak": "Yếu",
+    "fair": "Trung bình",
+    "good": "Tốt",
+    "strong": "Mạnh"
   }
 }

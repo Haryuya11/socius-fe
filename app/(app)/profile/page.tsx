@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   Crown,
   Star,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -23,6 +24,7 @@ import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
 import { ProfilePageSkeleton } from "@/components/skeleton/profile/profile-page-skeleton";
+import { ChangePasswordDialog } from "@/components/profile/change-password-dialog";
 
 export default function ProfilePage() {
   const t = useTranslations("Profile");
@@ -153,6 +155,17 @@ export default function ProfilePage() {
                   >
                     {t("export")}
                   </Button>
+                  <ChangePasswordDialog>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-full bg-transparent border-border/50 hover:bg-muted/50 gap-2"
+                      
+                    >
+                      <Lock className="h-3.5 w-3.5" />
+                      {t("change_password.button_label")}
+                    </Button>
+                  </ChangePasswordDialog>
                   <Button size="sm" className="rounded-full">
                     {t("edit_profile")}
                   </Button>
