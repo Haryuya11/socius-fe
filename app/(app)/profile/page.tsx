@@ -12,6 +12,7 @@ import {
   Crown,
   Star,
   Lock,
+  Camera,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -25,6 +26,7 @@ import { useTranslations } from "next-intl";
 
 import { ProfilePageSkeleton } from "@/components/skeleton/profile/profile-page-skeleton";
 import { ChangePasswordDialog } from "@/components/profile/change-password-dialog";
+import { AvatarUploadDialog } from "@/components/profile/avatar-upload-dialog";
 
 export default function ProfilePage() {
   const t = useTranslations("Profile");
@@ -160,7 +162,6 @@ export default function ProfilePage() {
                       variant="outline"
                       size="sm"
                       className="rounded-full bg-transparent border-border/50 hover:bg-muted/50 gap-2"
-                      
                     >
                       <Lock className="h-3.5 w-3.5" />
                       {t("change_password.button_label")}
@@ -175,16 +176,32 @@ export default function ProfilePage() {
               <div className="flex flex-col md:flex-row items-start gap-8">
                 {/* Profile Avatar */}
                 <div className="relative">
-                  <Avatar className="h-32 w-32 border-4 border-background shadow-2xl">
-                    <AvatarImage
-                      src={avatarUrl || "/placeholder.svg"}
-                      alt={fullName}
-                      className="object-cover"
-                    />
-                    <AvatarFallback className="bg-linear-to-br from-primary to-primary/70 text-primary-foreground text-4xl font-bold">
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
+                  {/* 2. Bọc Avatar trong Dialog */}
+                  <AvatarUploadDialog currentAvatarUrl={avatarUrl || ""}>
+                    {/* 3. Thêm class 'group' và 'cursor-pointer' để xử lý hover */}
+                    <div className="relative group cursor-pointer">
+                      <Avatar className="h-32 w-32 border-4 border-background shadow-2xl transition-transform duration-300 group-hover:scale-105">
+                        <AvatarImage
+                          src={avatarUrl || "/placeholder.svg"}
+                          alt={fullName}
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="bg-linear-to-br from-primary to-primary/70 text-primary-foreground text-4xl font-bold">
+                          {initials}
+                        </AvatarFallback>
+                      </Avatar>
+
+                      {/* 4. Lớp phủ (Overlay) hiện ra khi Hover */}
+                      <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 border-4 border-transparent">
+                        <Camera className="h-8 w-8 text-white drop-shadow-md" />
+                      </div>
+
+                      {/* Nút nhỏ hiển thị icon edit ở góc (luôn hiện hoặc tùy chọn) */}
+                      <div className="absolute bottom-0 right-0 bg-primary text-primary-foreground p-1.5 rounded-full border-2 border-background shadow-sm translate-x-1 translate-y-1 group-hover:scale-110 transition-transform">
+                        <Camera className="h-4 w-4" />
+                      </div>
+                    </div>
+                  </AvatarUploadDialog>
                 </div>
 
                 <div className="flex-1 w-full">
