@@ -104,6 +104,27 @@
       "team_leader": "Team Leader",
       "active_member": "Active Member",
       "no_team": "No teams assigned"
+    },
+    "change_password": {
+      "button_label": "Change Password",
+      "title": "Change Password",
+      "description": "Protect your account, please do not share your password with others.",
+      "current_password": "Current Password",
+      "new_password": "New Password",
+      "confirm_password": "Confirm Password",
+      "cancel": "Cancel",
+      "update": "Update",
+      "success_msg": "Password changed successfully!",
+      "error_generic": "An error occurred."
+    },
+    "validation": {
+      "current_password_required": "Please enter your current password",
+      "new_password_min": "New password must have at least 6 characters",
+      "password_uppercase": "At least 1 uppercase letter",
+      "password_number": "At least 1 number",
+      "password_special": "At least 1 special character",
+      "confirm_password_required": "Please confirm your new password",
+      "passwords_not_match": "Passwords do not match"
     }
   },
   "Employees": {
@@ -186,5 +207,12 @@
     "documents": "Documents",
     "settings": "Settings",
     "employees": "Employees"
+  },
+  "PasswordStrength": {
+    "label": "Password Strength:",
+    "weak": "Weak",
+    "fair": "Fair",
+    "good": "Good",
+    "strong": "Strong"
   }
 }

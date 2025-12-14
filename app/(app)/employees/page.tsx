@@ -427,7 +427,7 @@ export default function EmployeesPage() {
               <h3 className="font-semibold text-lg">{t("empty.title")}</h3>
               <p className="text-sm text-muted-foreground">
                 {activeFiltersCount > 0
-                  ? t("empty.desc_filtered") // "No employees match your active filters."
+                  ? t("empty.desc_filtered") 
                   : t("empty.desc_default")}{" "}
               </p>
               {activeFiltersCount > 0 && (
