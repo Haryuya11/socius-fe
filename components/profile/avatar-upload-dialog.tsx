@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useRef, ChangeEvent } from "react";
@@ -13,10 +14,13 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Camera, ImagePlus, Loader2 } from "lucide-react";
-import { getCroppedImg } from "@/lib/canvas-utils"
+import { ImagePlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-// import { employeeService } from "@/services/employeeService"; // Import service upload của bạn
+import { getCroppedImg } from "@/lib/canvas-utils";
+import { employeeService } from "@/services/employee-service";
+import { UpdateEmployeeBody } from "@/lib/validations/employee";
+import { useAuthStore } from "@/stores/auth-store";
+import { getFullImageUrl } from "@/utils/image-utils";
 
 export function AvatarUploadDialog({
   children,
@@ -25,6 +29,7 @@ export function AvatarUploadDialog({
   children: React.ReactNode;
   currentAvatarUrl?: string;
 }) {
+  const { user, setUser } = useAuthStore();
   const [open, setOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -34,7 +39,7 @@ export function AvatarUploadDialog({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Xử lý khi chọn file từ máy tính
+  // ... (Các hàm onFileChange, readFile, onCropComplete GIỮ NGUYÊN như cũ)
   const onFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
@@ -51,54 +56,60 @@ export function AvatarUploadDialog({
     });
   };
 
-  // Lưu lại tọa độ khi người dùng crop
   const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
-  };
-
-  // Xử lý Upload
-  const handleUpload = async () => {
-    if (!imageSrc || !croppedAreaPixels) return;
-
-    try {
-      setIsUploading(true);
-      // 1. Cắt ảnh thành Blob
-      const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
-
-      if (!croppedImageBlob) throw new Error("Could not crop image");
-
-      // 2. Tạo FormData để gửi lên Server
-      const formData = new FormData();
-      // Đặt tên file là avatar.jpg
-      const file = new File([croppedImageBlob], "avatar.jpg", {
-        type: "image/jpeg",
-      });
-      formData.append("file", file);
-
-      // 3. Gọi API (Ví dụ)
-      // await employeeService.uploadAvatar(formData);
-
-      // Giả lập API delay
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      toast.success("Cập nhật ảnh đại diện thành công!");
-      setOpen(false);
-      setImageSrc(null); // Reset
-
-      // Reload lại trang hoặc invalidate query để load ảnh mới
-      window.location.reload();
-    } catch (error) {
-      console.error(error);
-      toast.error("Có lỗi xảy ra khi upload ảnh.");
-    } finally {
-      setIsUploading(false);
-    }
   };
 
   const resetDialog = () => {
     setImageSrc(null);
     setZoom(1);
     setCrop({ x: 0, y: 0 });
+  };
+
+  // --- HÀM UPLOAD ĐƯỢC CẬP NHẬT ---
+  const handleUpload = async () => {
+    if (!imageSrc || !croppedAreaPixels || !user) return;
+
+    try {
+      setIsUploading(true);
+
+      // 1. Cắt ảnh
+      const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
+      if (!croppedImageBlob) throw new Error("Could not crop image");
+      const file = new File([croppedImageBlob], "avatar.png", {
+        type: "image/png",
+      });
+
+      // 2. Upload lấy Path
+      const uploadData = await employeeService.uploadAvatar(file);
+
+      // 3. Chuẩn bị data update với Type an toàn
+      const updatePayload: UpdateEmployeeBody = {
+        clientId: user.clientId, // Body yêu cầu clientId
+        userId: user.userId,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        systemRole: user.systemRole, // Type SystemRole khớp với Enum
+        salary: user.salary,
+        imageUrl: uploadData.path, // Path ảnh mới từ server
+      };
+
+      // 4. Gọi API Update
+      await employeeService.updateEmployee(user.clientId, updatePayload);
+
+      const constructedUrl = getFullImageUrl(uploadData.path);
+
+      setUser({ ...user, imageUrl: constructedUrl });
+
+      toast.success("Cập nhật ảnh đại diện thành công!");
+      setOpen(false);
+    } catch (error: any) {
+      console.error(error);
+      const msg = error?.response?.data?.message || "Có lỗi xảy ra.";
+      toast.error(msg);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -139,11 +150,11 @@ export function AvatarUploadDialog({
                 image={imageSrc}
                 crop={crop}
                 zoom={zoom}
-                aspect={1} // Tỉ lệ 1:1 cho avatar
+                aspect={1}
                 onCropChange={setCrop}
                 onCropComplete={onCropComplete}
                 onZoomChange={setZoom}
-                cropShape="round" // Hình tròn cho avatar
+                cropShape="round"
                 showGrid={false}
               />
             </div>
@@ -180,13 +191,14 @@ export function AvatarUploadDialog({
             <Button
               variant="outline"
               onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
             >
               Chọn ảnh khác
             </Button>
           )}
           <div className="flex gap-2">
             <DialogClose asChild>
-              <Button variant="ghost" type="button">
+              <Button variant="ghost" type="button" disabled={isUploading}>
                 Hủy
               </Button>
             </DialogClose>

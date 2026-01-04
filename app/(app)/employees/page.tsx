@@ -49,6 +49,7 @@ import { EmployeeTreeSkeleton } from "@/components/skeleton/employees/employee-t
 
 import { useDebounce } from "@/hooks/use-debounce";
 import { useMounted } from "@/hooks/use-mounted";
+import { AddEmployeeDialog } from "@/components/profile/add-employee-dialog";
 
 export default function EmployeesPage() {
   const t = useTranslations("Employees"); // Namespace: Employees
@@ -231,10 +232,12 @@ export default function EmployeesPage() {
               <Users className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">{totalItems}</span>
             </div>
-            <Button className="gap-2 shadow-sm">
-              <UserPlus className="h-4 w-4" />
-              {t("add_new")}
-            </Button>
+            <AddEmployeeDialog onSuccess={fetchEmployees}>
+              <Button className="gap-2 shadow-sm">
+                <UserPlus className="h-4 w-4" />
+                {t("add_new")}
+              </Button>
+            </AddEmployeeDialog>
           </div>
         </div>
 
@@ -427,7 +430,7 @@ export default function EmployeesPage() {
               <h3 className="font-semibold text-lg">{t("empty.title")}</h3>
               <p className="text-sm text-muted-foreground">
                 {activeFiltersCount > 0
-                  ? t("empty.desc_filtered") 
+                  ? t("empty.desc_filtered")
                   : t("empty.desc_default")}{" "}
               </p>
               {activeFiltersCount > 0 && (

@@ -15,11 +15,12 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/providers/auth-provider";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { getAvatarInfo } from "@/utils/avatar-utils";
 import { UserProfile } from "@/types/user";
+import { useAuth } from "@/hooks/use-auth";
+import { getFullImageUrl } from "@/utils/image-utils";
 
 export function ProfileMenu() {
   const [open, setOpen] = useState(false);
@@ -28,6 +29,9 @@ export function ProfileMenu() {
   const t = useTranslations("Profile");
 
   const { fullName, initials, avatarUrl } = getAvatarInfo(user as UserProfile);
+
+    const displayAvatarUrl = getFullImageUrl(avatarUrl);
+  
 
   if (!user) return null;
 
@@ -45,7 +49,10 @@ export function ProfileMenu() {
           className="relative h-10 w-10 rounded-full focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary transition-all hover:bg-accent/50"
         >
           <Avatar className="h-9 w-9 border border-border/50 transition-all duration-200 hover:border-primary/50 hover:shadow-md">
-            <AvatarImage src={avatarUrl || "/placeholder.svg"} alt={fullName} />
+            <AvatarImage
+              src={displayAvatarUrl || "/placeholder.svg"}
+              alt={fullName}
+            />
             <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
               {initials}
             </AvatarFallback>
@@ -59,7 +66,7 @@ export function ProfileMenu() {
             <div className="flex items-center gap-3">
               <Avatar className="h-11 w-11 border-2 border-primary/20 shadow-sm">
                 <AvatarImage
-                  src={avatarUrl || "/placeholder.svg"}
+                  src={displayAvatarUrl || "/placeholder.svg"}
                   alt={fullName}
                 />
                 <AvatarFallback className="bg-primary/15 text-primary font-bold text-sm">

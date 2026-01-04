@@ -1,6 +1,5 @@
 "use client";
 
-import { useAuth } from "@/providers/auth-provider";
 import { authUtils } from "@/lib/auth-helpers";
 import { Button } from "@/components/ui/button";
 import { Check, Copy } from "lucide-react";
@@ -8,6 +7,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function HomePage() {
   const t = useTranslations("Dashboard");

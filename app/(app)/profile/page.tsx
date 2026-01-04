@@ -18,7 +18,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/providers/auth-provider";
 import { getAvatarInfo } from "@/utils/avatar-utils";
 import { useEffect, useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
@@ -27,6 +26,8 @@ import { useTranslations } from "next-intl";
 import { ProfilePageSkeleton } from "@/components/skeleton/profile/profile-page-skeleton";
 import { ChangePasswordDialog } from "@/components/profile/change-password-dialog";
 import { AvatarUploadDialog } from "@/components/profile/avatar-upload-dialog";
+import { useAuth } from "@/hooks/use-auth";
+import { getFullImageUrl } from "@/utils/image-utils";
 
 export default function ProfilePage() {
   const t = useTranslations("Profile");
@@ -70,7 +71,7 @@ export default function ProfilePage() {
       observer.disconnect();
       clearTimeout(timer);
     };
-  }, [navItems, user]); 
+  }, [navItems, user]);
 
   const scrollToSection = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -91,6 +92,8 @@ export default function ProfilePage() {
   }
 
   const { fullName, initials, avatarUrl } = getAvatarInfo(user);
+
+  const displayAvatarUrl = getFullImageUrl(avatarUrl);
 
   const formattedSalary = new Intl.NumberFormat("vi", {
     style: "currency",
@@ -176,13 +179,11 @@ export default function ProfilePage() {
               <div className="flex flex-col md:flex-row items-start gap-8">
                 {/* Profile Avatar */}
                 <div className="relative">
-                  {/* 2. Bọc Avatar trong Dialog */}
-                  <AvatarUploadDialog currentAvatarUrl={avatarUrl || ""}>
-                    {/* 3. Thêm class 'group' và 'cursor-pointer' để xử lý hover */}
+                  <AvatarUploadDialog currentAvatarUrl={displayAvatarUrl}>
                     <div className="relative group cursor-pointer">
                       <Avatar className="h-32 w-32 border-4 border-background shadow-2xl transition-transform duration-300 group-hover:scale-105">
                         <AvatarImage
-                          src={avatarUrl || "/placeholder.svg"}
+                          src={displayAvatarUrl || "/placeholder.svg"}
                           alt={fullName}
                           className="object-cover"
                         />
@@ -191,14 +192,8 @@ export default function ProfilePage() {
                         </AvatarFallback>
                       </Avatar>
 
-                      {/* 4. Lớp phủ (Overlay) hiện ra khi Hover */}
                       <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 border-4 border-transparent">
                         <Camera className="h-8 w-8 text-white drop-shadow-md" />
-                      </div>
-
-                      {/* Nút nhỏ hiển thị icon edit ở góc (luôn hiện hoặc tùy chọn) */}
-                      <div className="absolute bottom-0 right-0 bg-primary text-primary-foreground p-1.5 rounded-full border-2 border-background shadow-sm translate-x-1 translate-y-1 group-hover:scale-110 transition-transform">
-                        <Camera className="h-4 w-4" />
                       </div>
                     </div>
                   </AvatarUploadDialog>

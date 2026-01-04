@@ -21,3 +21,12 @@ export interface EmployeeListData {
   hasNext: boolean;
   hasPrevious: boolean;
 }
+
+export interface CreateEmployeeResponse {
+  clientId: string;
+}
+
+export interface AvatarUploadResponse {
+  path: string;
+  url: string;
+}
