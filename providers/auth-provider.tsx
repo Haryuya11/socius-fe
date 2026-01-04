@@ -1,143 +1,69 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { UserProfile } from "@/types/user";
-import { userService } from "@/services/user-service";
-import { authUtils } from "@/lib/auth-helpers";
-import { loginRequest } from "@/lib/msal-config";
-import { SystemRole } from "@/types/roles";
+import React, { useEffect } from "react";
 import { useMsal } from "@azure/msal-react";
-import { toast } from "sonner";
-
-interface AuthContextType {
-  user: UserProfile | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: () => Promise<void>;
-  logout: () => void;
-  hasRole: (role: SystemRole) => boolean;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
+import { useAuthStore } from "@/stores/auth-store";
+import { authUtils } from "@/lib/auth-helpers";
+import { userService } from "@/services/user-service";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { instance, accounts } = useMsal();
+  const { accounts } = useMsal();
 
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const setUser = useAuthStore((state) => state.setUser);
+  const setLoading = useAuthStore((state) => state.setLoading);
+  const setInitialized = useAuthStore((state) => state.setInitialized);
+  const isInitialized = useAuthStore((state) => state.isInitialized);
 
-  // get user info from localStorage
-  useEffect(() => {
-    const storedUser = authUtils.getUserProfile();
-    if (storedUser) {
-      setUser(storedUser);
-    }
-    setIsInitialized(true);
-  }, []);
-
-  // fetch user profile
   const fetchProfile = async () => {
     const token = authUtils.getToken();
-    if (!token) {
-      setUser(null);
-      setIsLoading(false);
-      return;
-    }
+    if (!token) return; 
 
     try {
-      if (!user) setIsLoading(true);
+      // Chỉ set loading nếu chưa có data user (tránh flicking khi re-focus window)
+      if (!useAuthStore.getState().user) setLoading(true);
+
       const profile = await userService.fetchProfile();
       setUser(profile);
       authUtils.saveUserProfile(profile);
     } catch (err) {
       console.error("Failed to fetch user profile", err);
+      // Token lỗi hoặc hết hạn -> Silent fail hoặc clear user
+      setUser(null);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  // check if user is authenticated and fetch user profile
+  // 1. Khởi tạo từ localStorage ngay khi mount (Client-side)
+  useEffect(() => {
+    const storedUser = authUtils.getUserProfile();
+    if (storedUser) {
+      // Hydrate store ngay lập tức
+      useAuthStore.setState({
+        user: storedUser,
+        isAuthenticated: true,
+        isLoading: false,
+      });
+    }
+    setInitialized(true);
+  }, [setInitialized]);
+
+  // 2. Lắng nghe thay đổi account từ MSAL
   useEffect(() => {
     if (!isInitialized) return;
 
     const token = authUtils.getToken();
 
     if (accounts.length > 0 && token) {
+      // Trường hợp: User F5 lại trang hoặc mở tab mới đã có session MSAL
       fetchProfile();
-    } else if (accounts.length === 0 && !token) {
+    } else if (accounts.length === 0) {
+      // Trường hợp: Session MSAL bị mất -> Clear store
       setUser(null);
-      setIsLoading(false);
+      setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accounts, isInitialized]);
 
-  const login = async () => {
-    try {
-      setIsLoading(true);
-      const response = await instance.loginPopup(loginRequest);
-
-      const expiresAt =
-        response.expiresOn || new Date(Date.now() + 3600 * 1000);
-      authUtils.setAuth(response.idToken, response.accessToken, expiresAt);
-
-      await fetchProfile();
-
-      console.log("Login successful", response);
-      toast.success("Đăng nhập thành công!");
-    } catch (error) {
-      console.error("Login failed", error);
-      toast.error("Đăng nhập thất bại");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const logout = () => {
-    // instance.logoutPopup({
-    //   postLogoutRedirectUri: window.location.origin + "/login",
-    // });
-    instance.logoutRedirect({
-      postLogoutRedirectUri: window.location.origin + "/login",
-    });
-    authUtils.clearAuth();
-    setUser(null);
-  };
-
-  //   const handleLogout = () => {
-  //     authUtils.clearAuth();
-  //     const currentOrigin = window.location.origin;
-  //     const loginPage = "/login";
-
-  //     instance.logoutRedirect({
-  //       postLogoutRedirectUri: `${currentOrigin}${loginPage}`,
-  //     });
-  //   };
-
-  const hasRole = (roleCode: SystemRole) => {
-    return user?.systemRole === roleCode;
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isLoading,
-        isAuthenticated: !!user,
-        login,
-        logout,
-        hasRole,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <>{children}</>;
 }
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined || context === null) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};

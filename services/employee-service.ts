@@ -1,5 +1,11 @@
 import http from "@/lib/axios";
-import { Employee, EmployeeListData } from "@/types/employee";
+import { EmployeeInput, UpdateEmployeeBody } from "@/lib/validations/employee";
+import {
+  AvatarUploadResponse,
+  CreateEmployeeResponse,
+  Employee,
+  EmployeeListData,
+} from "@/types/employee";
 import { ApiResponse, PaginatedResponse } from "@/types/response";
 
 export interface SearchCondition {
@@ -46,7 +52,7 @@ export const employeeService = {
     try {
       const response = await http.post<
         ApiResponse<PaginatedResponse<Employee>>
-      >("/mvc/employees/search", payload);
+      >("/api/employees/search", payload);
       return response.data.data;
     } catch (error) {
       console.error("Failed to fetch employees", error);
@@ -72,5 +78,63 @@ export const employeeService = {
     await new Promise((resolve) => setTimeout(resolve, 500));
     console.log(`Mock deleted employee: ${id}`);
     return true;
+  },
+
+  createEmployee: async (
+    data: EmployeeInput & { imageUrl?: string }
+  ): Promise<boolean> => {
+    const payload = {
+      clientId: "",
+      userId: data.userId,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      systemRole: data.systemRole,
+      salary: data.salary,
+      imageUrl: data.imageUrl || "",
+    };
+
+    try {
+      const response = await http.post<ApiResponse<CreateEmployeeResponse>>(
+        "/api/employees",
+        payload
+      );
+      return response.data.success;
+    } catch (error) {
+      console.error("Create employee failed", error);
+      throw error;
+    }
+  },
+
+  uploadAvatar: async (file: File): Promise<AvatarUploadResponse> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await http.post<ApiResponse<AvatarUploadResponse>>(
+      "/api/employees/upload-avatar",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    return response.data.data;
+  },
+
+  updateEmployee: async (
+    clientId: string,
+    data: UpdateEmployeeBody 
+  ): Promise<boolean> => {
+    try {
+      const response = await http.put<ApiResponse<null>>(
+        `/api/employees/${clientId}`,
+        data
+      );
+      return response.data.success;
+    } catch (error) {
+      console.error("Update employee failed", error);
+      throw error;
+    }
   },
 };

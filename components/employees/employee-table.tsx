@@ -24,6 +24,7 @@ import { useTranslations } from "next-intl";
 // UPDATE: Import hàm tiện ích chung
 import { getAvatarInfo } from "@/utils/avatar-utils";
 import type { Employee } from "@/types/employee";
+import { getFullImageUrl } from "@/utils/image-utils";
 
 interface EmployeeTableProps {
   data: Employee[];
@@ -55,6 +56,7 @@ export function EmployeeTable({ data }: EmployeeTableProps) {
         <TableBody>
           {data.map((emp) => {
             const { fullName, initials, avatarUrl } = getAvatarInfo(emp);
+            const displayAvatarUrl = getFullImageUrl(avatarUrl);
 
             return (
               <TableRow
@@ -64,7 +66,9 @@ export function EmployeeTable({ data }: EmployeeTableProps) {
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10 border-2 border-border/50 shadow-sm">
-                      <AvatarImage src={avatarUrl || "/placeholder.svg"} />
+                      <AvatarImage
+                        src={displayAvatarUrl || "/placeholder.svg"}
+                      />
                       <AvatarFallback className="bg-linear-to-br from-blue-500 to-cyan-500 text-white font-medium">
                         {initials}
                       </AvatarFallback>

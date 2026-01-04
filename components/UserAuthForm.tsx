@@ -1,12 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { useAuth } from "@/providers/auth-provider"; // 1. Import Context
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons"; // Đảm bảo đường dẫn icon đúng
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/hooks/use-auth";
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -18,7 +18,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   const handleLogin = async () => {
     if (isLoading) return;
-    
+
     setIsLoading(true);
     try {
       await login();

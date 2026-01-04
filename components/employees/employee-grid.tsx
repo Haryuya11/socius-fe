@@ -15,6 +15,7 @@ import { useTranslations } from "next-intl";
 
 import { getAvatarInfo } from "@/utils/avatar-utils";
 import type { Employee } from "@/types/employee";
+import { getFullImageUrl } from "@/utils/image-utils";
 
 interface EmployeeGridProps {
   data: Employee[];
@@ -28,6 +29,7 @@ export function EmployeeGrid({ data }: EmployeeGridProps) {
       {data.map((emp) => {
         const { fullName, initials, avatarUrl } = getAvatarInfo(emp);
         const primaryDept = emp.departments?.find((d) => d.isPrimary);
+        const displayAvatarUrl = getFullImageUrl(avatarUrl);
 
         return (
           <Card
@@ -37,7 +39,7 @@ export function EmployeeGrid({ data }: EmployeeGridProps) {
             <CardHeader className="pb-3 space-y-0">
               <div className="flex items-start gap-3">
                 <Avatar className="h-14 w-14 border-2 border-border/50 shadow-md group-hover:border-primary/30 transition-colors">
-                  <AvatarImage src={avatarUrl || "/placeholder.svg"} />
+                  <AvatarImage src={displayAvatarUrl || "/placeholder.svg"} />
                   <AvatarFallback className="bg-linear-to-br from-blue-500 to-cyan-500 text-white font-semibold text-lg">
                     {initials}
                   </AvatarFallback>

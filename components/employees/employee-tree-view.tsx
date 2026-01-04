@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import type { Employee } from "@/types/employee";
 
 import { getAvatarInfo } from "@/utils/avatar-utils";
+import { getFullImageUrl } from "@/utils/image-utils";
 
 interface Props {
   data: Employee[];
@@ -30,6 +31,7 @@ function EmployeeNode({ emp }: { emp: Employee }) {
   const t = useTranslations("Employees");
 
   const { fullName, initials, avatarUrl } = getAvatarInfo(emp);
+  const displayAvatarUrl = getFullImageUrl(avatarUrl);
 
   const deptCount = emp.departments?.length || 0;
   const teamCount = emp.teams?.length || 0;
@@ -43,7 +45,7 @@ function EmployeeNode({ emp }: { emp: Employee }) {
         <div className="flex items-center gap-4 flex-1 min-w-0">
           <div className="relative">
             <Avatar className="h-16 w-16 border-2 border-primary/20 shadow-lg">
-              <AvatarImage src={avatarUrl || "/placeholder.svg"} />
+              <AvatarImage src={displayAvatarUrl || "/placeholder.svg"} />
               <AvatarFallback className="bg-linear-to-br from-blue-500 to-cyan-500 text-white font-semibold text-lg">
                 {initials}
               </AvatarFallback>

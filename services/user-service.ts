@@ -5,7 +5,7 @@ import { ChangePasswordRequest, UserProfile } from "@/types/user";
 export const userService = {
   fetchProfile: async (): Promise<UserProfile> => {
     const response = await http.get<ApiResponse<UserProfile>>(
-      "/mvc/employees/profile"
+      "/api/employees/profile"
     );
     return response.data.data;
   },
@@ -15,7 +15,7 @@ export const userService = {
   changePassword: async (payload: ChangePasswordRequest): Promise<boolean> => {
     try {
       const response = await http.put<ApiResponse<null>>(
-        "/mvc/employees/change-password",
+        "/api/employees/change-password",
         payload
       );
       return response.data.success;
