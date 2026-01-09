@@ -12,7 +12,7 @@ declare module "axios" {
 
 let msalInitPromise: Promise<void> | null = null;
 
-async function getValidToken(forceRefresh = false) {
+export async function getValidToken(forceRefresh = false) {
   // if running in server (SSR), return null
   if (typeof window === "undefined") return null;
 
@@ -54,7 +54,7 @@ async function getValidToken(forceRefresh = false) {
 
       const expiresAt = new Date(exp * 1000);
 
-      authUtils.setAuth(response.idToken, response.accessToken, expiresAt);
+      authUtils.setAuth(response.idToken, response.accessToken);
     }
 
     return response.idToken;

@@ -4,7 +4,6 @@ import {
   AvatarUploadResponse,
   CreateEmployeeResponse,
   Employee,
-  EmployeeListData,
 } from "@/types/employee";
 import { ApiResponse, PaginatedResponse } from "@/types/response";
 
