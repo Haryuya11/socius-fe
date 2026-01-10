@@ -7,6 +7,8 @@ import ThemeProvider from "@/providers/theme-provider";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { AuthProvider } from "@/providers/auth-provider";
+import NotificationListener from "@/components/notification/notification-listener";
+import NotificationInitializer from "@/components/notification/notification-initializer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,8 +46,12 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <MsalProviderWrapper>
-            <NextIntlClientProvider messages={messages}>
-              <AuthProvider>{children}</AuthProvider>
+            <NextIntlClientProvider messages={messages} now={new Date()}>
+              <AuthProvider>
+                {children}
+                <NotificationInitializer />
+                <NotificationListener />
+              </AuthProvider>
             </NextIntlClientProvider>
           </MsalProviderWrapper>
         </ThemeProvider>

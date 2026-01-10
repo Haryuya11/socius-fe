@@ -30,8 +30,7 @@ export function ProfileMenu() {
 
   const { fullName, initials, avatarUrl } = getAvatarInfo(user as UserProfile);
 
-    const displayAvatarUrl = getFullImageUrl(avatarUrl);
-  
+  const displayAvatarUrl = getFullImageUrl(avatarUrl);
 
   if (!user) return null;
 

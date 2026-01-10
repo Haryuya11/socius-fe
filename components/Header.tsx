@@ -18,6 +18,8 @@ import SidebarNav from "./sidebar-nav";
 import { ProfileMenu } from "./profile";
 import { useMounted } from "@/hooks/use-mounted";
 
+import { NotificationMenu } from "@/components/notification/notification-menu";
+
 export default function Header({
   className,
   ...rest
@@ -113,10 +115,13 @@ export default function Header({
           </Link>
         </div>
 
+        {/* --- RIGHT SIDE: ACTIONS --- */}
         <div className="flex items-center justify-end gap-1 sm:gap-2 h-full py-4">
           {!mounted ? (
             <>
               <Skeleton className="h-9 w-9 rounded-md" />
+              <Skeleton className="h-9 w-9 rounded-md" />
+              {/* Thêm Skeleton cho chuông báo */}
               <Skeleton className="h-9 w-9 rounded-md" />
               <Separator
                 orientation="vertical"
@@ -126,8 +131,12 @@ export default function Header({
             </>
           ) : (
             <>
+              {/* Các nút action */}
               <ThemeToggle />
               <LanguageSwitcher />
+
+              {/* THÊM THÔNG BÁO VÀO ĐÂY */}
+              <NotificationMenu />
 
               <Separator
                 orientation="vertical"

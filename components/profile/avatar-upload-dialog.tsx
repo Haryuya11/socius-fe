@@ -3,6 +3,7 @@
 
 import { useState, useRef, ChangeEvent } from "react";
 import Cropper, { Area } from "react-easy-crop";
+import { useTranslations } from "next-intl"; // ✅ Import hook
 import {
   Dialog,
   DialogContent,
@@ -16,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { ImagePlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { getCroppedImg } from "@/lib/canvas-utils";
+import { getCroppedImg } from "@/utils/canvas-utils";
 import { employeeService } from "@/services/employee-service";
 import { UpdateEmployeeBody } from "@/lib/validations/employee";
 import { useAuthStore } from "@/stores/auth-store";
@@ -24,11 +25,13 @@ import { getFullImageUrl } from "@/utils/image-utils";
 
 export function AvatarUploadDialog({
   children,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   currentAvatarUrl,
 }: {
   children: React.ReactNode;
   currentAvatarUrl?: string;
 }) {
+  const t = useTranslations("Profile.avatar_dialog");
   const { user, setUser } = useAuthStore();
   const [open, setOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -39,7 +42,6 @@ export function AvatarUploadDialog({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // ... (Các hàm onFileChange, readFile, onCropComplete GIỮ NGUYÊN như cũ)
   const onFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
@@ -66,46 +68,45 @@ export function AvatarUploadDialog({
     setCrop({ x: 0, y: 0 });
   };
 
-  // --- HÀM UPLOAD ĐƯỢC CẬP NHẬT ---
   const handleUpload = async () => {
     if (!imageSrc || !croppedAreaPixels || !user) return;
 
     try {
       setIsUploading(true);
 
-      // 1. Cắt ảnh
+      // 1. crop
       const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
-      if (!croppedImageBlob) throw new Error("Could not crop image");
+      if (!croppedImageBlob) throw new Error(t("crop_error"));
       const file = new File([croppedImageBlob], "avatar.png", {
         type: "image/png",
       });
 
-      // 2. Upload lấy Path
+      // 2. upload
       const uploadData = await employeeService.uploadAvatar(file);
 
-      // 3. Chuẩn bị data update với Type an toàn
+      // 3. prepare payload
       const updatePayload: UpdateEmployeeBody = {
-        clientId: user.clientId, // Body yêu cầu clientId
+        clientId: user.clientId,
         userId: user.userId,
         firstName: user.firstName,
         lastName: user.lastName,
-        systemRole: user.systemRole, // Type SystemRole khớp với Enum
+        systemRole: user.systemRole,
         salary: user.salary,
-        imageUrl: uploadData.path, // Path ảnh mới từ server
+        imageUrl: uploadData.path,
       };
 
-      // 4. Gọi API Update
+      // 4. call api update
       await employeeService.updateEmployee(user.clientId, updatePayload);
 
       const constructedUrl = getFullImageUrl(uploadData.path);
 
       setUser({ ...user, imageUrl: constructedUrl });
 
-      toast.success("Cập nhật ảnh đại diện thành công!");
+      toast.success(t("success"));
       setOpen(false);
     } catch (error: any) {
       console.error(error);
-      const msg = error?.response?.data?.message || "Có lỗi xảy ra.";
+      const msg = error?.response?.data?.message || t("error");
       toast.error(msg);
     } finally {
       setIsUploading(false);
@@ -123,29 +124,29 @@ export function AvatarUploadDialog({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Cập nhật ảnh đại diện</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
         </DialogHeader>
 
         <div className="py-4">
           {!imageSrc ? (
             <div
-              className="border-2 border-dashed border-muted-foreground/25 rounded-xl h-64 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/30 transition-colors gap-3"
+              className="border-2 border-dashed border-muted-foreground/25 rounded-xl h-64 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/30 transition-colors gap-3 group"
               onClick={() => fileInputRef.current?.click()}
             >
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <ImagePlus className="h-6 w-6 text-primary" />
+              <div className="h-14 w-14 rounded-full bg-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <ImagePlus className="h-7 w-7 text-primary/70 group-hover:text-primary" />
               </div>
               <div className="text-center">
                 <p className="text-sm font-medium text-foreground">
-                  Nhấn để chọn ảnh
+                  {t("click_to_upload")}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  JPG, PNG, GIF tối đa 5MB
+                  {t("helper_text")}
                 </p>
               </div>
             </div>
           ) : (
-            <div className="relative h-80 w-full bg-black rounded-lg overflow-hidden">
+            <div className="relative h-80 w-full bg-black rounded-lg overflow-hidden shadow-inner border border-border/50">
               <Cropper
                 image={imageSrc}
                 crop={crop}
@@ -169,10 +170,10 @@ export function AvatarUploadDialog({
           />
 
           {imageSrc && (
-            <div className="mt-6 space-y-2">
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Thu nhỏ</span>
-                <span>Phóng to</span>
+            <div className="mt-6 space-y-3 px-1">
+              <div className="flex justify-between text-xs font-medium text-muted-foreground">
+                <span>{t("zoom_out")}</span>
+                <span>{t("zoom_in")}</span>
               </div>
               <Slider
                 value={[zoom]}
@@ -193,18 +194,18 @@ export function AvatarUploadDialog({
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
             >
-              Chọn ảnh khác
+              {t("change_image")}
             </Button>
           )}
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full justify-end sm:w-auto">
             <DialogClose asChild>
               <Button variant="ghost" type="button" disabled={isUploading}>
-                Hủy
+                {t("cancel")}
               </Button>
             </DialogClose>
             <Button onClick={handleUpload} disabled={!imageSrc || isUploading}>
               {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Lưu thay đổi
+              {t("save")}
             </Button>
           </div>
         </DialogFooter>

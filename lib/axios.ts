@@ -12,22 +12,23 @@ declare module "axios" {
 
 let msalInitPromise: Promise<void> | null = null;
 
-async function getValidToken(forceRefresh = false) {
+export async function getValidToken(forceRefresh = false) {
   // if running in server (SSR), return null
   if (typeof window === "undefined") return null;
 
   try {
-  // check if msal is initialized
-  if (!msalInitPromise) {
-    msalInitPromise = msalInstance.initialize();
-  }
+    // check if msal is initialized
+    if (!msalInitPromise) {
+      msalInitPromise = msalInstance.initialize();
+    }
 
-  // wait for msal to initialize
-  await msalInitPromise;
+    // wait for msal to initialize
+    await msalInitPromise;
 
-  // get all accounts
-  const account = msalInstance.getActiveAccount() || msalInstance.getAllAccounts()[0];
-  if (!account) {
+    // get all accounts
+    const account =
+      msalInstance.getActiveAccount() || msalInstance.getAllAccounts()[0];
+    if (!account) {
       return null;
     }
 
@@ -44,17 +45,7 @@ async function getValidToken(forceRefresh = false) {
     // if different, update token in cookie
 
     if (response.idToken) {
-
-      const exp =
-        response.idTokenClaims &&
-        typeof response.idTokenClaims === "object" &&
-        "exp" in response.idTokenClaims
-          ? (response.idTokenClaims as { exp: number }).exp
-          : Math.floor(Date.now() / 1000) + 3600;
-
-      const expiresAt = new Date(exp * 1000);
-
-      authUtils.setAuth(response.idToken, response.accessToken, expiresAt);
+      authUtils.setAuth(response.idToken, response.accessToken);
     }
 
     return response.idToken;

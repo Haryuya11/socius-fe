@@ -9,12 +9,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTranslations } from "next-intl";
 import { getAvatarInfo } from "@/utils/avatar-utils";
 import { useAuth } from "@/hooks/use-auth";
+import { getFullImageUrl } from "@/utils/image-utils";
 
 export default function HomePage() {
   const t = useTranslations("Dashboard");
   const { user, isLoading, logout } = useAuth();
   const [copied, setCopied] = useState(false);
   const { fullName, initials, avatarUrl } = getAvatarInfo(user);
+
+  const displayAvatarUrl = getFullImageUrl(avatarUrl);
 
   const handleCopyToken = () => {
     const token = authUtils.getToken();
@@ -46,7 +49,7 @@ export default function HomePage() {
           <div className="flex items-center gap-4 border-b pb-4 mb-4">
             <Avatar className="h-16 w-16">
               <AvatarImage
-                src={avatarUrl || "/placeholder.svg"}
+                src={displayAvatarUrl || "/placeholder.svg"}
                 alt={fullName}
               />
               <AvatarFallback>{initials}</AvatarFallback>

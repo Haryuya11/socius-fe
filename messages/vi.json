@@ -31,6 +31,15 @@
     "status": {
       "loading": "Đang tải...",
       "no_data": "Không tìm thấy dữ liệu"
+    },
+    "avatar_picker": {
+      "upload_text": "Tải lên",
+      "remove_tooltip": "Xóa ảnh",
+      "edit_dialog_title": "Chỉnh sửa ảnh",
+      "zoom_out": "Thu nhỏ",
+      "zoom_in": "Phóng to",
+      "cancel": "Hủy",
+      "confirm": "Xác nhận"
     }
   },
   "Dashboard": {
@@ -125,6 +134,20 @@
       "password_special": "Cần ít nhất 1 ký tự đặc biệt",
       "confirm_password_required": "Vui lòng xác nhận mật khẩu mới",
       "passwords_not_match": "Mật khẩu xác nhận không khớp"
+    },
+    "avatar_dialog": {
+      "title": "Cập nhật ảnh đại diện",
+      "click_to_upload": "Nhấn để chọn ảnh",
+      "drag_drop": "hoặc kéo thả vào đây",
+      "helper_text": "JPG, PNG, GIF tối đa 5MB",
+      "zoom_out": "Thu nhỏ",
+      "zoom_in": "Phóng to",
+      "change_image": "Chọn ảnh khác",
+      "cancel": "Hủy",
+      "save": "Lưu thay đổi",
+      "success": "Cập nhật ảnh đại diện thành công!",
+      "error": "Có lỗi xảy ra khi tải ảnh.",
+      "crop_error": "Không thể cắt ảnh."
     }
   },
   "Employees": {
@@ -214,5 +237,63 @@
     "fair": "Trung bình",
     "good": "Tốt",
     "strong": "Mạnh"
+  },
+  "Notifications": {
+    "title": "Thông báo",
+    "mark_all_read": "Đánh dấu tất cả đã đọc",
+    "view_all": "Xem tất cả thông báo",
+    "filters": {
+      "all": "Tất cả",
+      "unread": "Chưa đọc"
+    },
+    "empty": {
+      "message": "Bạn không có thông báo nào.",
+      "description": "Chúng tôi sẽ báo cho bạn khi có tin mới.",
+      "no_unread": "Tuyệt vời! Bạn đã đọc hết thông báo."
+    },
+    "new": "Mới"
+  },
+  "EmployeeDetails": {
+    "title": "Hồ sơ nhân viên",
+    "back": "Quay lại",
+    "loading": "Đang tải thông tin nhân viên...",
+    "copied": "Đã sao chép!",
+    "sections": {
+      "overview": "Tổng quan",
+      "personal": "Thông tin cá nhân",
+      "organization": "Tổ chức"
+    },
+    "actions": {
+      "edit": "Chỉnh sửa",
+      "menu_label": "Thao tác",
+      "copy_id": "Sao chép ID",
+      "suspend": "Đình chỉ tài khoản",
+      "active_status": "Đang hoạt động"
+    },
+    "fields": {
+      "full_name": "Họ và tên",
+      "email": "Địa chỉ Email",
+      "role": "Vai trò hệ thống",
+      "salary": "Mức lương",
+      "client_id": "Client ID"
+    },
+    "descriptions": {
+      "unique_id": "Mã định danh duy nhất",
+      "access_level": "Cấp độ truy cập hệ thống",
+      "primary_contact": "Liên hệ chính",
+      "base_salary": "Lương cơ bản",
+      "job_title": "Nhân viên Socius"
+    },
+    "org": {
+      "title": "Tổ chức",
+      "departments": "Phòng ban",
+      "teams": "Nhóm",
+      "no_dept": "Chưa thuộc phòng ban nào",
+      "no_team": "Chưa tham gia nhóm nào"
+    },
+    "error": {
+      "title": "Không tìm thấy nhân viên",
+      "description": "Nhân viên này không tồn tại hoặc đã bị xóa."
+    }
   }
 }

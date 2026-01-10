@@ -66,7 +66,7 @@ export default function SidebarNav({
     },
     {
       title: t("notifications"),
-      href: "/my-notifications",
+      href: "/notifications",
       icon: Bell,
     },
     {
