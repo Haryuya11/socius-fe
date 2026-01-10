@@ -4,6 +4,7 @@ import {
   AvatarUploadResponse,
   CreateEmployeeResponse,
   Employee,
+  EmployeeDetail,
 } from "@/types/employee";
 import { ApiResponse, PaginatedResponse } from "@/types/response";
 
@@ -123,7 +124,7 @@ export const employeeService = {
 
   updateEmployee: async (
     clientId: string,
-    data: UpdateEmployeeBody 
+    data: UpdateEmployeeBody
   ): Promise<boolean> => {
     try {
       const response = await http.put<ApiResponse<null>>(
@@ -133,6 +134,18 @@ export const employeeService = {
       return response.data.success;
     } catch (error) {
       console.error("Update employee failed", error);
+      throw error;
+    }
+  },
+
+  getEmployeeById: async (id: string): Promise<EmployeeDetail> => {
+    try {
+      const response = await http.get<ApiResponse<EmployeeDetail>>(
+        `/api/employees/${id}`
+      );
+      return response.data.data;
+    } catch (error) {
+      console.error(`Failed to fetch employee with id ${id}`, error);
       throw error;
     }
   },

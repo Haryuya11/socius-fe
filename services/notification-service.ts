@@ -21,7 +21,6 @@ export const notificationService = {
       { params }
     );
 
-    // 👇 QUAN TRỌNG: Trả về thẳng object chứa { data: [], nextCursor }
     // API trả về: { success: true, data: { data: [], nextCursor: ... } }
     return res.data.data;
   },
@@ -30,18 +29,17 @@ export const notificationService = {
   getUnreadCount: async () => {
     const res = await http.get<{ data: number }>("/api/notifications/unread");
 
-    // 👇 QUAN TRỌNG: Trả về thẳng con số (14)
     // API trả về: { success: true, data: 14 }
     return res.data.data;
   },
 
   // 3. Mark Read
   markAsRead: async (id: number | string) => {
-    return http.post(`/api/notifications/read/${id}`);
+    return http.put(`/api/notifications/read/${id}`);
   },
 
   // 4. Mark All Read
   markAllRead: async () => {
-    return http.post("/api/notifications/mark-all");
+    return http.put("/api/notifications/mark-all");
   },
 };

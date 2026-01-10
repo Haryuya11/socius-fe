@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { useParams, useRouter } from "next/navigation";
 import {
   Mail,
   Briefcase,
@@ -12,42 +14,78 @@ import {
   CheckCircle2,
   Crown,
   Star,
-  Lock,
-  Camera,
+  Copy,
   ArrowLeft,
-  Settings,
-  Download,
+  AlertCircle,
+  MoreHorizontal,
+  Ban,
+  Pencil,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { getAvatarInfo } from "@/utils/avatar-utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 
-import { ChangePasswordDialog } from "@/components/profile/change-password-dialog";
-import { AvatarUploadDialog } from "@/components/profile/avatar-upload-dialog";
-import { useAuth } from "@/hooks/use-auth";
-import { getFullImageUrl } from "@/utils/image-utils";
+// Services & Types
+import { employeeService } from "@/services/employee-service";
+import { EmployeeDetail } from "@/types/employee";
 import { ProfileSkeleton } from "@/components/skeleton/profile/profile-page-skeleton";
+import { getAvatarInfo } from "@/utils/avatar-utils";
+import { getFullImageUrl } from "@/utils/image-utils";
 
-export default function ProfilePage() {
-  const t = useTranslations("Profile");
-  const { user } = useAuth();
+export default function EmployeeDetailsPage() {
+  const t = useTranslations("EmployeeDetails");
+  const params = useParams();
+  const router = useRouter();
+
+  // State
+  const [employee, setEmployee] = useState<EmployeeDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [activeSection, setActiveSection] = useState("overview");
 
+  // Navigation Items
   const navItems = useMemo(
     () => [
-      { id: "overview", label: t("nav.overview") },
-      { id: "details", label: t("nav.details") },
-      { id: "organization", label: t("nav.organization") },
+      { id: "overview", label: t("sections.overview") },
+      { id: "details", label: t("sections.personal") },
+      { id: "organization", label: t("org.title") },
     ],
     [t]
   );
 
   useEffect(() => {
-    if (!user) return;
+    const fetchEmployeeDetails = async () => {
+      if (!params.id) return;
+      try {
+        setLoading(true);
+        const data = await employeeService.getEmployeeById(params.id as string);
+        setEmployee(data);
+      } catch (err) {
+        console.error("Error fetching employee:", err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEmployeeDetails();
+  }, [params.id]);
+
+  // --- Scroll Spy Logic ---
+  useEffect(() => {
+    if (!employee) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -71,7 +109,7 @@ export default function ProfilePage() {
       observer.disconnect();
       clearTimeout(timer);
     };
-  }, [navItems, user]);
+  }, [navItems, employee]);
 
   const scrollToSection = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -87,30 +125,57 @@ export default function ProfilePage() {
     }
   };
 
-  if (!user) {
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(t("copied"));
+  };
+
+  const formatSalary = (amount: number) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  // --- 1. Loading State: Dùng Skeleton thay cho Loader2 ---
+  if (loading) {
     return <ProfileSkeleton />;
   }
 
-  const { fullName, initials, avatarUrl } = getAvatarInfo(user);
+  // --- Error State ---
+  if (error || !employee) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
+        <div className="h-20 w-20 rounded-full bg-destructive/10 flex items-center justify-center">
+          <AlertCircle className="h-10 w-10 text-destructive" />
+        </div>
+        <h2 className="text-xl font-bold">{t("error.title")}</h2>
+        <p className="text-muted-foreground">{t("error.description")}</p>
+        <Button onClick={() => router.back()} variant="outline">
+          {t("back")}
+        </Button>
+      </div>
+    );
+  }
 
+  const { fullName, initials, avatarUrl } = getAvatarInfo(employee);
   const displayAvatarUrl = getFullImageUrl(avatarUrl);
 
-  const formattedSalary = new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-    maximumFractionDigits: 0,
-  }).format(user.salary || 0);
+  const departments = (employee as any).departments || [];
+  const teams = (employee as any).teams || [];
 
   return (
     <main className="min-h-screen bg-background animate-in fade-in-0 duration-500">
       <div className="flex min-h-screen relative items-start">
+        {/* --- SIDEBAR --- */}
         <aside className="w-64 border-r border-border/40 bg-card/30 backdrop-blur-sm p-8 hidden lg:block sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto">
           <div className="mb-10">
             <Button
               variant="ghost"
               size="sm"
               className="-ml-3 mb-6 text-muted-foreground hover:text-foreground"
-              onClick={() => history.back()}
+              onClick={() => router.back()}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               {t("back")}
@@ -120,7 +185,7 @@ export default function ProfilePage() {
               {fullName}
             </h2>
             <p className="text-xs text-muted-foreground break-all">
-              {user.userId}
+              {employee.clientId}
             </p>
           </div>
 
@@ -152,12 +217,13 @@ export default function ProfilePage() {
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(var(--primary),0.05),transparent_50%)]"></div>
             <div className="relative max-w-5xl mx-auto px-6 lg:px-12 py-12">
+              {/* Header Actions */}
               <div className="flex items-start justify-between mb-8 lg:justify-end">
                 <Button
                   variant="ghost"
                   size="sm"
                   className="lg:hidden rounded-full"
-                  onClick={() => history.back()}
+                  onClick={() => router.back()}
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   {t("back")}
@@ -169,48 +235,58 @@ export default function ProfilePage() {
                     size="sm"
                     className="rounded-full bg-background/50 border-border/50 hover:bg-background"
                   >
-                    <Download className="h-3.5 w-3.5 mr-2" />
-                    {t("export")}
+                    <Pencil className="h-3.5 w-3.5 mr-2" />
+                    {t("actions.edit")}
                   </Button>
 
-                  <ChangePasswordDialog>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="rounded-full bg-background/50 border-border/50 hover:bg-background"
-                    >
-                      <Lock className="h-3.5 w-3.5 mr-2" />
-                      {t("change_password.button_label")}
-                    </Button>
-                  </ChangePasswordDialog>
-
-                  <Button size="sm" className="rounded-full">
-                    <Settings className="h-3.5 w-3.5 mr-2" />
-                    {t("edit_profile")}
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="rounded-full h-9 w-9"
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>
+                        {t("actions.menu_label")}
+                      </DropdownMenuLabel>{" "}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => copyToClipboard(employee.clientId)}
+                      >
+                        <Copy className="h-4 w-4 mr-2" />
+                        {t("actions.copy_id")}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem className="text-destructive focus:text-destructive">
+                        <Ban className="h-4 w-4 mr-2" />
+                        {t("actions.suspend")}{" "}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
 
               <div className="flex flex-col md:flex-row items-start gap-8">
-                <div className="relative">
-                  <AvatarUploadDialog currentAvatarUrl={displayAvatarUrl}>
-                    <div className="relative group cursor-pointer">
-                      <Avatar className="h-32 w-32 border-4 border-background shadow-2xl transition-transform duration-300 group-hover:scale-105">
-                        <AvatarImage
-                          src={displayAvatarUrl || "/placeholder.svg"}
-                          alt={fullName}
-                          className="object-cover"
-                        />
-                        <AvatarFallback className="bg-linear-to-br from-primary to-primary/70 text-primary-foreground text-4xl font-bold">
-                          {initials}
-                        </AvatarFallback>
-                      </Avatar>
-
-                      <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 border-4 border-transparent z-20">
-                        <Camera className="h-8 w-8 text-white drop-shadow-md" />
-                      </div>
-                    </div>
-                  </AvatarUploadDialog>
+                {/* Avatar */}
+                <div className="relative group">
+                  <Avatar className="h-32 w-32 border-4 border-background shadow-2xl">
+                    <AvatarImage
+                      src={displayAvatarUrl}
+                      alt={fullName}
+                      className="object-cover"
+                    />
+                    <AvatarFallback className="bg-linear-to-br from-primary to-primary/70 text-primary-foreground text-4xl font-bold">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div
+                    className="absolute bottom-1 right-1 h-6 w-6 rounded-full bg-green-500 border-4 border-background"
+                    title={t("actions.active_status")}
+                  ></div>
                 </div>
 
                 <div className="flex-1 w-full">
@@ -220,21 +296,20 @@ export default function ProfilePage() {
                     </h1>
                     <Badge className="bg-primary/15 text-primary border border-primary/30 px-3 py-1">
                       <Shield className="h-3.5 w-3.5 mr-1.5" />
-                      {user.systemRole}
+                      {employee.systemRole}
                     </Badge>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-6 text-muted-foreground mb-6">
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4" />
-                      <span className="text-sm">{user.userId}</span>
+                      <span className="text-sm">{employee.userId}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Building2 className="h-4 w-4" />
+                      <Briefcase className="h-4 w-4" />
                       <span className="text-sm">
-                        {user.departments[0]?.departmentName ||
-                          t("org.no_dept")}
-                      </span>
+                        {t("descriptions.job_title")}
+                      </span>{" "}
                     </div>
                   </div>
 
@@ -242,26 +317,26 @@ export default function ProfilePage() {
                   <div className="flex flex-wrap gap-4">
                     <div className="bg-card/50 backdrop-blur-sm border border-border/40 rounded-xl px-5 py-3 hover:border-primary/20 transition-colors">
                       <div className="text-xs text-muted-foreground mb-1">
-                        {t("stats.annual_salary")}
+                        {t("fields.salary")}
                       </div>
                       <div className="text-xl font-bold text-foreground">
-                        {formattedSalary}
+                        {formatSalary(employee.salary)}
                       </div>
                     </div>
                     <div className="bg-card/50 backdrop-blur-sm border border-border/40 rounded-xl px-5 py-3 hover:border-primary/20 transition-colors">
                       <div className="text-xs text-muted-foreground mb-1">
-                        {t("stats.departments")}
-                      </div>
+                        {t("org.departments")}
+                      </div>{" "}
                       <div className="text-xl font-bold text-foreground">
-                        {user.departments.length}
+                        {departments.length}
                       </div>
                     </div>
                     <div className="bg-card/50 backdrop-blur-sm border border-border/40 rounded-xl px-5 py-3 hover:border-primary/20 transition-colors">
                       <div className="text-xs text-muted-foreground mb-1">
-                        {t("stats.teams")}
-                      </div>
+                        {t("org.teams")}
+                      </div>{" "}
                       <div className="text-xl font-bold text-foreground">
-                        {user.teams.length}
+                        {teams.length}
                       </div>
                     </div>
                   </div>
@@ -270,13 +345,15 @@ export default function ProfilePage() {
             </div>
           </div>
 
+          {/* MAIN CONTENT AREA */}
           <div className="max-w-5xl mx-auto px-6 lg:px-12 py-12">
+            {/* PERSONAL DETAILS */}
             <section id="details" className="mb-12 scroll-mt-20">
               <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
                 <div className="h-10 w-10 rounded-lg bg-linear-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-                  <Briefcase className="h-5 w-5 text-primary" />
+                  <User className="h-5 w-5 text-primary" />
                 </div>
-                {t("details.title")}
+                {t("sections.personal")}
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -288,16 +365,25 @@ export default function ProfilePage() {
                       </div>
                       <div>
                         <h3 className="font-semibold text-foreground">
-                          {t("details.client_id")}
+                          {t("fields.client_id")}
                         </h3>
                         <p className="text-xs text-muted-foreground">
-                          {t("details.unique_identifier")}
-                        </p>
+                          {t("descriptions.unique_id")}
+                        </p>{" "}
                       </div>
                     </div>
-                    <p className="text-sm font-mono text-foreground bg-muted/50 px-4 py-3 rounded-lg border border-border/40 break-all">
-                      {user.clientId}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-mono text-foreground bg-muted/50 px-3 py-2 rounded-lg border border-border/40 break-all flex-1">
+                        {employee.clientId}
+                      </p>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => copyToClipboard(employee.clientId)}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </Card>
 
@@ -309,15 +395,15 @@ export default function ProfilePage() {
                       </div>
                       <div>
                         <h3 className="font-semibold text-foreground">
-                          {t("details.system_role")}
+                          {t("fields.role")}
                         </h3>
                         <p className="text-xs text-muted-foreground">
-                          {t("details.access_level")}
-                        </p>
+                          {t("descriptions.access_level")}
+                        </p>{" "}
                       </div>
                     </div>
                     <Badge className="bg-primary/15 text-primary border border-primary/30 px-4 py-2 text-sm">
-                      {user.systemRole}
+                      {employee.systemRole}
                     </Badge>
                   </div>
                 </Card>
@@ -330,15 +416,17 @@ export default function ProfilePage() {
                       </div>
                       <div>
                         <h3 className="font-semibold text-foreground">
-                          {t("details.email")}
+                          {t("fields.email")}
                         </h3>
                         <p className="text-xs text-muted-foreground">
-                          {t("details.primary_contact")}
-                        </p>
+                          {t("descriptions.primary_contact")}
+                        </p>{" "}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <p className="text-sm text-foreground">{user.userId}</p>
+                      <p className="text-sm text-foreground">
+                        {employee.userId}
+                      </p>
                       <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
                     </div>
                   </div>
@@ -352,22 +440,22 @@ export default function ProfilePage() {
                       </div>
                       <div>
                         <h3 className="font-semibold text-foreground">
-                          {t("details.compensation")}
+                          {t("fields.salary")}
                         </h3>
                         <p className="text-xs text-muted-foreground">
-                          {t("details.base_salary")}
-                        </p>
+                          {t("descriptions.base_salary")}
+                        </p>{" "}
                       </div>
                     </div>
                     <p className="text-2xl font-bold text-primary">
-                      {formattedSalary}
+                      {formatSalary(employee.salary)}
                     </p>
                   </div>
                 </Card>
               </div>
             </section>
 
-            {/* --- ORGANIZATION SECTION --- */}
+            {/* ORGANIZATION SECTION */}
             <section id="organization" className="mb-12 scroll-mt-20">
               <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
                 <div className="h-10 w-10 rounded-lg bg-linear-to-br from-primary/20 to-primary/10 flex items-center justify-center">
@@ -377,7 +465,7 @@ export default function ProfilePage() {
               </h2>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* --- DEPARTMENTS CARD --- */}
+                {/* Departments List */}
                 <Card className="border-border/40 bg-card/50 backdrop-blur-sm hover:border-primary/20 transition-all duration-300 hover:shadow-lg">
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-6">
@@ -386,13 +474,14 @@ export default function ProfilePage() {
                         {t("org.departments")}
                       </h3>
                       <Badge variant="secondary" className="rounded-full px-3">
-                        {user.departments.length}
+                        {departments.length}
                       </Badge>
                     </div>
 
                     <div className="space-y-4">
-                      {user.departments && user.departments.length > 0 ? (
-                        user.departments.map((dept) => (
+                      {departments.length > 0 ? (
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        departments.map((dept: any) => (
                           <div
                             key={dept.departmentCode}
                             className={cn(
@@ -418,38 +507,21 @@ export default function ProfilePage() {
                                 {dept.departmentCode}
                               </Badge>
                             </div>
-
-                            <div className="flex items-center gap-2 pt-2 border-t border-border/20 mt-2">
-                              {dept.isPrimary ? (
-                                <Badge
-                                  variant="outline"
-                                  className="text-xs gap-1 pl-1 bg-green-100 text-green-700 border-green-200 dark:bg-green-500/20 dark:text-green-300 dark:border-green-800"
-                                >
-                                  <CheckCircle2 className="h-3 w-3" />
-                                  {t("org.primary_dept")}
-                                </Badge>
-                              ) : (
-                                <span className="text-xs text-muted-foreground flex items-center gap-1.5">
-                                  <div className="h-1.5 w-1.5 rounded-full bg-slate-400" />
-                                  {t("org.member")}
-                                </span>
-                              )}
-                            </div>
                           </div>
                         ))
                       ) : (
-                        <div className="text-center py-12">
-                          <Building2 className="h-12 w-12 text-muted-foreground/30 mx-auto mb-3" />
-                          <p className="text-muted-foreground text-sm">
+                        <div className="text-center py-8">
+                          <Building2 className="h-10 w-10 text-muted-foreground/30 mx-auto mb-2" />
+                          <p className="text-sm text-muted-foreground">
                             {t("org.no_dept")}
-                          </p>
+                          </p>{" "}
                         </div>
                       )}
                     </div>
                   </div>
                 </Card>
 
-                {/* --- TEAMS CARD --- */}
+                {/* Teams List */}
                 <Card className="border-border/40 bg-card/50 backdrop-blur-sm hover:border-primary/20 transition-all duration-300 hover:shadow-lg">
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-6">
@@ -458,13 +530,14 @@ export default function ProfilePage() {
                         {t("org.teams")}
                       </h3>
                       <Badge variant="secondary" className="rounded-full px-3">
-                        {user.teams.length}
+                        {teams.length}
                       </Badge>
                     </div>
 
                     <div className="space-y-4">
-                      {user.teams && user.teams.length > 0 ? (
-                        user.teams.map((team) => (
+                      {teams.length > 0 ? (
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        teams.map((team: any) => (
                           <div
                             key={team.teamCode}
                             className={cn(
@@ -486,35 +559,18 @@ export default function ProfilePage() {
                                   {team.roleName}
                                 </p>
                               </div>
-                              <Badge
-                                variant="outline"
-                                className="text-xs  shrink-0 border-border"
-                              >
+                              <Badge variant="outline" className="text-xs">
                                 {team.teamCode}
                               </Badge>
-                            </div>
-
-                            <div className="flex items-center gap-2 pt-2 border-t border-border/20 mt-2">
-                              {team.isLeader ? (
-                                <Badge className="text-xs gap-1 pl-1 shadow-none bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-500/20 dark:text-orange-300 dark:border-orange-800">
-                                  <Crown className="h-3 w-3" />
-                                  {t("org.team_leader")}
-                                </Badge>
-                              ) : (
-                                <span className="text-xs text-muted-foreground flex items-center gap-1.5">
-                                  <div className="h-1.5 w-1.5 rounded-full bg-cyan-500" />
-                                  {t("org.active_member")}
-                                </span>
-                              )}
                             </div>
                           </div>
                         ))
                       ) : (
-                        <div className="text-center py-12">
-                          <Users className="h-12 w-12 text-muted-foreground/30 mx-auto mb-3" />
-                          <p className="text-muted-foreground text-sm">
+                        <div className="text-center py-8">
+                          <Users className="h-10 w-10 text-muted-foreground/30 mx-auto mb-2" />
+                          <p className="text-sm text-muted-foreground">
                             {t("org.no_team")}
-                          </p>
+                          </p>{" "}
                         </div>
                       )}
                     </div>

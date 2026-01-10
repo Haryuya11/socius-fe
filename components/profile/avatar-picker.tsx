@@ -2,6 +2,7 @@
 
 import { useState, useRef, ChangeEvent, useEffect } from "react";
 import Cropper, { Area } from "react-easy-crop";
+import { useTranslations } from "next-intl"; // ✅ Import hook i18n
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Camera, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getCroppedImg } from "@/lib/canvas-utils";
+import { getCroppedImg } from "@/utils/canvas-utils";
 import { getFullImageUrl } from "@/utils/image-utils";
 
 interface AvatarPickerProps {
@@ -25,6 +26,7 @@ export function AvatarPicker({
   onImageCropped,
   initialImage,
 }: AvatarPickerProps) {
+  const t = useTranslations("Common.avatar_picker");
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     getFullImageUrl(initialImage) || null
   );
@@ -94,7 +96,7 @@ export function AvatarPicker({
           <AvatarFallback className="bg-transparent">
             <div className="flex flex-col items-center justify-center text-muted-foreground">
               <Camera className="h-6 w-6 mb-1" />
-              <span className="text-[10px]">Upload</span>
+              <span className="text-[10px]">{t("upload_text")}</span>{" "}
             </div>
           </AvatarFallback>
         </Avatar>
@@ -104,7 +106,7 @@ export function AvatarPicker({
           <div
             className="absolute -top-1 -right-1 bg-destructive text-white rounded-full p-1 cursor-pointer hover:bg-destructive/90 z-10"
             onClick={handleRemoveImage}
-            title="Xóa ảnh"
+            title={t("remove_tooltip")} 
           >
             <X className="h-3 w-3" />
           </div>
@@ -123,7 +125,7 @@ export function AvatarPicker({
       <Dialog open={isCropOpen} onOpenChange={setIsCropOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Chỉnh sửa ảnh</DialogTitle>
+            <DialogTitle>{t("edit_dialog_title")}</DialogTitle>
           </DialogHeader>
           <div className="py-4">
             <div className="relative h-80 w-full bg-black rounded-lg overflow-hidden">
@@ -140,8 +142,8 @@ export function AvatarPicker({
             </div>
             <div className="mt-4 space-y-2">
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Thu nhỏ</span>
-                <span>Phóng to</span>
+                <span>{t("zoom_out")}</span>
+                <span>{t("zoom_in")}</span>
               </div>
               <Slider
                 value={[zoom]}
@@ -154,9 +156,9 @@ export function AvatarPicker({
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setIsCropOpen(false)}>
-              Hủy
+              {t("cancel")}
             </Button>
-            <Button onClick={handleCropConfirm}>Xác nhận</Button>
+            <Button onClick={handleCropConfirm}>{t("confirm")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

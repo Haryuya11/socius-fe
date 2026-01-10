@@ -8,7 +8,7 @@ import {
 import { notificationService } from "@/services/notification-service";
 import { getValidToken } from "@/lib/axios";
 
-// ... (Giữ nguyên hàm getWebSocketUrl) ...
+// get socket url helper
 const getWebSocketUrl = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   const protocol = apiUrl.startsWith("https") ? "wss://" : "ws://";
@@ -24,10 +24,13 @@ interface NotificationState {
   nextCursor: string | undefined;
   isConnected: boolean;
 
+  // actions API
   fetchInitialData: () => Promise<void>;
   loadMore: () => Promise<void>;
   markRead: (id: number) => Promise<void>;
   markAllRead: () => Promise<void>;
+
+  // actions Socket
   connectSocket: () => void;
   disconnectSocket: () => void;
   receiveSocketMessage: (msg: NotificationMessage) => void;
@@ -44,50 +47,60 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   nextCursor: undefined,
   isConnected: false,
 
+  // 1. receive Socket Message -> merge into store
   receiveSocketMessage: (newMsg) => {
     set((state) => {
-      const exists = state.notifications.find((n) => n.id === newMsg.id);
-      if (exists) return state;
+      const currentList = Array.isArray(state.notifications)
+        ? state.notifications
+        : [];
+      // avoid duplicate
+      if (currentList.find((n) => n.id === newMsg.id)) return state;
+
       return {
-        notifications: [newMsg, ...state.notifications],
+        notifications: [newMsg, ...currentList],
         unreadCount: state.unreadCount + 1,
       };
     });
   },
 
-  // ---------------------------------------------------------
-  // 👇 ĐÃ SỬA: Logic Fetch đơn giản hóa theo Service mới
-  // ---------------------------------------------------------
+  // 2. fetch API Initial (handle wrapper data)
   fetchInitialData: async () => {
     if (get().isLoading) return;
     set({ isLoading: true });
 
     try {
-      const [listData, unreadNum] = await Promise.all([
-        notificationService.getList(10), // Trả về { data: [], nextCursor: ... }
-        notificationService.getUnreadCount(), // Trả về number (ví dụ: 14)
+      const [listRes, countRes] = await Promise.all([
+        notificationService.getList(10),
+        notificationService.getUnreadCount(),
       ]);
 
-      // 1. Lấy mảng thông báo
-      const apiList = Array.isArray(listData.data) ? listData.data : [];
+      // parse List
+      const rawData = (listRes as any).data || listRes;
 
-      // 2. Lấy Cursor
-      const cursor = listData.nextCursor;
+      // make sure data is array
+      const apiList = Array.isArray(rawData) ? rawData : [];
+      const cursor =
+        (listRes as any).nextCursor || (listRes as any).meta?.next_cursor;
 
-      // 3. Lấy số lượng unread (đảm bảo là số)
-      const safeCount = typeof unreadNum === "number" ? unreadNum : 0;
+      // Parse Count
+      const safeCount =
+        typeof countRes === "number"
+          ? countRes
+          : (countRes as any).count ?? (countRes as any).data ?? 0;
 
       set((state) => {
-        // Merge với socket (nếu có)
-        const combined = [...state.notifications, ...apiList];
+        const currentNotis = Array.isArray(state.notifications)
+          ? state.notifications
+          : [];
+        const combined = [...currentNotis, ...apiList];
 
-        // Lọc trùng ID
+        // remove duplicate
         const uniqueList = combined.filter(
           (item, index, self) =>
             index === self.findIndex((t) => t.id === item.id)
         );
 
-        // Sort mới nhất lên đầu
+        // sort by createdAt
         uniqueList.sort(
           (a, b) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -96,8 +109,8 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         return {
           notifications: uniqueList,
           unreadCount: safeCount,
-          nextCursor: cursor ?? undefined, // Chuyển null thành undefined cho an toàn
-          hasMore: !!cursor, // API trả về hasNext: true nhưng ta cứ check cursor cho chắc
+          nextCursor: cursor ?? undefined,
+          hasMore: !!cursor,
         };
       });
     } catch (error) {
@@ -107,9 +120,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     }
   },
 
-  // ---------------------------------------------------------
-  // 👇 ĐÃ SỬA: Logic Load More
-  // ---------------------------------------------------------
+  // 3. load more
   loadMore: async () => {
     const { isLoading, hasMore, nextCursor, notifications } = get();
     if (isLoading || !hasMore || !nextCursor) return;
@@ -118,8 +129,9 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     try {
       const res = await notificationService.getList(10, nextCursor);
 
-      const newList = Array.isArray(res.data) ? res.data : [];
-      const newCursor = res.nextCursor;
+      const rawList = (res as any).data || res;
+      const newList = Array.isArray(rawList) ? rawList : [];
+      const newCursor = (res as any).nextCursor;
 
       set({
         notifications: [...notifications, ...newList],
@@ -133,9 +145,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     }
   },
 
-  // ---------------------------------------------------------
-  // 👇 Logic Mark Read (Giữ nguyên vì đã chuẩn)
-  // ---------------------------------------------------------
+  // 4. mark read
   markRead: async (id) => {
     set((state) => ({
       notifications: state.notifications.map((n) =>
@@ -154,11 +164,15 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     await notificationService.markAllRead();
   },
 
-  // ---------------------------------------------------------
-  // 👇 Logic Socket (Giữ nguyên)
-  // ---------------------------------------------------------
+  // 5. connect Socket
   connectSocket: async () => {
-    if (socket && socket.readyState === WebSocket.OPEN) return;
+    if (
+      socket &&
+      (socket.readyState === WebSocket.OPEN ||
+        socket.readyState === WebSocket.CONNECTING)
+    )
+      return;
+
     const token = await getValidToken();
     if (!token) return;
 
@@ -188,10 +202,11 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       socket = null;
     };
 
+    // Ping Heartbeat
     clearInterval(pingInterval);
     pingInterval = setInterval(() => {
       if (socket?.readyState === WebSocket.OPEN) socket.send("ping");
-    }, 15000);
+    }, 36000);
   },
 
   disconnectSocket: () => {

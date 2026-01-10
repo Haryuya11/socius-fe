@@ -31,6 +31,15 @@
     "status": {
       "loading": "Loading...",
       "no_data": "No data found"
+    },
+    "avatar_picker": {
+      "upload_text": "Upload",
+      "remove_tooltip": "Remove image",
+      "edit_dialog_title": "Edit image",
+      "zoom_out": "Zoom out",
+      "zoom_in": "Zoom in",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
     }
   },
   "Dashboard": {
@@ -125,6 +134,20 @@
       "password_special": "At least 1 special character",
       "confirm_password_required": "Please confirm your new password",
       "passwords_not_match": "Passwords do not match"
+    },
+    "avatar_dialog": {
+      "title": "Update Profile Picture",
+      "click_to_upload": "Click to upload",
+      "drag_drop": "or drag and drop",
+      "helper_text": "JPG, PNG, GIF up to 5MB",
+      "zoom_out": "Zoom out",
+      "zoom_in": "Zoom in",
+      "change_image": "Change image",
+      "cancel": "Cancel",
+      "save": "Save changes",
+      "success": "Profile picture updated successfully!",
+      "error": "An error occurred while uploading.",
+      "crop_error": "Could not crop image."
     }
   },
   "Employees": {
@@ -214,5 +237,63 @@
     "fair": "Fair",
     "good": "Good",
     "strong": "Strong"
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "mark_all_read": "Mark all as read",
+    "view_all": "View all notifications",
+    "filters": {
+      "all": "All",
+      "unread": "Unread"
+    },
+    "empty": {
+      "message": "You have no notifications.",
+      "description": "We'll let you know when something arrives.",
+      "no_unread": "Great! You're all caught up."
+    },
+    "new": "New"
+  },
+  "EmployeeDetails": {
+    "title": "Employee Profile",
+    "back": "Back",
+    "loading": "Loading employee information...",
+    "copied": "Copied to clipboard!",
+    "sections": {
+      "overview": "Overview",
+      "personal": "Personal Details",
+      "organization": "Organization"
+    },
+    "actions": {
+      "edit": "Edit",
+      "menu_label": "Actions",
+      "copy_id": "Copy ID",
+      "suspend": "Suspend User",
+      "active_status": "Active"
+    },
+    "fields": {
+      "full_name": "Full Name",
+      "email": "Email Address",
+      "role": "System Role",
+      "salary": "Annual Salary",
+      "client_id": "Client ID"
+    },
+    "descriptions": {
+      "unique_id": "Unique Identifier",
+      "access_level": "System Access Level",
+      "primary_contact": "Primary Contact",
+      "base_salary": "Base Salary",
+      "job_title": "Socius Employee"
+    },
+    "org": {
+      "title": "Organization",
+      "departments": "Departments",
+      "teams": "Teams",
+      "no_dept": "No departments assigned",
+      "no_team": "No teams assigned"
+    },
+    "error": {
+      "title": "Employee Not Found",
+      "description": "This employee does not exist or may have been deleted."
+    }
   }
 }

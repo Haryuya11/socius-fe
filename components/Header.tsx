@@ -18,7 +18,7 @@ import SidebarNav from "./sidebar-nav";
 import { ProfileMenu } from "./profile";
 import { useMounted } from "@/hooks/use-mounted";
 
-import { NotificationMenu } from "@/components/notification-menu";
+import { NotificationMenu } from "@/components/notification/notification-menu";
 
 export default function Header({
   className,

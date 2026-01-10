@@ -13,6 +13,16 @@ export interface Employee {
   teams: TeamInfo[];
 }
 
+export interface EmployeeDetail {
+  clientId: string;
+  userId: string;
+  firstName: string;
+  lastName: string;
+  systemRole: SystemRole;
+  imageUrl: string;
+  salary: number;
+}
+
 export interface EmployeeListData {
   data: Employee[];
   totalItems: number;

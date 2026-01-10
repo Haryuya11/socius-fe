@@ -10,7 +10,7 @@ export default function NotificationInitializer() {
   const { accounts } = useMsal();
 
   useEffect(() => {
-    // Chỉ connect khi user đã login
+    // only connect when logged in
     if (accounts.length > 0) {
       connectSocket();
       fetchInitialData();
@@ -21,5 +21,5 @@ export default function NotificationInitializer() {
     };
   }, [accounts, connectSocket, disconnectSocket, fetchInitialData]);
 
-  return null; // Component không render gì cả
+  return null;
 }
