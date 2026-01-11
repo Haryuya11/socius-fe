@@ -18,6 +18,14 @@
     },
     "not_found": {
       "title": "404 - Page Not Found"
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "description": "Learn how Socius protects your personal and employment data."
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "description": "Understand the terms and conditions for using the Socius HR management system."
     }
   },
   "Common": {
@@ -294,6 +302,144 @@
     "error": {
       "title": "Employee Not Found",
       "description": "This employee does not exist or may have been deleted."
+    }
+  },
+  "Privacy": {
+    "title": "Privacy Policy",
+    "back": "Back to Login",
+    "last_updated": "Last Updated",
+    "date": "January 12, 2026",
+    "footer": "All rights reserved.",
+    "intro": {
+      "title": "Introduction",
+      "content": "Socius is an internal HR management system exclusively for employees within our organization. We are committed to protecting the privacy and security of your personal and employment information. This Privacy Policy explains how we collect, use, store, and protect employee data within our system. As an employee with authorized access to Socius, you acknowledge that you have read and understood this policy."
+    },
+    "collection": {
+      "title": "Information We Collect",
+      "intro": "As an HR management system, Socius collects various types of information necessary for effective workforce management:",
+      "items": {
+        "personal": "Personal Information: Full name, email address, contact details, date of birth, and identification numbers",
+        "employment": "Employment Information: Job title, employee ID, start date, employment status, and work history",
+        "organization": "Organizational Data: Department assignments, team memberships, reporting structure, and manager relationships",
+        "compensation": "Compensation Data: Salary information, bonuses, benefits, and payroll details",
+        "system": "System Usage Data: Login activity, feature usage, authentication logs, and system interactions"
+      }
+    },
+    "usage": {
+      "title": "How We Use Your Information",
+      "intro": "We use the collected information for legitimate business purposes including:",
+      "items": {
+        "management": "Employee management and workforce planning",
+        "communication": "Internal communication and collaboration within your organization",
+        "compensation": "Payroll processing and compensation management",
+        "analytics": "Performance analytics and organizational insights",
+        "security": "System security, access control, and audit compliance"
+      }
+    },
+    "protection": {
+      "title": "Data Protection and Security",
+      "content": "We implement industry-standard security measures to protect your information, including encryption, secure authentication via Microsoft Azure AD, role-based access control, regular security audits, and secure data transmission protocols. Access to sensitive information is restricted based on job roles and business necessity."
+    },
+    "sharing": {
+      "title": "Data Sharing and Disclosure",
+      "intro": "Your information is shared only in the following circumstances:",
+      "items": {
+        "authorized": "With authorized personnel within your organization based on their role and access permissions",
+        "legal": "When required by law, legal process, or regulatory compliance",
+        "consent": "With your explicit consent for specific purposes"
+      }
+    },
+    "rights": {
+      "title": "Your Rights",
+      "intro": "You have the following rights regarding your personal information:",
+      "items": {
+        "access": "Access and review your personal information stored in the system",
+        "correction": "Request corrections to inaccurate or incomplete information",
+        "deletion": "Request deletion of your data in accordance with legal and regulatory requirements",
+        "objection": "Object to certain types of data processing"
+      }
+    },
+    "retention": {
+      "title": "Data Retention",
+      "content": "We retain your information for as long as your employment continues and for a period thereafter as required by law, regulatory compliance, or legitimate business purposes. Employment records may be retained according to legal requirements even after employment termination."
+    },
+    "contact": {
+      "title": "Contact Us",
+      "content": "If you have questions about this Privacy Policy or your personal data, please contact your organization's HR department for privacy-related matters or your system administrator for technical inquiries. We respond to all requests within 5-10 business days."
+    },
+    "updates": {
+      "title": "Policy Updates",
+      "content": "We may update this Privacy Policy periodically to reflect changes in our practices or legal requirements. We will notify users of significant changes through the system notification feature. Continued use of Socius after changes constitutes acceptance of the updated policy."
+    }
+  },
+  "Terms": {
+    "title": "Terms of Service",
+    "last_updated": "Last Updated",
+    "date": "January 12, 2026",
+    "footer": "All rights reserved.",
+    "intro": {
+      "title": "Introduction",
+      "content": "Welcome to Socius, an internal Human Resources Management System for employees of our organization. These Terms of Service govern your access to and use of this internal platform. As an employee granted access to Socius, you acknowledge that you have read, understood, and agree to be bound by these terms. Access to this system is restricted to authorized employees only."
+    },
+    "acceptance": {
+      "title": "Acceptance of Terms",
+      "content": "By logging in with your employee credentials or using any features of the Socius system, you agree to comply with these Terms of Service and all applicable laws and regulations. Your continued use of the system constitutes ongoing acceptance of these terms, including any modifications we may make from time to time. Access is granted to you as an employee of the organization."
+    },
+    "accounts": {
+      "title": "Employee Access",
+      "intro": "Access to Socius is granted exclusively to employees of the organization through your company-issued credentials. You are responsible for maintaining the security and confidentiality of your account credentials.",
+      "items": {
+        "authentication": "Authentication: Accounts are authenticated through your organization's Microsoft Azure Active Directory. You must use legitimate credentials provided by your organization.",
+        "security": "Security: You must maintain the confidentiality of your password and account information. Notify your system administrator immediately of any unauthorized access or security breach.",
+        "responsibility": "Responsibility: You are responsible for all activities that occur under your account. Do not share your credentials or allow others to access your account."
+      }
+    },
+    "usage": {
+      "title": "Acceptable System Usage",
+      "intro": "Socius is designed exclusively for legitimate human resources management purposes within your organization. You agree to use the system appropriately:",
+      "items": {
+        "purpose": "Use the system only for authorized HR management activities such as employee data management, organizational structure oversight, and legitimate business operations.",
+        "compliance": "Comply with all applicable laws, regulations, and your organization's internal policies when using the system.",
+        "professional": "Maintain professional conduct and use the system in a manner consistent with workplace standards and ethical guidelines."
+      }
+    },
+    "data": {
+      "title": "Data Responsibilities",
+      "content": "You acknowledge that Socius processes sensitive employee and organizational data. You agree to handle all data accessed through the system in accordance with applicable privacy laws, data protection regulations, and your organization's data policies. You must not extract, copy, or use data for purposes outside the scope of your authorized role."
+    },
+    "prohibited": {
+      "title": "Prohibited Activities",
+      "intro": "The following activities are strictly prohibited when using Socius:",
+      "items": {
+        "unauthorized": "Attempting to access data, features, or areas of the system for which you do not have proper authorization.",
+        "misuse": "Using the system to transmit, store, or process malicious code, viruses, or any harmful content.",
+        "interference": "Interfering with or disrupting the system's operation, security features, or other users' access to the platform.",
+        "violation": "Using the system in any manner that violates applicable laws, regulations, or infringes upon the rights of others."
+      }
+    },
+    "intellectual": {
+      "title": "Intellectual Property",
+      "content": "All content, features, functionality, and intellectual property rights in Socius, including but not limited to software code, designs, graphics, user interfaces, and documentation, are owned by Socius or its licensors. You are granted a limited, non-exclusive, non-transferable license to use the system solely for its intended HR management purposes. You may not copy, modify, distribute, sell, or create derivative works from any part of the system."
+    },
+    "liability": {
+      "title": "Limitation of Liability",
+      "content": "Socius is provided \"as is\" without warranties of any kind, either express or implied. To the maximum extent permitted by law, we disclaim all warranties regarding system availability, accuracy of data, or fitness for a particular purpose. We shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of or inability to use the system. Your organization's use of Socius is at its own risk."
+    },
+    "termination": {
+      "title": "Account Termination",
+      "content": "We reserve the right to suspend or terminate your access to Socius at any time, with or without cause, and with or without notice, particularly if we believe you have violated these Terms of Service. Upon termination, your right to access and use the system will immediately cease. Your organization may also terminate your account access according to its internal policies and procedures."
+    },
+    "changes": {
+      "title": "Changes to Terms",
+      "content": "We reserve the right to modify these Terms of Service at any time to reflect changes in our services, legal requirements, or business practices. We will provide notice of significant changes through the system notification feature. Your continued use of Socius after such changes constitutes your acceptance of the modified terms. We encourage you to review these terms periodically."
+    },
+    "contact": {
+      "title": "Contact Information",
+      "content": "If you have questions about these Terms of Service, please contact your organization's system administrator or HR department for assistance."
+    },
+    "governing": {
+      "title": "Governing Law",
+      "content": "These Terms of Service shall be governed by and construed in accordance with applicable laws. Any disputes arising from these terms or your use of Socius shall be subject to the exclusive jurisdiction of the appropriate courts."
     }
   }
 }

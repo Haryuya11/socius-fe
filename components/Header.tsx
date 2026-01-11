@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import SidebarNav from "./sidebar-nav";
 import { ProfileMenu } from "./profile";
 import { useMounted } from "@/hooks/use-mounted";
+import { useAuth } from "@/hooks/use-auth";
 
 import { NotificationMenu } from "@/components/notification/notification-menu";
 
@@ -26,6 +27,7 @@ export default function Header({
 }: React.ComponentProps<"header">) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const mounted = useMounted();
+  const { isAuthenticated } = useAuth();
 
   return (
     <header
@@ -136,7 +138,7 @@ export default function Header({
               <LanguageSwitcher />
 
               {/* THÊM THÔNG BÁO VÀO ĐÂY */}
-              <NotificationMenu />
+              {isAuthenticated && <NotificationMenu />}
 
               <Separator
                 orientation="vertical"
