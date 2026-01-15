@@ -231,12 +231,12 @@ function renderOrgStructure(
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge
+                      {/* <Badge
                         variant="outline"
                         className="text-[10px] h-5 font-medium bg-white dark:bg-orange-950 border-orange-300 dark:border-orange-700 dark:text-orange-200"
                       >
                         {team.roleName}
-                      </Badge>
+                      </Badge> */}
                       <span className="text-[10px] text-orange-600 dark:text-orange-300 font-mono">
                         {team.teamCode}
                       </span>

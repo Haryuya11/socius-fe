@@ -44,6 +44,7 @@ import { EmployeeDetail } from "@/types/employee";
 import { ProfileSkeleton } from "@/components/skeleton/profile/profile-page-skeleton";
 import { getAvatarInfo } from "@/utils/avatar-utils";
 import { getFullImageUrl } from "@/utils/image-utils";
+import { TeamInfo } from "@/types/teams";
 
 export default function EmployeeDetailsPage() {
   const t = useTranslations("EmployeeDetails");
@@ -252,7 +253,7 @@ export default function EmployeeDetailsPage() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>
                         {t("actions.menu_label")}
-                      </DropdownMenuLabel>{" "}
+                      </DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={() => copyToClipboard(employee.clientId)}
@@ -263,7 +264,7 @@ export default function EmployeeDetailsPage() {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem className="text-destructive focus:text-destructive">
                         <Ban className="h-4 w-4 mr-2" />
-                        {t("actions.suspend")}{" "}
+                        {t("actions.suspend")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -309,7 +310,7 @@ export default function EmployeeDetailsPage() {
                       <Briefcase className="h-4 w-4" />
                       <span className="text-sm">
                         {t("descriptions.job_title")}
-                      </span>{" "}
+                      </span>
                     </div>
                   </div>
 
@@ -326,7 +327,7 @@ export default function EmployeeDetailsPage() {
                     <div className="bg-card/50 backdrop-blur-sm border border-border/40 rounded-xl px-5 py-3 hover:border-primary/20 transition-colors">
                       <div className="text-xs text-muted-foreground mb-1">
                         {t("org.departments")}
-                      </div>{" "}
+                      </div>
                       <div className="text-xl font-bold text-foreground">
                         {departments.length}
                       </div>
@@ -334,7 +335,7 @@ export default function EmployeeDetailsPage() {
                     <div className="bg-card/50 backdrop-blur-sm border border-border/40 rounded-xl px-5 py-3 hover:border-primary/20 transition-colors">
                       <div className="text-xs text-muted-foreground mb-1">
                         {t("org.teams")}
-                      </div>{" "}
+                      </div>
                       <div className="text-xl font-bold text-foreground">
                         {teams.length}
                       </div>
@@ -369,7 +370,7 @@ export default function EmployeeDetailsPage() {
                         </h3>
                         <p className="text-xs text-muted-foreground">
                           {t("descriptions.unique_id")}
-                        </p>{" "}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -399,7 +400,7 @@ export default function EmployeeDetailsPage() {
                         </h3>
                         <p className="text-xs text-muted-foreground">
                           {t("descriptions.access_level")}
-                        </p>{" "}
+                        </p>
                       </div>
                     </div>
                     <Badge className="bg-primary/15 text-primary border border-primary/30 px-4 py-2 text-sm">
@@ -420,7 +421,7 @@ export default function EmployeeDetailsPage() {
                         </h3>
                         <p className="text-xs text-muted-foreground">
                           {t("descriptions.primary_contact")}
-                        </p>{" "}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -444,7 +445,7 @@ export default function EmployeeDetailsPage() {
                         </h3>
                         <p className="text-xs text-muted-foreground">
                           {t("descriptions.base_salary")}
-                        </p>{" "}
+                        </p>
                       </div>
                     </div>
                     <p className="text-2xl font-bold text-primary">
@@ -480,7 +481,6 @@ export default function EmployeeDetailsPage() {
 
                     <div className="space-y-4">
                       {departments.length > 0 ? (
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         departments.map((dept: any) => (
                           <div
                             key={dept.departmentCode}
@@ -514,7 +514,7 @@ export default function EmployeeDetailsPage() {
                           <Building2 className="h-10 w-10 text-muted-foreground/30 mx-auto mb-2" />
                           <p className="text-sm text-muted-foreground">
                             {t("org.no_dept")}
-                          </p>{" "}
+                          </p>
                         </div>
                       )}
                     </div>
@@ -536,8 +536,7 @@ export default function EmployeeDetailsPage() {
 
                     <div className="space-y-4">
                       {teams.length > 0 ? (
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        teams.map((team: any) => (
+                        teams.map((team: TeamInfo) => (
                           <div
                             key={team.teamCode}
                             className={cn(
@@ -555,9 +554,9 @@ export default function EmployeeDetailsPage() {
                                     <Crown className="h-3.5 w-3.5 text-orange-500 fill-orange-500" />
                                   )}
                                 </p>
-                                <p className="text-sm text-muted-foreground">
+                                {/* <p className="text-sm text-muted-foreground">
                                   {team.roleName}
-                                </p>
+                                </p> */}
                               </div>
                               <Badge variant="outline" className="text-xs">
                                 {team.teamCode}
@@ -570,7 +569,7 @@ export default function EmployeeDetailsPage() {
                           <Users className="h-10 w-10 text-muted-foreground/30 mx-auto mb-2" />
                           <p className="text-sm text-muted-foreground">
                             {t("org.no_team")}
-                          </p>{" "}
+                          </p>
                         </div>
                       )}
                     </div>

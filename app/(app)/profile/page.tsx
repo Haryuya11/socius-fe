@@ -482,9 +482,7 @@ export default function ProfilePage() {
                                     <Crown className="h-3.5 w-3.5 text-orange-500 fill-orange-500" />
                                   )}
                                 </p>
-                                <p className="text-sm text-muted-foreground">
-                                  {team.roleName}
-                                </p>
+
                               </div>
                               <Badge
                                 variant="outline"

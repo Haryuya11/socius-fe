@@ -39,7 +39,7 @@ import {
   EmployeeInput,
 } from "@/lib/validations/employee";
 import { employeeService } from "@/services/employee-service";
-import { AvatarPicker } from "./avatar-picker";
+import { AvatarPicker } from "../profile/avatar-picker";
 import { ROLE_LABELS, SYSTEM_ROLES } from "@/types/roles";
 
 interface AddEmployeeDialogProps {
@@ -63,7 +63,7 @@ export function AddEmployeeDialog({
       lastName: "",
       systemRole: "USER",
       salary: undefined,
-      imageUrl: "", 
+      imageUrl: "",
     },
   });
 

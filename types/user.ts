@@ -1,7 +1,7 @@
 import { DepartmentInfo } from "./department";
 import { ScopePermission } from "./permission";
 import { SystemRole } from "./roles";
-import { TeamInfo } from "./team";
+import { TeamInfo } from "./teams";
 
 export interface UserProfile {
   clientId: string;
