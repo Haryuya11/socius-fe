@@ -1,6 +1,6 @@
 import { DepartmentInfo } from "./department";
 import { SystemRole } from "./roles";
-import { TeamInfo } from "./team";
+import { TeamInfo } from "./teams";
 
 export interface Employee {
   clientId: string;
