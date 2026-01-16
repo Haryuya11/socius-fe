@@ -18,6 +18,14 @@
     },
     "not_found": {
       "title": "404 - Trang không tồn tại"
+    },
+    "privacy": {
+      "title": "Chính sách bảo mật",
+      "description": "Tìm hiểu cách Socius bảo vệ dữ liệu cá nhân và thông tin nhân sự của bạn."
+    },
+    "terms": {
+      "title": "Điều khoản dịch vụ",
+      "description": "Hiểu rõ các điều khoản và điều kiện khi sử dụng hệ thống quản lý nhân sự Socius."
     }
   },
   "Common": {
@@ -294,6 +302,144 @@
     "error": {
       "title": "Không tìm thấy nhân viên",
       "description": "Nhân viên này không tồn tại hoặc đã bị xóa."
+    }
+  },
+  "Privacy": {
+    "title": "Chính sách bảo mật",
+    "back": "Quay lại trang đăng nhập",
+    "last_updated": "Cập nhật lần cuối",
+    "date": "12 tháng 1, 2026",
+    "footer": "Bản quyền thuộc về Socius.",
+    "intro": {
+      "title": "Giới thiệu",
+      "content": "Socius là hệ thống quản lý nhân sự nội bộ dành riêng cho nhân viên trong tổ chức của chúng tôi. Chúng tôi cam kết bảo vệ quyền riêng tư và bảo mật thông tin cá nhân cũng như dữ liệu nhân sự của bạn. Chính sách bảo mật này giải thích cách chúng tôi thu thập, sử dụng, lưu trữ và bảo vệ dữ liệu nhân viên trong hệ thống. Khi là nhân viên được cấp quyền truy cập Socius, bạn xác nhận rằng bạn đã đọc và hiểu chính sách này."
+    },
+    "collection": {
+      "title": "Thông tin chúng tôi thu thập",
+      "intro": "Là hệ thống quản lý nhân sự, Socius thu thập các loại thông tin cần thiết cho việc quản lý lực lượng lao động hiệu quả:",
+      "items": {
+        "personal": "Thông tin cá nhân: Họ tên đầy đủ, địa chỉ email, thông tin liên hệ, ngày sinh và số định danh",
+        "employment": "Thông tin tuyển dụng: Chức danh công việc, mã nhân viên, ngày bắt đầu làm việc, trạng thái làm việc và lịch sử công việc",
+        "organization": "Dữ liệu tổ chức: Phân bổ phòng ban, thành viên nhóm, cấu trúc báo cáo và quan hệ quản lý",
+        "compensation": "Dữ liệu lương thưởng: Thông tin lương, thưởng, phúc lợi và chi tiết bảng lương",
+        "system": "Dữ liệu sử dụng hệ thống: Hoạt động đăng nhập, sử dụng tính năng, nhật ký xác thực và tương tác hệ thống"
+      }
+    },
+    "usage": {
+      "title": "Cách chúng tôi sử dụng thông tin của bạn",
+      "intro": "Chúng tôi sử dụng thông tin thu thập được cho các mục đích kinh doanh hợp pháp bao gồm:",
+      "items": {
+        "management": "Quản lý nhân viên và lập kế hoạch lực lượng lao động",
+        "communication": "Giao tiếp nội bộ và cộng tác trong tổ chức của bạn",
+        "compensation": "Xử lý bảng lương và quản lý lương thưởng",
+        "analytics": "Phân tích hiệu suất và thông tin chi tiết về tổ chức",
+        "security": "Bảo mật hệ thống, kiểm soát truy cập và tuân thủ kiểm toán"
+      }
+    },
+    "protection": {
+      "title": "Bảo vệ và bảo mật dữ liệu",
+      "content": "Chúng tôi triển khai các biện pháp bảo mật tiêu chuẩn ngành để bảo vệ thông tin của bạn, bao gồm mã hóa, xác thực an toàn qua Microsoft Azure AD, kiểm soát truy cập dựa trên vai trò, kiểm toán bảo mật thường xuyên và các giao thức truyền dữ liệu an toàn. Quyền truy cập vào thông tin nhạy cảm được hạn chế dựa trên vai trò công việc và nhu cầu kinh doanh."
+    },
+    "sharing": {
+      "title": "Chia sẻ và tiết lộ dữ liệu",
+      "intro": "Thông tin của bạn chỉ được chia sẻ trong các trường hợp sau:",
+      "items": {
+        "authorized": "Với nhân viên được ủy quyền trong tổ chức của bạn dựa trên vai trò và quyền truy cập của họ",
+        "legal": "Khi được yêu cầu theo luật định, quy trình pháp lý hoặc tuân thủ quy định",
+        "consent": "Với sự đồng ý rõ ràng của bạn cho các mục đích cụ thể"
+      }
+    },
+    "rights": {
+      "title": "Quyền của bạn",
+      "intro": "Bạn có các quyền sau đối với thông tin cá nhân của mình:",
+      "items": {
+        "access": "Truy cập và xem xét thông tin cá nhân của bạn được lưu trữ trong hệ thống",
+        "correction": "Yêu cầu sửa đổi thông tin không chính xác hoặc không đầy đủ",
+        "deletion": "Yêu cầu xóa dữ liệu của bạn theo yêu cầu pháp lý và quy định",
+        "objection": "Phản đối một số loại xử lý dữ liệu nhất định"
+      }
+    },
+    "retention": {
+      "title": "Lưu trữ dữ liệu",
+      "content": "Chúng tôi lưu giữ thông tin của bạn trong suốt thời gian làm việc của bạn và trong một khoảng thời gian sau đó theo yêu cầu của pháp luật, tuân thủ quy định hoặc mục đích kinh doanh hợp pháp. Hồ sơ làm việc có thể được lưu giữ theo yêu cầu pháp luật ngay cả sau khi chấm dứt hợp đồng lao động."
+    },
+    "contact": {
+      "title": "Liên hệ với chúng tôi",
+      "content": "Nếu bạn có thắc mắc về Chính sách bảo mật này hoặc dữ liệu cá nhân của bạn, vui lòng liên hệ với bộ phận Nhân sự của tổ chức cho các vấn đề về quyền riêng tư hoặc quản trị viên hệ thống cho các thắc mắc kỹ thuật. Chúng tôi sẽ phản hồi trong vòng 5-10 ngày làm việc."
+    },
+    "updates": {
+      "title": "Cập nhật chính sách",
+      "content": "Chúng tôi có thể cập nhật Chính sách bảo mật này định kỳ để phản ánh các thay đổi trong thực tiễn hoặc yêu cầu pháp lý của chúng tôi. Chúng tôi sẽ thông báo cho người dùng về các thay đổi đáng kể thông qua tính năng thông báo hệ thống. Việc tiếp tục sử dụng Socius sau các thay đổi đồng nghĩa với việc chấp nhận chính sách đã cập nhật."
+    }
+  },
+  "Terms": {
+    "title": "Điều khoản dịch vụ",
+    "last_updated": "Cập nhật lần cuối",
+    "date": "12 tháng 1, 2026",
+    "footer": "Bảo lưu mọi quyền.",
+    "intro": {
+      "title": "Giới thiệu",
+      "content": "Chào mừng đến với Socius, hệ thống Quản lý Nhân sự nội bộ dành cho nhân viên của tổ chức chúng tôi. Các Điều khoản dịch vụ này điều chỉnh quyền truy cập và sử dụng nền tảng nội bộ này. Khi là nhân viên được cấp quyền truy cập Socius, bạn xác nhận rằng bạn đã đọc, hiểu và đồng ý bị ràng buộc bởi các điều khoản này. Quyền truy cập vào hệ thống này chỉ dành cho nhân viên được ủy quyền."
+    },
+    "acceptance": {
+      "title": "Chấp nhận điều khoản",
+      "content": "Bằng cách đăng nhập với thông tin nhân viên của bạn hoặc sử dụng bất kỳ tính năng nào của hệ thống Socius, bạn đồng ý tuân thủ các Điều khoản dịch vụ này và tất cả các luật và quy định hiện hành. Việc bạn tiếp tục sử dụng hệ thống đồng nghĩa với việc chấp nhận liên tục các điều khoản này, bao gồm bất kỳ sửa đổi nào chúng tôi có thể thực hiện theo thời gian. Quyền truy cập được cấp cho bạn với tư cách là nhân viên của tổ chức."
+    },
+    "accounts": {
+      "title": "Quyền truy cập nhân viên",
+      "intro": "Quyền truy cập vào Socius được cấp dành riêng cho nhân viên của tổ chức thông qua thông tin đăng nhập do công ty cấp. Bạn có trách nhiệm duy trì tính bảo mật và bí mật của thông tin đăng nhập tài khoản của mình.",
+      "items": {
+        "authentication": "Xác thực: Tài khoản được xác thực thông qua Microsoft Azure Active Directory của tổ chức bạn. Bạn phải sử dụng thông tin đăng nhập hợp lệ do tổ chức cung cấp.",
+        "security": "Bảo mật: Bạn phải giữ bí mật mật khẩu và thông tin tài khoản của mình. Thông báo ngay cho quản trị viên hệ thống nếu có bất kỳ truy cập trái phép hoặc vi phạm bảo mật nào.",
+        "responsibility": "Trách nhiệm: Bạn chịu trách nhiệm cho tất cả các hoạt động xảy ra dưới tài khoản của mình. Không chia sẻ thông tin đăng nhập hoặc cho phép người khác truy cập tài khoản của bạn."
+      }
+    },
+    "usage": {
+      "title": "Về việc sử dụng hệ thống",
+      "intro": "Socius được thiết kế riêng cho các mục đích quản lý nhân sự hợp pháp trong tổ chức của bạn. Bạn đồng ý sử dụng hệ thống một cách thích hợp:",
+      "items": {
+        "purpose": "Chỉ sử dụng hệ thống cho các hoạt động quản lý nhân sự được ủy quyền như quản lý dữ liệu nhân viên, giám sát cấu trúc tổ chức và các hoạt động kinh doanh hợp pháp.",
+        "compliance": "Tuân thủ tất cả các luật, quy định hiện hành và các chính sách nội bộ của tổ chức khi sử dụng hệ thống.",
+        "professional": "Duy trì hành vi chuyên nghiệp và sử dụng hệ thống theo cách phù hợp với tiêu chuẩn nơi làm việc và hướng dẫn đạo đức."
+      }
+    },
+    "data": {
+      "title": "Trách nhiệm về dữ liệu",
+      "content": "Bạn thừa nhận rằng Socius xử lý dữ liệu nhân viên và tổ chức nhạy cảm. Bạn đồng ý xử lý tất cả dữ liệu được truy cập thông qua hệ thống theo luật bảo mật hiện hành, quy định bảo vệ dữ liệu và chính sách dữ liệu của tổ chức. Bạn không được trích xuất, sao chép hoặc sử dụng dữ liệu cho các mục đích ngoài phạm vi vai trò được ủy quyền của mình."
+    },
+    "prohibited": {
+      "title": "Các hoạt động bị cấm",
+      "intro": "Các hoạt động sau đây bị nghiêm cấm khi sử dụng Socius:",
+      "items": {
+        "unauthorized": "Cố gắng truy cập dữ liệu, tính năng hoặc khu vực của hệ thống mà bạn không có quyền truy cập hợp lệ.",
+        "misuse": "Sử dụng hệ thống để truyền, lưu trữ hoặc xử lý mã độc hại, vi-rút hoặc bất kỳ nội dung có hại nào.",
+        "interference": "Can thiệp hoặc làm gián đoạn hoạt động của hệ thống, các tính năng bảo mật hoặc quyền truy cập của người dùng khác vào nền tảng.",
+        "violation": "Sử dụng hệ thống theo bất kỳ cách nào vi phạm luật pháp, quy định hiện hành hoặc xâm phạm quyền của người khác."
+      }
+    },
+    "intellectual": {
+      "title": "Sở hữu trí tuệ",
+      "content": "Tất cả nội dung, tính năng, chức năng và quyền sở hữu trí tuệ trong Socius, bao gồm nhưng không giới hạn ở mã phần mềm, thiết kế, đồ họa, giao diện người dùng và tài liệu, thuộc sở hữu của Socius hoặc các bên cấp phép. Bạn được cấp giấy phép hạn chế, không độc quyền, không thể chuyển nhượng để sử dụng hệ thống chỉ cho mục đích quản lý nhân sự dự định. Bạn không được sao chép, sửa đổi, phân phối, bán hoặc tạo các sản phẩm phái sinh từ bất kỳ phần nào của hệ thống."
+    },
+    "liability": {
+      "title": "Giới hạn trách nhiệm pháp lý",
+      "content": "Socius được cung cấp \"nguyên trạng\" mà không có bất kỳ bảo đảm nào, dù rõ ràng hay ngụ ý. Trong phạm vi tối đa được luật pháp cho phép, chúng tôi không bảo đảm về tính khả dụng của hệ thống, độ chính xác của dữ liệu hoặc sự phù hợp cho một mục đích cụ thể. Chúng tôi sẽ không chịu trách nhiệm cho bất kỳ thiệt hại gián tiếp, ngẫu nhiên, đặc biệt, hậu quả hoặc trừng phạt phát sinh từ việc bạn sử dụng hoặc không thể sử dụng hệ thống. Việc tổ chức của bạn sử dụng Socius là tự chịu rủi ro."
+    },
+    "termination": {
+      "title": "Chấm dứt tài khoản",
+      "content": "Chúng tôi bảo lưu quyền tạm ngưng hoặc chấm dứt quyền truy cập của bạn vào Socius bất cứ lúc nào, có hoặc không có lý do, và có hoặc không có thông báo, đặc biệt nếu chúng tôi tin rằng bạn đã vi phạm các Điều khoản dịch vụ này. Khi chấm dứt, quyền truy cập và sử dụng hệ thống của bạn sẽ chấm dứt ngay lập tức. Tổ chức của bạn cũng có thể chấm dứt quyền truy cập tài khoản của bạn theo các chính sách và thủ tục nội bộ."
+    },
+    "changes": {
+      "title": "Thay đổi điều khoản",
+      "content": "Chúng tôi bảo lưu quyền sửa đổi các Điều khoản dịch vụ này bất cứ lúc nào để phản ánh các thay đổi trong dịch vụ, yêu cầu pháp lý hoặc hoạt động kinh doanh của chúng tôi. Chúng tôi sẽ thông báo về những thay đổi đáng kể thông qua tính năng thông báo hệ thống. Việc bạn tiếp tục sử dụng Socius sau những thay đổi đó đồng nghĩa với việc bạn chấp nhận các điều khoản đã sửa đổi. Chúng tôi khuyến khích bạn xem xét các điều khoản này định kỳ."
+    },
+    "contact": {
+      "title": "Thông tin liên hệ",
+      "content": "Nếu bạn có câu hỏi về các Điều khoản dịch vụ này, vui lòng liên hệ với quản trị viên hệ thống hoặc bộ phận Nhân sự của tổ chức để được hỗ trợ."
+    },
+    "governing": {
+      "title": "Luật điều chỉnh",
+      "content": "Các Điều khoản dịch vụ này sẽ được điều chỉnh và giải thích theo luật hiện hành. Bất kỳ tranh chấp nào phát sinh từ các điều khoản này hoặc việc sử dụng Socius của bạn sẽ thuộc thẩm quyền độc quyền của các tòa án thích hợp."
     }
   }
 }
