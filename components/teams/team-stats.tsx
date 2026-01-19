@@ -1,17 +1,16 @@
 import { Users, Building2, Layers } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Team } from "@/types/teams";
 
 interface TeamStatsProps {
-  data: Team[];
   totalItems: number;
+  uniqueDepts: number; 
 }
 
-export function TeamStats({ data, totalItems }: TeamStatsProps) {
-  const uniqueDepts = new Set(data.map((t) => t.departmentCode)).size;
+export function TeamStats({ totalItems, uniqueDepts }: TeamStatsProps) {
 
   return (
     <div className="grid gap-4 md:grid-cols-3">
+      {/* Card 1: Tổng số Team */}
       <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">

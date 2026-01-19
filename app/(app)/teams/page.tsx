@@ -69,16 +69,20 @@ export default function TeamsPage() {
 
   const [data, setData] = useState<Team[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+
+  const [filteredTotalItems, setFilteredTotalItems] = useState(0);
+  const [statsTotalItems, setStatsTotalItems] = useState(0);
+  const [statsUniqueDepts, setStatsUniqueDepts] = useState(0);
 
   const [teamToDelete, setTeamToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const debouncedCondition = useDebounce(searchCondition, 500);
+  const debouncedCondition = useDebounce(searchCondition, 200);
 
-  // --- API HANDLERS ---
   const fetchTeams = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -98,19 +102,39 @@ export default function TeamsPage() {
       });
 
       setData(res.data);
-      setTotalItems(res.totalItems);
+      setFilteredTotalItems(res.totalItems);
       setTotalPages(res.totalPages);
     } catch (error) {
       console.error(error);
       toast.error("Không thể tải danh sách team");
     } finally {
       setIsLoading(false);
+      setIsFirstLoad(false);
     }
   }, [currentPage, debouncedCondition, viewMode]);
 
+  const fetchStats = useCallback(async () => {
+    try {
+      const res = await teamService.fetchTeams({
+        page: 1,
+        size: 1000,
+        condition: {},
+      });
+
+      setStatsTotalItems(res.totalItems);
+      const uniqueDepts = new Set(res.data.map((t) => t.departmentCode)).size;
+      setStatsUniqueDepts(uniqueDepts);
+    } catch (error) {
+      console.error("Failed to fetch team stats", error);
+    }
+  }, []);
+
   useEffect(() => {
-    if (mounted) fetchTeams();
-  }, [fetchTeams, mounted]);
+    if (mounted) {
+      fetchTeams();
+      fetchStats();
+    }
+  }, [fetchTeams, fetchStats, mounted]);
 
   const executeDelete = async () => {
     if (!teamToDelete) return;
@@ -120,6 +144,7 @@ export default function TeamsPage() {
       toast.success("Xóa team thành công");
       setTeamToDelete(null);
       fetchTeams();
+      fetchStats();
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Xóa thất bại");
     } finally {
@@ -226,9 +251,14 @@ export default function TeamsPage() {
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-lg border border-border/50">
               <Users className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium">{totalItems}</span>
+              <span className="text-sm font-medium">{filteredTotalItems}</span>
             </div>
-            <TeamDialog onSuccess={fetchTeams}>
+            <TeamDialog
+              onSuccess={() => {
+                fetchTeams();
+                fetchStats();
+              }}
+            >
               <Button className="gap-2 shadow-sm">
                 <Users className="h-4 w-4" /> Thêm Team
               </Button>
@@ -236,15 +266,17 @@ export default function TeamsPage() {
           </div>
         </div>
 
-        {/* STATS */}
-        {isLoading ? (
+        {isFirstLoad ? (
           <TeamStatsSkeleton />
         ) : (
-          <TeamStats data={data} totalItems={totalItems} />
+          <TeamStats
+            totalItems={statsTotalItems}
+            uniqueDepts={statsUniqueDepts}
+          />
         )}
 
         {/* TOOLBAR */}
-        {isLoading ? (
+        {isFirstLoad ? (
           <TeamsToolbarSkeleton />
         ) : (
           <Card className="shadow-sm border-border/50">
@@ -384,16 +416,15 @@ export default function TeamsPage() {
         )}
 
         {/* CONTENT RENDER */}
-        {renderContent()}
+        <div className="min-h-[400px]">{renderContent()}</div>
 
-        {/* PAGINATION */}
         {!isLoading && data.length > 0 && viewMode !== "tree" && (
           <Card className="shadow-sm border-border/50">
             <CardContent className="p-4">
               <PaginationControl
                 currentPage={currentPage}
                 totalPages={totalPages}
-                totalItems={totalItems}
+                totalItems={filteredTotalItems}
                 onPageChange={setCurrentPage}
               />
             </CardContent>

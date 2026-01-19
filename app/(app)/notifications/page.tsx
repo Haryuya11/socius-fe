@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { parseToUtcDate } from "@/utils/date-utils";
+import { NotificationMessage } from "@/types/notification"; // Import Type
 
 export default function NotificationsPage() {
   const t = useTranslations("Notifications");
@@ -44,8 +45,7 @@ export default function NotificationsPage() {
     return notifications;
   }, [notifications, filter]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleItemClick = (item: any) => {
+  const handleItemClick = (item: NotificationMessage) => {
     if (item.isRead === 0) {
       markRead(item.id);
     }
@@ -87,7 +87,7 @@ export default function NotificationsPage() {
                   "px-4 py-1.5 rounded-md text-sm font-medium transition-all",
                   filter === "all"
                     ? "bg-background text-foreground shadow-xs"
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {t("filters.all")}
@@ -98,7 +98,7 @@ export default function NotificationsPage() {
                   "px-4 py-1.5 rounded-md text-sm font-medium transition-all",
                   filter === "unread"
                     ? "bg-background text-foreground shadow-xs"
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {t("filters.unread")}
@@ -145,14 +145,16 @@ export default function NotificationsPage() {
           <div className="space-y-3">
             {filteredNotifications.map((item) => {
               const isUnread = item.isRead === 0;
+
+              // Updated: Sử dụng redirectUrl thay vì payload.linkUrl
               const ContentWrapper = ({
                 children,
               }: {
                 children: React.ReactNode;
               }) =>
-                item.payload.linkUrl ? (
+                item.redirectUrl ? (
                   <Link
-                    href={item.payload.linkUrl}
+                    href={item.redirectUrl}
                     className="block w-full"
                     onClick={() => handleItemClick(item)}
                   >
@@ -174,7 +176,7 @@ export default function NotificationsPage() {
                       "relative overflow-hidden transition-all duration-300 hover:shadow-md border-border/40",
                       isUnread
                         ? "bg-card/80 dark:bg-card/60 border-primary/20"
-                        : "bg-card/40 hover:bg-card/60"
+                        : "bg-card/40 hover:bg-card/60",
                     )}
                   >
                     {isUnread && (
@@ -186,7 +188,7 @@ export default function NotificationsPage() {
                           "flex h-12 w-12 shrink-0 items-center justify-center rounded-full border transition-colors",
                           isUnread
                             ? "bg-primary/10 text-primary border-primary/20"
-                            : "bg-muted/50 text-muted-foreground border-transparent"
+                            : "bg-muted/50 text-muted-foreground border-transparent",
                         )}
                       >
                         <Bell className="h-5 w-5" />
@@ -198,15 +200,16 @@ export default function NotificationsPage() {
                               "text-base truncate pr-2",
                               isUnread
                                 ? "font-bold text-foreground"
-                                : "font-medium text-muted-foreground"
+                                : "font-medium text-muted-foreground",
                             )}
                           >
-                            {item.payload.title}
+                            {/* UPDATED: Truy cập trực tiếp title */}
+                            {item.title}
                           </h4>
                           <span className="text-xs text-muted-foreground shrink-0 whitespace-nowrap bg-muted/40 px-2 py-1 rounded-md">
                             {format.relativeTime(
                               parseToUtcDate(item.createdAt),
-                              { now: new Date() }
+                              { now: new Date() },
                             )}
                           </span>
                         </div>
@@ -215,10 +218,11 @@ export default function NotificationsPage() {
                             "text-sm leading-relaxed line-clamp-2",
                             isUnread
                               ? "text-foreground/90"
-                              : "text-muted-foreground/80"
+                              : "text-muted-foreground/80",
                           )}
                         >
-                          {item.payload.content}
+                          {/* UPDATED: Truy cập trực tiếp content */}
+                          {item.content}
                         </p>
                       </div>
                     </div>

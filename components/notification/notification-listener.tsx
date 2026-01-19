@@ -43,8 +43,8 @@ export default function NotificationListener() {
         // const audio = new Audio('/notification.mp3');
         // audio.play().catch(() => {});
 
-        toast(latestMsg.payload.title, {
-          description: latestMsg.payload.content,
+        toast(latestMsg.title, {
+          description: latestMsg.content,
           // Sử dụng màu primary thay vì blue-500 hardcode
           icon: <Bell className="h-4 w-4 text-primary" />,
           duration: 5000,
@@ -53,8 +53,8 @@ export default function NotificationListener() {
           action: {
             label: "Xem", // Hoặc t('actions.view')
             onClick: () => {
-              if (latestMsg.payload.linkUrl) {
-                router.push(latestMsg.payload.linkUrl);
+              if (latestMsg.redirectUrl) {
+                router.push(latestMsg.redirectUrl);
               }
             },
           },

@@ -230,14 +230,17 @@
   "Navigation": {
     "dashboard": "Bảng điều khiển",
     "my_team": "Đội ngũ của tôi",
-    "my_tasks": "Công việc",
+    "tasks": "Công việc",
     "calendar": "Lịch",
     "messages": "Tin nhắn",
     "notifications": "Thông báo",
     "directory": "Danh bạ",
     "documents": "Tài liệu",
     "settings": "Cài đặt",
-    "employees": "Nhân viên"
+    "employees": "Nhân viên",
+    "admin_panel": "Trang quản lý",
+    "departments": "Phòng ban",
+    "teams": "Quản lý nhóm"
   },
   "PasswordStrength": {
     "label": "Độ mạnh:",

@@ -230,14 +230,18 @@
   "Navigation": {
     "dashboard": "Dashboard",
     "my_team": "My Team",
-    "my_tasks": "My Tasks",
+    "tasks": "Tasks",
     "calendar": "Calendar",
     "messages": "Messages",
     "notifications": "Notifications",
     "directory": "Directory",
     "documents": "Documents",
     "settings": "Settings",
-    "employees": "Employees"
+    "employees": "Employees",
+    "admin_panel": "Admin Panel",
+    "departments": "Departments",
+    "teams": "Manage Teams"
+
   },
   "PasswordStrength": {
     "label": "Password Strength:",

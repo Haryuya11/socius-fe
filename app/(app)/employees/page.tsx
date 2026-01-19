@@ -9,26 +9,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PaginationControl } from "@/components/ui/pagination-control";
 
-// Types & Services
 import { Employee } from "@/types/employee";
 import { employeeService, SearchCondition } from "@/services/employee-service";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useMounted } from "@/hooks/use-mounted";
 
-// Components
 import { EmployeesHeader } from "@/components/employees/employees-header";
 import { EmployeesToolbar } from "@/components/employees/employees-toolbar";
 import { EmployeesStats } from "@/components/employees/employees-stats";
-
-// Views
 import { EmployeeGrid } from "@/components/employees/employee-grid";
 import { EmployeeTable } from "@/components/employees/employee-table";
 import { EmployeeTreeView } from "@/components/employees/employee-tree-view";
 
-// Skeletons
 import { EmployeesToolbarSkeleton } from "@/components/skeleton/employees/employees-toolbar-skeleton";
 import { EmployeeTreeSkeleton } from "@/components/skeleton/employees/employee-tree-skeleton";
-import { TeamStatsSkeleton } from "@/components/skeleton/teams/team-stats-skeleton"; // Tái sử dụng stats skeleton
+import { TeamStatsSkeleton } from "@/components/skeleton/teams/team-stats-skeleton";
 import { EmployeeGridSkeleton } from "@/components/skeleton/employees/employee-grid";
 import { EmployeeTableSkeleton } from "@/components/skeleton/employees/employee-table";
 
@@ -43,8 +38,9 @@ export default function EmployeesPage() {
   const initialPage = Number(searchParams.get("page")) || 1;
   const initialCondition: SearchCondition = {
     userId: searchParams.get("userId") || "",
-    firstName: searchParams.get("firstName") || "",
-    lastName: searchParams.get("lastName") || "",
+    fullName: searchParams.get("fullName") || "",
+    departmentCode: searchParams.get("departmentCode") || "",
+    teamCode: searchParams.get("teamCode") || "",
     systemRole: searchParams.get("systemRole") || "",
   };
 
@@ -53,21 +49,23 @@ export default function EmployeesPage() {
     useState<SearchCondition>(initialCondition);
   const [data, setData] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const [totalAdmins, setTotalAdmins] = useState(0);
+  const [filteredTotalItems, setFilteredTotalItems] = useState(0);
+  const [statsTotalItems, setStatsTotalItems] = useState(0);
+  const [statsTotalAdmins, setStatsTotalAdmins] = useState(0);
 
-  const debouncedCondition = useDebounce(searchCondition, 400);
+  const debouncedCondition = useDebounce(searchCondition, 200);
 
-  // --- LOGIC ---
   const updateUrl = useCallback(
     (newCondition: SearchCondition, newPage: number) => {
       const params = new URLSearchParams();
-      if (newCondition.firstName)
-        params.set("firstName", newCondition.firstName);
+      if (newCondition.fullName) params.set("fullName", newCondition.fullName);
       if (newCondition.userId) params.set("userId", newCondition.userId);
-      if (newCondition.lastName) params.set("lastName", newCondition.lastName);
+      if (newCondition.departmentCode)
+        params.set("departmentCode", newCondition.departmentCode);
+      if (newCondition.teamCode) params.set("teamCode", newCondition.teamCode);
       if (newCondition.systemRole)
         params.set("systemRole", newCondition.systemRole);
       if (newPage > 1) params.set("page", newPage.toString());
@@ -86,28 +84,33 @@ export default function EmployeesPage() {
       });
       setData(res.data);
       setTotalPages(res.totalPages);
-      setTotalItems(res.totalItems);
+      setFilteredTotalItems(res.totalItems);
     } catch (error) {
       console.error("Failed to fetch employees", error);
       setData([]);
     } finally {
       setIsLoading(false);
+      setIsFirstLoad(false);
     }
   }, [currentPage, debouncedCondition]);
 
   const fetchStats = useCallback(async () => {
     try {
-      const res = await employeeService.fetchEmployees({
-        page: 1,
-        size: 1,
-        condition: {
-          firstName: "",
-          lastName: "",
-          userId: "",
-          systemRole: "SYS_ADMIN",
-        },
-      });
-      setTotalAdmins(res.totalItems);
+      const [allRes, adminRes] = await Promise.all([
+        employeeService.fetchEmployees({
+          page: 1,
+          size: 1,
+          condition: {},
+        }),
+        employeeService.fetchEmployees({
+          page: 1,
+          size: 1,
+          condition: { systemRole: "SYS_ADMIN" },
+        }),
+      ]);
+
+      setStatsTotalItems(allRes.totalItems);
+      setStatsTotalAdmins(adminRes.totalItems);
     } catch (error) {
       console.error("Failed to fetch stats", error);
     }
@@ -120,9 +123,8 @@ export default function EmployeesPage() {
     }
   }, [fetchEmployees, fetchStats, mounted]);
 
-  // --- HANDLERS ---
   const handleSearchChange = (val: string) => {
-    const newCond = { ...searchCondition, firstName: val };
+    const newCond = { ...searchCondition, fullName: val };
     setSearchCondition(newCond);
     setCurrentPage(1);
     updateUrl(newCond, 1);
@@ -137,8 +139,9 @@ export default function EmployeesPage() {
   const handleFilterReset = () => {
     const emptyState = {
       userId: "",
-      firstName: "",
-      lastName: "",
+      fullName: "",
+      departmentCode: "",
+      teamCode: "",
       systemRole: "",
     };
     setSearchCondition(emptyState);
@@ -152,7 +155,6 @@ export default function EmployeesPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // --- RENDER HELPERS ---
   const renderContent = () => {
     if (isLoading) {
       if (viewMode === "grid") return <EmployeeGridSkeleton />;
@@ -161,6 +163,7 @@ export default function EmployeesPage() {
     }
 
     if (data.length === 0) {
+      // ... (Giữ nguyên logic render empty)
       const activeFiltersCount =
         Object.values(searchCondition).filter(Boolean).length;
       return (
@@ -168,11 +171,7 @@ export default function EmployeesPage() {
           <CardContent className="flex h-96 flex-col items-center justify-center text-center">
             <Users className="h-12 w-12 text-muted-foreground/30 mb-4" />
             <h3 className="font-semibold text-lg">{t("empty.title")}</h3>
-            <p className="text-sm text-muted-foreground">
-              {activeFiltersCount > 0
-                ? t("empty.desc_filtered")
-                : t("empty.desc_default")}
-            </p>
+            {/* ... */}
             {activeFiltersCount > 0 && (
               <Button
                 variant="link"
@@ -207,22 +206,28 @@ export default function EmployeesPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-background via-background to-muted/20 p-6 space-y-6 animate-in fade-in duration-500">
       <div className="max-w-[1600px] mx-auto space-y-6">
-        {/* HEADER */}
-        <EmployeesHeader totalItems={totalItems} onSuccess={fetchEmployees} />
+        {/* HEADER: Dùng filteredTotalItems để hiện số kết quả tìm thấy */}
+        <EmployeesHeader
+          totalItems={filteredTotalItems}
+          onSuccess={fetchEmployees}
+        />
 
-        {/* STATS */}
-        {isLoading ? (
+        {/* STATS: Dùng statsTotalItems và statsTotalAdmins (Số liệu gốc) */}
+        {isFirstLoad ? (
           <TeamStatsSkeleton />
         ) : (
-          <EmployeesStats totalItems={totalItems} totalAdmins={totalAdmins} />
+          <EmployeesStats
+            totalItems={statsTotalItems}
+            totalAdmins={statsTotalAdmins}
+          />
         )}
 
         {/* TOOLBAR */}
-        {isLoading ? (
+        {isFirstLoad ? (
           <EmployeesToolbarSkeleton />
         ) : (
           <EmployeesToolbar
-            searchValue={searchCondition.firstName || ""}
+            searchValue={searchCondition.fullName || ""}
             onSearchChange={handleSearchChange}
             searchCondition={searchCondition}
             onFilterApply={handleFilterApply}
@@ -233,16 +238,16 @@ export default function EmployeesPage() {
         )}
 
         {/* CONTENT */}
-        {renderContent()}
+        <div className="min-h-[400px]">{renderContent()}</div>
 
-        {/* PAGINATION */}
+        {/* PAGINATION: Dùng filteredTotalItems để tính số trang */}
         {!isLoading && data.length > 0 && (
           <Card className="shadow-sm border-border/50">
             <CardContent className="p-4">
               <PaginationControl
                 currentPage={currentPage}
                 totalPages={totalPages}
-                totalItems={totalItems}
+                totalItems={filteredTotalItems}
                 onPageChange={handlePageChange}
                 isLoading={isLoading}
               />

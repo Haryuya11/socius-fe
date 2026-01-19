@@ -1,5 +1,5 @@
 import { DepartmentInfo } from "./department";
-import { ScopePermission } from "./permission";
+import { Permission } from "./permission";
 import { SystemRole } from "./roles";
 import { TeamInfo } from "./teams";
 
@@ -13,7 +13,7 @@ export interface UserProfile {
   imageUrl: string;
   departments: DepartmentInfo[];
   teams: TeamInfo[];
-  permissions: ScopePermission[];
+  permissions: Permission[];
 }
 
 export interface BasicUserInfo {

@@ -11,8 +11,9 @@ import { ApiResponse, PaginatedResponse } from "@/types/response";
 export interface SearchCondition {
   clientId?: string;
   userId?: string;
-  firstName?: string;
-  lastName?: string;
+  fullName?: string;
+  departmentCode?: string;
+  teamCode?: string;
   systemRole?: string;
 }
 
@@ -32,8 +33,9 @@ export const employeeService = {
 
     const condition = params?.condition || {
       userId: "",
-      firstName: "",
-      lastName: "",
+      fullName: "",
+      departmentCode: "",
+      teamCode: "",
       systemRole: "",
     };
 
@@ -43,10 +45,7 @@ export const employeeService = {
         pageNumber: page,
         pageSize: size,
       },
-      sortRequests: [
-        { sortBy: "first_name", sortDirection: "ASC" },
-        { sortBy: "created_at", sortDirection: "DESC" },
-      ],
+      sortRequests: [{ sortBy: "fullName", sortDirection: "ASC" }],
     };
 
     try {
