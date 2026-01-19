@@ -2,19 +2,16 @@
 
 import { Users, Briefcase, ShieldCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Employee } from "@/types/employee"; // Không cần import Employee nữa nếu không dùng data để tính
 
 interface EmployeesStatsProps {
-  // data: Employee[]; // Xóa dòng này đi vì không dùng để tính toán nữa
-  totalItems: number; // Tổng nhân viên
-  totalAdmins: number; // Thêm prop này: Tổng Admin lấy từ API
+  totalItems: number; 
+  totalAdmins: number; 
 }
 
 export function EmployeesStats({
   totalItems,
   totalAdmins,
 }: EmployeesStatsProps) {
-  // const adminCount = data.filter((e) => e.systemRole === "SYS_ADMIN").length; -> XÓA DÒNG NÀY
 
   return (
     <div className="grid gap-4 md:grid-cols-3">

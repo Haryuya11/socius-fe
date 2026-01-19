@@ -126,28 +126,15 @@ export function EmployeesToolbar({
                       />
                     </div>
                     <div className="grid gap-1.5">
-                      <Label htmlFor="lastName" className="text-xs">
-                        {t("filters.last_name_label")}
-                      </Label>
-                      <Input
-                        id="lastName"
-                        className="h-8"
-                        value={tempCondition.lastName}
-                        onChange={(e) =>
-                          handleInputChange("lastName", e.target.value)
-                        }
-                      />
-                    </div>
-                    <div className="grid gap-1.5">
-                      <Label htmlFor="firstName" className="text-xs">
+                      <Label htmlFor="fullName" className="text-xs">
                         {t("filters.first_name_label")}
                       </Label>
                       <Input
-                        id="firstName"
+                        id="fullName"
                         className="h-8"
-                        value={tempCondition.firstName}
+                        value={tempCondition.fullName}
                         onChange={(e) =>
-                          handleInputChange("firstName", e.target.value)
+                          handleInputChange("fullName", e.target.value)
                         }
                       />
                     </div>

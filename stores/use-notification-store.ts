@@ -4,11 +4,34 @@ import {
   NotificationMessage,
   WebSocketMessage,
   EventTypes,
+  DomainTypes,
+  WsNotificationPayload,
 } from "@/types/notification";
 import { notificationService } from "@/services/notification-service";
 import { getValidToken } from "@/lib/axios";
 
-// get socket url helper
+const normalizeNotification = (rawItem: any): NotificationMessage => {
+  const title = rawItem.title || rawItem.payload?.title || "No Title";
+  const content = rawItem.content || rawItem.payload?.content || "";
+
+  const redirectUrl =
+    rawItem.redirectUrl ||
+    rawItem.linkUrl ||
+    rawItem.payload?.redirectUrl ||
+    rawItem.payload?.linkUrl;
+
+  return {
+    id: rawItem.id || rawItem.notificationId, 
+    title: title,
+    content: content,
+    redirectUrl: redirectUrl,
+    isRead: rawItem.isRead ?? 0,
+    createdAt: rawItem.createdAt || new Date().toISOString(),
+    deliveryType: rawItem.deliveryType,
+  };
+};
+
+// Helper: Get WS URL
 const getWebSocketUrl = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   const protocol = apiUrl.startsWith("https") ? "wss://" : "ws://";
@@ -24,16 +47,16 @@ interface NotificationState {
   nextCursor: string | undefined;
   isConnected: boolean;
 
-  // actions API
+  // Actions
   fetchInitialData: () => Promise<void>;
   loadMore: () => Promise<void>;
-  markRead: (id: number) => Promise<void>;
+  markRead: (id: number | string) => Promise<void>;
   markAllRead: () => Promise<void>;
 
-  // actions Socket
+  // Socket Actions
   connectSocket: () => void;
   disconnectSocket: () => void;
-  receiveSocketMessage: (msg: NotificationMessage) => void;
+  receiveSocketMessage: (msg: WebSocketMessage<WsNotificationPayload>) => void;
 }
 
 let socket: WebSocket | null = null;
@@ -47,23 +70,32 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   nextCursor: undefined,
   isConnected: false,
 
-  // 1. receive Socket Message -> merge into store
-  receiveSocketMessage: (newMsg) => {
+  receiveSocketMessage: (wsMsg) => {
+    if (
+      wsMsg.domain !== DomainTypes.NOTIFICATION ||
+      wsMsg.type !== EventTypes.NEW_NOTIFICATION
+    ) {
+      return;
+    }
+
+    const payload = wsMsg.data;
+
+    const rawForMapper = { ...payload, id: payload.notificationId };
+    const newNotification = normalizeNotification(rawForMapper);
+
     set((state) => {
       const currentList = Array.isArray(state.notifications)
         ? state.notifications
         : [];
-      // avoid duplicate
-      if (currentList.find((n) => n.id === newMsg.id)) return state;
+      if (currentList.find((n) => n.id === newNotification.id)) return state;
 
       return {
-        notifications: [newMsg, ...currentList],
+        notifications: [newNotification, ...currentList],
         unreadCount: state.unreadCount + 1,
       };
     });
   },
 
-  // 2. fetch API Initial (handle wrapper data)
   fetchInitialData: async () => {
     if (get().isLoading) return;
     set({ isLoading: true });
@@ -74,37 +106,29 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         notificationService.getUnreadCount(),
       ]);
 
-      // parse List
       const rawData = (listRes as any).data || listRes;
+      const apiListRaw = Array.isArray(rawData) ? rawData : [];
+      const apiList = apiListRaw.map(normalizeNotification);
 
-      // make sure data is array
-      const apiList = Array.isArray(rawData) ? rawData : [];
       const cursor =
         (listRes as any).nextCursor || (listRes as any).meta?.next_cursor;
-
-      // Parse Count
       const safeCount =
         typeof countRes === "number"
           ? countRes
-          : (countRes as any).count ?? (countRes as any).data ?? 0;
+          : ((countRes as any).count ?? 0);
 
       set((state) => {
-        const currentNotis = Array.isArray(state.notifications)
-          ? state.notifications
-          : [];
+        const currentNotis = state.notifications;
         const combined = [...currentNotis, ...apiList];
-
-        // remove duplicate
-        const uniqueList = combined.filter(
-          (item, index, self) =>
-            index === self.findIndex((t) => t.id === item.id)
-        );
-
-        // sort by createdAt
-        uniqueList.sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
+        const uniqueList = combined
+          .filter(
+            (item, index, self) =>
+              index === self.findIndex((t) => t.id === item.id),
+          )
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          );
 
         return {
           notifications: uniqueList,
@@ -120,7 +144,6 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     }
   },
 
-  // 3. load more
   loadMore: async () => {
     const { isLoading, hasMore, nextCursor, notifications } = get();
     if (isLoading || !hasMore || !nextCursor) return;
@@ -128,9 +151,11 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     set({ isLoading: true });
     try {
       const res = await notificationService.getList(10, nextCursor);
-
       const rawList = (res as any).data || res;
-      const newList = Array.isArray(rawList) ? rawList : [];
+      const apiListRaw = Array.isArray(rawList) ? rawList : [];
+
+      const newList = apiListRaw.map(normalizeNotification);
+
       const newCursor = (res as any).nextCursor;
 
       set({
@@ -145,11 +170,10 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     }
   },
 
-  // 4. mark read
   markRead: async (id) => {
     set((state) => ({
       notifications: state.notifications.map((n) =>
-        n.id === id ? { ...n, isRead: 1 } : n
+        n.id === id ? { ...n, isRead: 1 } : n,
       ),
       unreadCount: Math.max(0, state.unreadCount - 1),
     }));
@@ -164,7 +188,6 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     await notificationService.markAllRead();
   },
 
-  // 5. connect Socket
   connectSocket: async () => {
     if (
       socket &&
@@ -188,11 +211,11 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       if (event.data === "pong") return;
       try {
         const message: WebSocketMessage<any> = JSON.parse(event.data);
-        if (message.type === EventTypes.NOTIFICATION) {
-          get().receiveSocketMessage(message.data);
+        if (message.domain === DomainTypes.NOTIFICATION) {
+          get().receiveSocketMessage(message);
         }
       } catch (e) {
-        console.error(e);
+        console.error("WS Parse Error", e);
       }
     };
 
@@ -202,11 +225,10 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       socket = null;
     };
 
-    // Ping Heartbeat
     clearInterval(pingInterval);
     pingInterval = setInterval(() => {
       if (socket?.readyState === WebSocket.OPEN) socket.send("ping");
-    }, 36000);
+    }, 30000);
   },
 
   disconnectSocket: () => {

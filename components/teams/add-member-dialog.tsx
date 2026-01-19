@@ -55,7 +55,7 @@ export function AddMemberDialog({
         const res = await employeeService.fetchEmployees({
           page: 1,
           size: 20,
-          condition: { firstName: debouncedQuery },
+          condition: { fullName: debouncedQuery },
         });
         setResults(res.data);
       } catch (error) {

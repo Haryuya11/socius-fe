@@ -5,7 +5,7 @@ import { Bell, CheckCheck, Loader2, Inbox, ExternalLink } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import Link from "next/link";
 import { useTranslations, useFormatter } from "next-intl";
-import { useRouter } from "next/navigation"; // Thêm router để chuyển trang
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,13 +18,14 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useNotificationStore } from "@/stores/use-notification-store";
 import { parseToUtcDate } from "@/utils/date-utils";
+import { NotificationMessage } from "@/types/notification"; // Import Type
 
 export function NotificationMenu() {
   const t = useTranslations("Notifications");
   const format = useFormatter();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const [filter, setFilter] = useState<"all" | "unread">("all"); // State cho bộ lọc
+  const [filter, setFilter] = useState<"all" | "unread">("all");
 
   const {
     notifications,
@@ -52,8 +53,10 @@ export function NotificationMenu() {
     return notifications;
   }, [notifications, filter]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleItemClick = (item: any) => {
+  console.log(filteredNotifications)
+
+  // Đã sửa type: dùng NotificationMessage thay vì any
+  const handleItemClick = (item: NotificationMessage) => {
     if (item.isRead === 0) {
       markRead(item.id);
     }
@@ -124,7 +127,7 @@ export function NotificationMenu() {
                 "text-xs font-medium pb-1.5 border-b-2 transition-all",
                 filter === "all"
                   ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground",
               )}
             >
               {t("filters.all")}
@@ -135,7 +138,7 @@ export function NotificationMenu() {
                 "text-xs font-medium pb-1.5 border-b-2 transition-all",
                 filter === "unread"
                   ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground",
               )}
             >
               {t("filters.unread")}
@@ -146,7 +149,6 @@ export function NotificationMenu() {
         {/* --- Content --- */}
         <ScrollArea className="h-[400px]">
           {notifications.length === 0 && !isLoading ? (
-            // Trường hợp chưa có tin nhắn nào
             <div className="flex flex-col h-[300px] items-center justify-center text-center p-6 gap-3">
               <div className="h-16 w-16 rounded-2xl bg-muted/30 flex items-center justify-center mb-2">
                 <Inbox className="h-8 w-8 text-muted-foreground/50" />
@@ -161,7 +163,6 @@ export function NotificationMenu() {
               </div>
             </div>
           ) : filteredNotifications.length === 0 && filter === "unread" ? (
-            // Trường hợp đã lọc Unread nhưng không có
             <div className="flex flex-col h-[300px] items-center justify-center text-center p-6 gap-3">
               <div className="h-14 w-14 rounded-full bg-green-500/10 flex items-center justify-center mb-2">
                 <CheckCheck className="h-6 w-6 text-green-500" />
@@ -177,14 +178,15 @@ export function NotificationMenu() {
               {filteredNotifications.map((item) => {
                 const isUnread = item.isRead === 0;
 
+                // Cập nhật logic RedirectUrl (thay vì payload.linkUrl)
                 const ContentWrapper = ({
                   children,
                 }: {
                   children: React.ReactNode;
                 }) =>
-                  item.payload.linkUrl ? (
+                  item.redirectUrl ? (
                     <Link
-                      href={item.payload.linkUrl}
+                      href={item.redirectUrl}
                       className="block focus:outline-none"
                       onClick={() => handleItemClick(item)}
                     >
@@ -201,7 +203,7 @@ export function NotificationMenu() {
                       "relative flex cursor-pointer items-start gap-4 px-4 py-4 transition-all duration-200 group",
                       isUnread
                         ? "bg-primary/5 hover:bg-primary/10"
-                        : "bg-transparent hover:bg-muted/50"
+                        : "bg-transparent hover:bg-muted/50",
                     )}
                   >
                     {isUnread && (
@@ -213,7 +215,7 @@ export function NotificationMenu() {
                         "mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors border",
                         isUnread
                           ? "bg-primary/15 text-primary border-primary/20"
-                          : "bg-muted/50 text-muted-foreground border-transparent group-hover:bg-muted"
+                          : "bg-muted/50 text-muted-foreground border-transparent group-hover:bg-muted",
                       )}
                     >
                       <Bell className="h-4 w-4" />
@@ -227,15 +229,16 @@ export function NotificationMenu() {
                               "text-sm leading-snug truncate pr-2",
                               isUnread
                                 ? "font-semibold text-foreground"
-                                : "font-normal text-muted-foreground"
+                                : "font-normal text-muted-foreground",
                             )}
                           >
-                            {item.payload.title}
+                            {/* UPDATED: Truy cập trực tiếp title */}
+                            {item.title}
                           </p>
                           <span className="text-[10px] text-muted-foreground/70 shrink-0 whitespace-nowrap">
                             {format.relativeTime(
-                              parseToUtcDate(item.createdAt), 
-                              { now: new Date() } 
+                              parseToUtcDate(item.createdAt),
+                              { now: new Date() },
                             )}
                           </span>
                         </div>
@@ -244,10 +247,11 @@ export function NotificationMenu() {
                             "text-xs line-clamp-2",
                             isUnread
                               ? "text-foreground/80"
-                              : "text-muted-foreground/70"
+                              : "text-muted-foreground/70",
                           )}
                         >
-                          {item.payload.content}
+                          {/* UPDATED: Truy cập trực tiếp content */}
+                          {item.content}
                         </p>
                       </ContentWrapper>
                     </div>
