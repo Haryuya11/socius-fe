@@ -2,8 +2,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import {  Loader2 } from "lucide-react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -31,9 +32,12 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { departmentService } from "@/services/department-service";
 import { DepartmentMember, Department } from "@/types/department";
-
-// [FIX] 1. Import constants từ roles.ts
 import { DEPT_ROLES, ROLE_LABELS } from "@/types/roles";
+
+import {
+  transferMemberSchema,
+  TransferMemberFormValues,
+} from "@/lib/validations/department";
 
 interface TransferProps {
   open: boolean;
@@ -52,17 +56,23 @@ export function TransferDeptMemberDialog({
 }: TransferProps) {
   const [depts, setDepts] = useState<Department[]>([]);
 
-  // [FIX] Set default value dùng constant cho an toàn
-  const form = useForm({
+  const form = useForm<TransferMemberFormValues>({
+    resolver: zodResolver(transferMemberSchema),
     defaultValues: {
       toDepartmentCode: "",
-      roleCode: DEPT_ROLES.MEMBER, // Thay vì hardcode string "DEPT_MEM"
+      roleCode: DEPT_ROLES.MEMBER,
       isPrimary: false,
     },
   });
 
   useEffect(() => {
     if (open) {
+      form.reset({
+        toDepartmentCode: "",
+        roleCode: DEPT_ROLES.MEMBER,
+        isPrimary: false,
+      });
+
       departmentService
         .fetchDepartments({ page: 1, size: 100 })
         .then((res) =>
@@ -72,9 +82,9 @@ export function TransferDeptMemberDialog({
         )
         .catch(console.error);
     }
-  }, [open, currentDeptCode]);
+  }, [open, currentDeptCode, form]);
 
-  const onSubmit = async (values: any) => {
+  const onSubmit: SubmitHandler<TransferMemberFormValues> = async (values) => {
     try {
       await departmentService.transferMember({
         employeeId: member.employee.clientId,
@@ -110,10 +120,7 @@ export function TransferDeptMemberDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Phòng ban đích</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
                       <SelectValue placeholder="Chọn phòng ban..." />
                     </SelectTrigger>
@@ -135,6 +142,7 @@ export function TransferDeptMemberDialog({
                 </FormItem>
               )}
             />
+
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -142,15 +150,11 @@ export function TransferDeptMemberDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Vai trò mới</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {/* [FIX] 2. Map qua DEPT_ROLES để hiển thị option động */}
                         {Object.values(DEPT_ROLES).map((role) => (
                           <SelectItem key={role} value={role}>
                             {ROLE_LABELS[role]}

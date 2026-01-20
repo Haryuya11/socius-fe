@@ -3,10 +3,9 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Loader2, Plus, Pencil } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 
 import {
   Dialog,
@@ -28,13 +27,10 @@ import {
 import { departmentService } from "@/services/department-service";
 import { Department } from "@/types/department";
 
-const deptSchema = z.object({
-  departmentCode: z
-    .string()
-    .min(1, "Mã phòng ban là bắt buộc")
-    .regex(/^[A-Z0-9_]+$/, "Mã chỉ chứa chữ hoa, số và gạch dưới"),
-  departmentName: z.string().min(1, "Tên phòng ban là bắt buộc"),
-});
+import {
+  departmentSchema,
+  DepartmentFormValues,
+} from "@/lib/validations/department";
 
 interface DepartmentDialogProps {
   initialData?: Department | null;
@@ -50,8 +46,8 @@ export function DepartmentDialog({
   const [open, setOpen] = useState(false);
   const isEdit = !!initialData;
 
-  const form = useForm({
-    resolver: zodResolver(deptSchema),
+  const form = useForm<DepartmentFormValues>({
+    resolver: zodResolver(departmentSchema),
     defaultValues: {
       departmentCode: "",
       departmentName: "",
@@ -67,7 +63,7 @@ export function DepartmentDialog({
     }
   }, [open, initialData, form]);
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: DepartmentFormValues) => {
     try {
       if (isEdit) {
         await departmentService.updateDepartment(initialData.departmentCode, {
