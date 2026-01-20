@@ -4,7 +4,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-// import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Loader2, Plus, Save } from "lucide-react";
 
@@ -40,7 +39,8 @@ import {
 } from "@/lib/validations/employee";
 import { employeeService } from "@/services/employee-service";
 import { AvatarPicker } from "../profile/avatar-picker";
-import { ROLE_LABELS, SYSTEM_ROLES } from "@/types/roles";
+// [FIX] Import RoleCode để fix lỗi type indexing
+import { ROLE_LABELS, SYSTEM_ROLES, RoleCode } from "@/types/roles";
 
 interface AddEmployeeDialogProps {
   children?: React.ReactNode;
@@ -73,20 +73,15 @@ export function AddEmployeeDialog({
 
       // BƯỚC 1: Nếu có chọn ảnh, Upload ảnh trước
       if (imageBlob) {
-        // Tạo File từ Blob
         const file = new File([imageBlob], "avatar.png", { type: "image/png" });
-
-        // Gọi API upload để lấy path
         const uploadRes = await employeeService.uploadAvatar(file);
-
-        // Lưu path trả về
         avatarPath = uploadRes.path;
       }
 
       // BƯỚC 2: Chuẩn bị data cuối cùng
       const payload = {
         ...data,
-        imageUrl: avatarPath, // Gán path ảnh vào payload
+        imageUrl: avatarPath,
       };
 
       // BƯỚC 3: Gọi API tạo nhân viên
@@ -94,7 +89,6 @@ export function AddEmployeeDialog({
 
       toast.success("Thêm nhân viên thành công!");
 
-      // Reset và đóng dialog
       setOpen(false);
       form.reset();
       setImageBlob(null);
@@ -201,9 +195,9 @@ export function AddEmployeeDialog({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {SYSTEM_ROLES.map((role) => (
+                        {Object.values(SYSTEM_ROLES).map((role) => (
                           <SelectItem key={role} value={role}>
-                            {ROLE_LABELS[role]}
+                            {ROLE_LABELS[role as RoleCode]}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -229,7 +223,7 @@ export function AddEmployeeDialog({
                           field.onChange(
                             e.target.value === ""
                               ? undefined
-                              : Number(e.target.value)
+                              : Number(e.target.value),
                           )
                         }
                       />

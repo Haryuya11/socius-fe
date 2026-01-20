@@ -1,4 +1,4 @@
-import { DepartmentInfo } from "./department";
+import { Department } from "./department";
 import { SystemRole } from "./roles";
 import { TeamInfo } from "./teams";
 
@@ -9,7 +9,7 @@ export interface Employee {
   lastName: string;
   systemRole: SystemRole;
   imageUrl: string;
-  departments: DepartmentInfo[];
+  departments: Department[];
   teams: TeamInfo[];
 }
 

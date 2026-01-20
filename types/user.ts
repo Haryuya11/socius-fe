@@ -1,4 +1,4 @@
-import { DepartmentInfo } from "./department";
+import { Department } from "./department";
 import { Permission } from "./permission";
 import { SystemRole } from "./roles";
 import { TeamInfo } from "./teams";
@@ -11,7 +11,7 @@ export interface UserProfile {
   systemRole: SystemRole;
   salary: number;
   imageUrl: string;
-  departments: DepartmentInfo[];
+  departments: Department[];
   teams: TeamInfo[];
   permissions: Permission[];
 }

@@ -29,6 +29,7 @@ import {
 import { teamService } from "@/services/team-service";
 import { Team } from "@/types/teams";
 import { teamSchema, TeamFormValues } from "@/lib/validations/team";
+import { DepartmentSelector } from "@/components/common/department-selector";
 
 interface TeamDialogProps {
   children?: React.ReactNode;
@@ -77,7 +78,7 @@ export function TeamDialog({
       if (onSuccess) onSuccess();
     } catch (error: any) {
       console.error(error);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Có lỗi xảy ra");
     }
   };
 
@@ -114,6 +115,7 @@ export function TeamDialog({
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4 py-4"
           >
+            {/* Mã Team */}
             <FormField
               control={form.control}
               name="teamCode"
@@ -125,6 +127,7 @@ export function TeamDialog({
                       placeholder="TEAM_001"
                       {...field}
                       disabled={isEdit}
+                      className="font-mono uppercase"
                     />
                   </FormControl>
                   <FormMessage />
@@ -132,6 +135,7 @@ export function TeamDialog({
               )}
             />
 
+            {/* Tên Team */}
             <FormField
               control={form.control}
               name="teamName"
@@ -139,7 +143,7 @@ export function TeamDialog({
                 <FormItem>
                   <FormLabel>Tên Team</FormLabel>
                   <FormControl>
-                    <Input placeholder="Wibu Vip Pro" {...field} />
+                    <Input placeholder="Vd: Mobile App Team" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -151,9 +155,13 @@ export function TeamDialog({
               name="departmentCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mã Phòng Ban (Dept Code)</FormLabel>
+                  <FormLabel>Phòng Ban Trực Thuộc</FormLabel>
                   <FormControl>
-                    <Input placeholder="WIBU" {...field} />
+                    <DepartmentSelector
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Tìm và chọn phòng ban..."
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -14,16 +14,17 @@ export interface TeamQueryParams {
 }
 
 export const teamService = {
-
   fetchTeams: async (
-    params?: TeamQueryParams
+    params?: TeamQueryParams,
   ): Promise<PaginatedResponse<Team>> => {
     const page = params?.page || 1;
     const size = params?.size || 10;
+
     const condition = params?.condition || {
       teamCode: null,
       teamName: null,
       departmentCode: null,
+      ...(params?.condition || {}),
     };
 
     const payload = {
@@ -34,7 +35,7 @@ export const teamService = {
 
     const response = await http.post<ApiResponse<PaginatedResponse<Team>>>(
       "/api/teams/search",
-      payload
+      payload,
     );
     return response.data.data;
   },
@@ -52,7 +53,7 @@ export const teamService = {
   updateTeam: async (code: string, data: Partial<TeamInput>): Promise<Team> => {
     const response = await http.put<ApiResponse<Team>>(
       `/api/teams/${code}`,
-      data
+      data,
     );
     return response.data.data;
   },
@@ -66,14 +67,14 @@ export const teamService = {
 
   getTeamMembers: async (teamCode: string): Promise<TeamMember[]> => {
     const response = await http.get<ApiResponse<TeamMember[]>>(
-      `/api/teams/${teamCode}/employees`
+      `/api/teams/${teamCode}/employees`,
     );
     return response.data.data;
   },
 
   addMembers: async (
     teamCode: string,
-    employees: { employeeId: string; roleCode?: string; isLeader?: boolean }[]
+    employees: { employeeId: string; roleCode?: string; isLeader?: boolean }[],
   ) => {
     // Mặc định roleCode là TEAM_MEM nếu không truyền
     const payload = {
@@ -85,7 +86,7 @@ export const teamService = {
     };
     const response = await http.post(
       `/api/teams/${teamCode}/employees`,
-      payload
+      payload,
     );
     return response.data;
   },
@@ -103,7 +104,7 @@ export const teamService = {
 
   changeLeader: async (teamCode: string, newLeadClientId: string) => {
     const response = await http.put(
-      `/api/teams/${teamCode}/lead?newLeadClientId=${newLeadClientId}`
+      `/api/teams/${teamCode}/lead?newLeadClientId=${newLeadClientId}`,
     );
     return response.data;
   },
