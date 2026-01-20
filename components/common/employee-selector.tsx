@@ -19,7 +19,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { employeeService } from "@/services/employee-service"; // Đảm bảo đường dẫn đúng service của bạn
+import { employeeService } from "@/services/employee-service";
 import { Employee } from "@/types/employee";
 import { getAvatarInfo } from "@/utils/avatar-utils";
 import { getFullImageUrl } from "@/utils/image-utils";
@@ -29,7 +29,7 @@ interface EmployeeSelectorProps {
   onChange: (value: string) => void;
   placeholder?: string;
   disabled?: boolean;
-  defaultLabel?: string; // [FIX] Nhận tên có sẵn
+  defaultLabel?: string;
 }
 
 export function EmployeeSelector({
@@ -73,7 +73,7 @@ export function EmployeeSelector({
     : defaultLabel || value;
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={false}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -104,7 +104,11 @@ export function EmployeeSelector({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0" align="start">
+      <PopoverContent
+        className="w-[300px] p-0"
+        align="start"
+        onWheel={(e) => e.stopPropagation()}
+      >
         <Command shouldFilter={false}>
           <CommandInput
             placeholder="Tìm theo tên..."
