@@ -45,13 +45,15 @@ export function DepartmentTable({
   const { hasPermission } = usePermission();
 
   return (
-    <Card className="shadow-sm border-border/50 overflow-hidden">
+    <Card className="shadow-sm border-border/50 overflow-hidden -py-6">
       <Table>
         <TableHeader className="bg-muted/30">
           <TableRow>
-            <TableHead className="w-[150px]">Mã Phòng Ban</TableHead>
+            <TableHead className="w-[150px] pl-6">Mã Phòng Ban</TableHead>
+
             <TableHead>Tên Phòng Ban</TableHead>
-            <TableHead className="text-right">Hành động</TableHead>
+
+            <TableHead className="text-right pr-6">Hành động</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -69,19 +71,20 @@ export function DepartmentTable({
 
             return (
               <TableRow key={dept.departmentCode} className="group">
-                <TableCell>
+                <TableCell className="pl-6">
                   <Badge variant="outline" className="font-mono bg-background">
                     {dept.departmentCode}
                   </Badge>
                 </TableCell>
+
                 <TableCell>
                   <div className="font-medium text-base">
                     {dept.departmentName}
                   </div>
                 </TableCell>
-                <TableCell className="text-right">
+
+                <TableCell className="text-right pr-6">
                   <div className="flex justify-end items-center gap-2">
-                    {/* Nút thao tác nhanh hiển thị khi hover (Desktop) */}
                     <div className="hidden group-hover:flex items-center gap-1 mr-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button
                         variant="ghost"

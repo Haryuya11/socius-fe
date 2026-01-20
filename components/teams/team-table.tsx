@@ -32,14 +32,14 @@ export function TeamTable({ data, onDelete, onSuccess }: TeamTableProps) {
   const router = useRouter();
 
   return (
-    <Card className="shadow-sm border-border/50 overflow-hidden">
+    <Card className="shadow-sm border-border/50 overflow-hidden -py-6">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/30 hover:bg-muted/30 border-border/50">
-            <TableHead className="font-semibold">Mã Team</TableHead>
+            <TableHead className="font-semibold pl-6">Mã Team</TableHead>
             <TableHead className="font-semibold">Tên Team</TableHead>
             <TableHead className="font-semibold">Phòng Ban</TableHead>
-            <TableHead className="text-right font-semibold">
+            <TableHead className="text-right font-semibold pr-6">
               Hành động
             </TableHead>
           </TableRow>
@@ -50,7 +50,7 @@ export function TeamTable({ data, onDelete, onSuccess }: TeamTableProps) {
               key={team.teamCode}
               className="hover:bg-muted/40 transition-colors border-border/50"
             >
-              <TableCell className="font-mono font-medium">
+              <TableCell className="font-mono font-medium pl-6">
                 {team.teamCode}
               </TableCell>
               <TableCell className="font-semibold">{team.teamName}</TableCell>
@@ -62,7 +62,7 @@ export function TeamTable({ data, onDelete, onSuccess }: TeamTableProps) {
                   {team.departmentCode}
                 </Badge>
               </TableCell>
-              <TableCell className="text-right">
+              <TableCell className="text-right pr-6">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
