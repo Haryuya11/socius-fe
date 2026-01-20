@@ -1,136 +1,166 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { authUtils } from "@/lib/auth-helpers";
-import { Button } from "@/components/ui/button";
-import { Check, Copy } from "lucide-react";
-import { toast } from "sonner";
-import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useTranslations } from "next-intl";
-import { getAvatarInfo } from "@/utils/avatar-utils";
+import { useEffect, useState } from "react";
+import { format } from "date-fns";
+import { vi } from "date-fns/locale";
+
 import { useAuth } from "@/hooks/use-auth";
-import { getFullImageUrl } from "@/utils/image-utils";
+import { usePermission } from "@/hooks/use-permission";
+import { taskService } from "@/services/task-service";
+import { Task } from "@/types/task";
 
-export default function HomePage() {
-  const t = useTranslations("Dashboard");
-  const { user, isLoading, logout } = useAuth();
-  const [copied, setCopied] = useState(false);
-  const { fullName, initials, avatarUrl } = getAvatarInfo(user);
+// Components
+import { StatsCards } from "@/components/dashboard/stats-cards";
+import { DashboardCalendar } from "@/components/dashboard/dashboard-calendar";
+import { TaskOverviewChart } from "@/components/dashboard/task-overview-chart";
+import { UrgentTasks } from "@/components/dashboard/urgent-tasks";
+import { DashboardHeaderSkeleton } from "@/components/skeleton/dashboard/header-skeleton";
 
-  const displayAvatarUrl = getFullImageUrl(avatarUrl);
+export default function DashboardPage() {
+  const { user, isLoading: isAuthLoading } = useAuth();
+  const { hasPermission } = usePermission();
 
-  const handleCopyToken = () => {
-    const token = authUtils.getToken();
-    if (token) {
-      navigator.clipboard.writeText(token);
-      setCopied(true);
-      toast.success(t("token_copied"));
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
+  const [stats, setStats] = useState({
+    total: 0,
+    inProgress: 0,
+    completed: 0,
+    overdue: 0,
+    pendingReview: 0,
+  });
+  const [urgentTasks, setUrgentTasks] = useState<Task[]>([]);
 
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+  // Khởi tạo là true để Skeleton hiện ngay lập tức
+  const [isDataLoading, setIsDataLoading] = useState(true);
 
-  if (!user) return null;
+  // Tính quyền
+  const isLeader = hasPermission("task.approve");
+
+  // Logic gọi API
+  useEffect(() => {
+    // Chỉ bắt đầu gọi API khi đã xác định được user
+    if (isAuthLoading || !user) return;
+
+    let isMounted = true; // Flag để tránh update state khi component đã unmount
+
+    const fetchDashboardData = async () => {
+      // Lưu ý: Không set lại setIsDataLoading(true) ở đây nữa
+      // vì mặc định nó đã là true rồi, tránh gây re-render thừa.
+
+      try {
+        const [allTasksRes, urgentRes, pendingRes] = await Promise.all([
+          taskService.searchTasks({
+            page: 1,
+            size: 1000,
+            condition: { receiverId: "me" },
+          }),
+          taskService.searchTasks({
+            page: 1,
+            size: 5,
+            condition: { receiverId: "me", status: ["IN_PROGRESS", "OVERDUE"] },
+            sortBy: "dueDate",
+            sortDirection: "ASC",
+          }),
+          isLeader
+            ? taskService.searchTasks({
+                page: 1,
+                size: 100,
+                condition: { senderId: "me", status: ["PENDING"] },
+              })
+            : Promise.resolve({ data: [], totalItems: 0 }),
+        ]);
+
+        if (isMounted) {
+          const myTasks = allTasksRes.data;
+          const total = allTasksRes.totalItems;
+          const inProgress = myTasks.filter(
+            (t) => t.status === "IN_PROGRESS",
+          ).length;
+          const completed = myTasks.filter(
+            (t) => t.status === "APPROVED",
+          ).length;
+          const overdue = myTasks.filter((t) => t.status === "OVERDUE").length;
+
+          setStats({
+            total,
+            inProgress,
+            completed,
+            overdue,
+            pendingReview: isLeader ? (pendingRes as any).totalItems : 0,
+          });
+
+          setUrgentTasks(urgentRes.data);
+        }
+      } catch (error) {
+        console.error("Dashboard Load Error", error);
+      } finally {
+        if (isMounted) {
+          // Chỉ tắt loading khi mọi thứ đã xong hoàn toàn
+          setIsDataLoading(false);
+        }
+      }
+    };
+
+    fetchDashboardData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user, isAuthLoading, isLeader]);
+
+  const isPageLoading = isAuthLoading || isDataLoading;
+
+
+  const chartData = [
+    { name: "Đang làm", total: stats.inProgress, color: "#3b82f6" },
+    { name: "Chờ duyệt", total: stats.pendingReview, color: "#f97316" },
+    { name: "Hoàn thành", total: stats.completed, color: "#22c55e" },
+    { name: "Quá hạn", total: stats.overdue, color: "#ef4444" },
+  ];
 
   return (
-    <div className="flex h-content-screen w-full flex-col items-center justify-center gap-6 bg-muted/20 p-8">
-      <div className="flex flex-col items-center gap-4 text-center max-w-2xl w-full">
-        <h1 className="text-3xl font-bold tracking-tight">{t("welcome")}</h1>
-
-        <div className="w-full rounded-xl border bg-card p-6 text-card-foreground shadow-sm animate-in fade-in zoom-in duration-300">
-          {/* Header Profile */}
-          <div className="flex items-center gap-4 border-b pb-4 mb-4">
-            <Avatar className="h-16 w-16">
-              <AvatarImage
-                src={displayAvatarUrl || "/placeholder.svg"}
-                alt={fullName}
-              />
-              <AvatarFallback>{initials}</AvatarFallback>
-            </Avatar>
-            <div className="text-left">
-              <h2 className="text-xl font-bold">
-                {user.firstName} {user.lastName}
-              </h2>
-              <p className="text-sm text-muted-foreground">{user.systemRole}</p>
-            </div>
-          </div>
-
-          <div className="space-y-4 text-left">
-            <div className="grid grid-cols-[100px_1fr] gap-2 items-center">
-              <span className="font-semibold text-muted-foreground">
-                {t("email")}
-              </span>
-              <span className="font-medium">{user.userId}</span>
-            </div>
-
-            <div className="grid grid-cols-[100px_1fr] gap-2 items-start">
-              <span className="font-semibold text-muted-foreground mt-1">
-                {t("departments")}
-              </span>
-              <div className="flex flex-wrap gap-1">
-                {user.departments.map((dept) => (
-                  <span
-                    key={dept.departmentCode}
-                    className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full"
-                  >
-                    {dept.departmentName} ({dept.roleName})
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-[100px_1fr] gap-2 items-start">
-              <span className="font-semibold text-muted-foreground mt-1">
-                {t("teams")}
-              </span>
-              <div className="flex flex-wrap gap-1">
-                {user.teams.map((team) => (
-                  <span
-                    key={team.teamCode}
-                    className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full"
-                  >
-                    {team.teamName} {team.isLeader && "👑"}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-[100px_1fr] gap-2 items-center pt-2">
-              <span className="font-semibold text-muted-foreground">
-                {t("token")}
-              </span>
-              <div className="flex items-center gap-2">
-                <code className="flex-1 bg-muted p-1.5 rounded text-xs text-muted-foreground font-mono truncate">
-                  {authUtils.getToken()?.slice(0, 20)}...
-                </code>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6"
-                  onClick={handleCopyToken}
-                >
-                  {copied ? (
-                    <Check className="h-3 w-3 text-green-500" />
-                  ) : (
-                    <Copy className="h-3 w-3" />
-                  )}
-                </Button>
-              </div>
-            </div>
+    <div className="p-6 space-y-6 bg-muted/5 min-h-screen animate-in fade-in duration-500">
+      {isPageLoading ? (
+        <DashboardHeaderSkeleton />
+      ) : (
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight text-foreground">
+              Dashboard
+            </h2>
+            {/* Dùng Optional Chaining (?) để tránh lỗi nếu user chưa kịp load */}
+            <p className="text-muted-foreground mt-1">
+              Xin chào {user?.firstName}, hôm nay có gì mới?
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {format(new Date(), "EEEE, d MMMM yyyy", { locale: vi })}
+            </p>
           </div>
         </div>
-      </div>
+      )}
 
-      <Button variant="destructive" onClick={logout}>
-        {t("logout")}
-      </Button>
+      <StatsCards
+        total={stats.total}
+        inProgress={stats.inProgress}
+        completed={stats.completed}
+        overdue={stats.overdue}
+        pendingReview={stats.pendingReview}
+        role={isLeader ? "LEADER" : "MEMBER"}
+        isLoading={isPageLoading}
+      />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6 h-full flex flex-col">
+          <TaskOverviewChart data={chartData} isLoading={isPageLoading} />
+          <div className="flex-1">
+            <UrgentTasks tasks={urgentTasks} isLoading={isPageLoading} />
+          </div>
+        </div>
+
+        <div className="lg:col-span-1 space-y-6">
+          <DashboardCalendar isPageLoading={isPageLoading} />
+        </div>
+      </div>
     </div>
   );
 }
