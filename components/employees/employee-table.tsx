@@ -34,13 +34,14 @@ export function EmployeeTable({ data }: EmployeeTableProps) {
   const t = useTranslations("Employees");
 
   return (
-    <Card className="shadow-sm border-border/50 overflow-hidden">
+    <Card className="shadow-sm border-border/50 overflow-hidden -py-6">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/30 hover:bg-muted/30 border-border/50">
-            <TableHead className="w-[320px] font-semibold">
+            <TableHead className="w-[320px] font-semibold pl-6">
               {t("table.employee")}
             </TableHead>
+
             <TableHead className="font-semibold">
               {t("table.system_role")}
             </TableHead>
@@ -48,7 +49,8 @@ export function EmployeeTable({ data }: EmployeeTableProps) {
               {t("table.departments")}
             </TableHead>
             <TableHead className="font-semibold">{t("table.teams")}</TableHead>
-            <TableHead className="text-right font-semibold">
+
+            <TableHead className="text-right font-semibold pr-6">
               {t("table.actions")}
             </TableHead>
           </TableRow>
@@ -63,7 +65,7 @@ export function EmployeeTable({ data }: EmployeeTableProps) {
                 key={emp.clientId}
                 className="hover:bg-muted/40 transition-colors border-border/50"
               >
-                <TableCell>
+                <TableCell className="pl-6">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10 border-2 border-border/50 shadow-sm">
                       <AvatarImage
@@ -83,6 +85,7 @@ export function EmployeeTable({ data }: EmployeeTableProps) {
                     </div>
                   </div>
                 </TableCell>
+
                 <TableCell>
                   <Badge
                     variant={
@@ -140,7 +143,9 @@ export function EmployeeTable({ data }: EmployeeTableProps) {
                     )}
                   </div>
                 </TableCell>
-                <TableCell className="text-right">
+
+                {/* THÊM pr-6 VÀO ĐÂY (Cột cuối - Body) */}
+                <TableCell className="text-right pr-6">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
