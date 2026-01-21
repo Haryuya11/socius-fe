@@ -290,6 +290,143 @@
       "active_desc": "Accounts currently active"
     }
   },
+  "Tasks": {
+    "title": "Task Management",
+    "greeting": "Hello {name}",
+    "create_new": "Create New Task",
+    "no_data": "No data available.",
+    "search_placeholder": "Search...",
+    "filter": "Filter",
+    "status": {
+      "IN_PROGRESS": "In Progress",
+      "PENDING": "Pending Review",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "OVERDUE": "Overdue",
+      "CANCELLED": "Cancelled"
+    },
+    "priority": {
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High"
+    },
+    "tabs": {
+      "my_tasks": "My Tasks",
+      "assigned": "Assigned Tasks",
+      "approvals": "Pending Approvals"
+    },
+    "table": {
+      "id": "ID",
+      "title": "Title",
+      "status": "Status",
+      "priority": "Priority",
+      "due_date": "Due Date",
+      "sender": "Assigned By",
+      "receiver": "Assignee",
+      "actions": "Actions",
+      "quick_approve": "Quick Approve"
+    },
+    "actions": {
+      "view_detail": "View Details",
+      "edit": "Edit",
+      "delete": "Delete Task",
+      "submit": "Submit for Review",
+      "approve": "Approve",
+      "reject": "Reject",
+      "cancel": "Cancel Task",
+      "reopen": "Reopen"
+    },
+    "detail": {
+      "back_to_parent": "Back to Parent Task",
+      "deadline": "Deadline:",
+      "assigned_by": "Assigned by:",
+      "submit_complete": "Submit Completion",
+      "receiver_label": "Assignee",
+      "start_date": "Start Date",
+      "description": "Description",
+      "no_description": "No description.",
+      "subtasks_list": "Subtask List",
+      "add_subtask": "Add",
+      "no_subtasks": "No subtasks yet",
+      "tabs": {
+        "info": "Information",
+        "subtasks": "Subtasks",
+        "activity": "Activity"
+      }
+    },
+    "form": {
+      "title_create": "Create New Task",
+      "title_edit": "Update Task",
+      "title_label": "Title",
+      "title_placeholder": "Enter task title",
+      "team_label": "Team",
+      "team_placeholder": "Select team...",
+      "dept_label": "Dept Code",
+      "receiver_label": "Assignee",
+      "receiver_placeholder": "Select assignee",
+      "priority_label": "Priority",
+      "priority_placeholder": "Select priority",
+      "start_date_label": "Start Date",
+      "due_date_label": "Due Date",
+      "select_date": "Select date",
+      "description_label": "Description",
+      "description_placeholder": "Task description...",
+      "cancel": "Cancel",
+      "save": "Save",
+      "required": "*"
+    },
+    "workflow": {
+      "submit_title": "Submit Task for Review",
+      "approve_title": "Approve Task",
+      "reject_title": "Reject Task",
+      "cancel_title": "Cancel Task",
+      "reopen_title": "Reopen Task",
+      "submit_label": "Completion Note",
+      "approve_label": "Note (optional)",
+      "reject_label": "Reason for Rejection",
+      "cancel_label": "Reason for Cancellation",
+      "reopen_label": "Reason (optional)",
+      "description": "This action will update the task status.",
+      "placeholder": "Enter content...",
+      "cancel_button": "Cancel",
+      "confirm_button": "Confirm",
+      "required_error": "Please enter content"
+    },
+    "subtask": {
+      "create_title": "Add Subtask",
+      "parent_label": "Parent:",
+      "title_label": "Title",
+      "receiver_label": "Assignee",
+      "receiver_placeholder": "Select assignee",
+      "priority_label": "Priority",
+      "start_date_label": "Start Date",
+      "due_date_label": "Due Date",
+      "select_date": "Select date",
+      "description_label": "Description",
+      "description_placeholder": "Task description...",
+      "cancel": "Cancel",
+      "create": "Create",
+      "date_error_start": "Must be after {date}",
+      "date_error_due": "Must be before {date}"
+    },
+    "messages": {
+      "create_success": "Task created successfully",
+      "update_success": "Updated successfully",
+      "delete_success": "Task deleted successfully",
+      "action_success": "Action completed successfully",
+      "error": "An error occurred",
+      "subtask_success": "Subtask created successfully",
+      "subtask_error": "Error creating subtask"
+    },
+    "activity": {
+      "past_verb": "has"
+    },
+    "confirm_delete": {
+      "title": "Delete Task",
+      "description": "This action cannot be undone.",
+      "confirm": "Delete"
+    }
+  },
   "Departments": {
     "title": "Department Management",
     "subtitle": "Organization structure and department administration",
@@ -439,7 +576,40 @@
       "description": "We'll let you know when something arrives.",
       "no_unread": "Great! You're all caught up."
     },
-    "new": "New"
+    "new": "New",
+    "actions": {
+      "view": "View"
+    }
+  },
+  "Roles": {
+    "title": "Roles",
+    "subtitle": "Manage roles and detailed permissions in the system.",
+    "tabs": {
+      "system": "System",
+      "department": "Department",
+      "team": "Team"
+    },
+    "search_placeholder": "Search Role, Code...",
+    "empty": {
+      "system": "No system roles found.",
+      "department": "No department roles found.",
+      "team": "No team roles found."
+    },
+    "card": {
+      "no_description": "No description for this role.",
+      "view_details": "View details",
+      "permissions_count": "{count} permissions"
+    },
+    "detail": {
+      "search_placeholder": "Search permissions...",
+      "copy_success": "Permissions JSON copied to clipboard",
+      "results": "results",
+      "no_results": "No matching permissions found.",
+      "default_permission_description": "System permission.",
+      "copy_json": "Copy JSON",
+      "close": "Close",
+      "id_label": "ID"
+    }
   },
   "EmployeeDetails": {
     "title": "Employee Profile",

@@ -8,10 +8,23 @@ import {
   WsNotificationPayload,
 } from "@/types/notification";
 import { notificationService } from "@/services/notification-service";
+import { translateNotificationMessage } from "@/utils/notification-i18n";
 
 const normalizeNotification = (rawItem: any): NotificationMessage => {
-  const title = rawItem.title || rawItem.payload?.title || "No Title";
-  const content = rawItem.content || rawItem.payload?.content || "";
+  // Get title and content keys
+  const titleKey = rawItem.title || rawItem.payload?.title || "No Title";
+  const contentKey = rawItem.content || rawItem.payload?.content || "";
+  const parameters = rawItem.parameters || rawItem.payload?.parameters;
+
+  // Translate if keys start with S_ (notification template keys)
+  let title = titleKey;
+  let content = contentKey;
+  
+  if (titleKey.startsWith("S_") && contentKey.startsWith("S_")) {
+    const translated = translateNotificationMessage(titleKey, contentKey, parameters);
+    title = translated.title;
+    content = translated.content;
+  }
 
   const redirectUrl =
     rawItem.redirectUrl ||

@@ -51,7 +51,7 @@ export default function NotificationListener() {
           // Style lại toast cho giống theme
           className: "group border-primary/20 bg-card/80 backdrop-blur-md",
           action: {
-            label: "Xem", // Hoặc t('actions.view')
+            label: t("actions.view"),
             onClick: () => {
               if (latestMsg.redirectUrl) {
                 router.push(latestMsg.redirectUrl);

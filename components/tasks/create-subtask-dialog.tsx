@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { Loader2, CalendarIcon } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 import {
   Dialog,
@@ -57,6 +58,8 @@ export function CreateSubTaskDialog({
   onOpenChange,
   onSuccess,
 }: CreateSubTaskDialogProps) {
+  const t = useTranslations("Tasks.subtask");
+  const tMessages = useTranslations("Tasks.messages");
   const [loading, setLoading] = useState(false);
 
   const form = useForm<SubTaskFormValues>({
@@ -77,14 +80,14 @@ export function CreateSubTaskDialog({
 
     if (values.startDate < pStart) {
       form.setError("startDate", {
-        message: `Phải sau ${format(pStart, "dd/MM")}`,
+        message: t("date_error_start", { date: format(pStart, "dd/MM") }),
       });
       return;
     }
 
     if (values.dueDate > pDue) {
       form.setError("dueDate", {
-        message: `Phải trước ${format(pDue, "dd/MM")}`,
+        message: t("date_error_due", { date: format(pDue, "dd/MM") }),
       });
       return;
     }
@@ -99,12 +102,12 @@ export function CreateSubTaskDialog({
         dueDate: format(values.dueDate, "yyyy-MM-dd"),
       };
       await taskService.createSubTask(parentTask.id, payload);
-      toast.success("Tạo Subtask thành công");
+      toast.success(tMessages("subtask_success"));
       form.reset();
       onOpenChange(false);
       onSuccess();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Lỗi tạo subtask");
+      toast.error(error?.response?.data?.message || tMessages("subtask_error"));
     } finally {
       setLoading(false);
     }
@@ -114,9 +117,9 @@ export function CreateSubTaskDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Thêm việc phụ</DialogTitle>
+          <DialogTitle>{t("create_title")}</DialogTitle>
           <p className="text-xs text-muted-foreground">
-            Thuộc: {parentTask.title}
+            {t("parent_label")} {parentTask.title}
           </p>
         </DialogHeader>
         <Form {...form}>
@@ -127,7 +130,7 @@ export function CreateSubTaskDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Tiêu đề <span className="text-red-500">*</span>
+                    {t("title_label")} <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input {...field} />
@@ -143,12 +146,13 @@ export function CreateSubTaskDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Người nhận <span className="text-red-500">*</span>
+                      {t("receiver_label")} <span className="text-red-500">*</span>
                     </FormLabel>
                     <FormControl>
                       <EmployeeSelector
                         value={field.value}
                         onChange={field.onChange}
+                        placeholder={t("receiver_placeholder")}
                       />
                     </FormControl>
                     <FormMessage />
@@ -160,7 +164,7 @@ export function CreateSubTaskDialog({
                 name="priority"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Độ ưu tiên</FormLabel>
+                    <FormLabel>{t("priority_label")}</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -171,9 +175,9 @@ export function CreateSubTaskDialog({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="LOW">Thấp</SelectItem>
-                        <SelectItem value="MEDIUM">Trung bình</SelectItem>
-                        <SelectItem value="HIGH">Cao</SelectItem>
+                        <SelectItem value="LOW">{t("../priority.LOW")}</SelectItem>
+                        <SelectItem value="MEDIUM">{t("../priority.MEDIUM")}</SelectItem>
+                        <SelectItem value="HIGH">{t("../priority.HIGH")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormItem>
@@ -188,7 +192,7 @@ export function CreateSubTaskDialog({
                 name="startDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Ngày bắt đầu</FormLabel>
+                    <FormLabel>{t("start_date_label")}</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -202,7 +206,7 @@ export function CreateSubTaskDialog({
                             {field.value ? (
                               format(field.value, "dd/MM/yyyy")
                             ) : (
-                              <span>Chọn ngày</span>
+                              <span>{t("select_date")}</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -231,7 +235,7 @@ export function CreateSubTaskDialog({
                 name="dueDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Hạn chót</FormLabel>
+                    <FormLabel>{t("due_date_label")}</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -245,7 +249,7 @@ export function CreateSubTaskDialog({
                             {field.value ? (
                               format(field.value, "dd/MM/yyyy")
                             ) : (
-                              <span>Chọn ngày</span>
+                              <span>{t("select_date")}</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -274,9 +278,9 @@ export function CreateSubTaskDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mô tả</FormLabel>
+                  <FormLabel>{t("description_label")}</FormLabel>
                   <FormControl>
-                    <Textarea {...field} />
+                    <Textarea placeholder={t("description_placeholder")} {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -287,11 +291,11 @@ export function CreateSubTaskDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
               >
-                Hủy
+                {t("cancel")}
               </Button>
               <Button type="submit" disabled={loading}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{" "}
-                Tạo
+                {t("create")}
               </Button>
             </div>
           </form>

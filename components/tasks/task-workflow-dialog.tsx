@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -34,36 +35,38 @@ export function TaskWorkflowDialog({
   onOpenChange,
   onSuccess,
 }: TaskWorkflowDialogProps) {
+  const t = useTranslations("Tasks.workflow");
+  const tMessages = useTranslations("Tasks.messages");
   const [loading, setLoading] = useState(false);
   const [note, setNote] = useState("");
 
   // Config object định nghĩa hành vi cho từng loại Action
   const config: Record<ActionType, WorkflowConfig> = {
     SUBMIT: {
-      title: "Gửi duyệt Task",
-      label: "Ghi chú hoàn thành",
+      title: t("submit_title"),
+      label: t("submit_label"),
       action: taskService.submitReview,
     },
     APPROVE: {
-      title: "Phê duyệt Task",
-      label: "Ghi chú (tùy chọn)",
+      title: t("approve_title"),
+      label: t("approve_label"),
       action: taskService.approveTask,
     },
     REJECT: {
-      title: "Từ chối Task",
-      label: "Lý do từ chối",
+      title: t("reject_title"),
+      label: t("reject_label"),
       action: taskService.rejectTask,
       required: true, // Bắt buộc nhập lý do
     },
     CANCEL: {
-      title: "Hủy Task",
-      label: "Lý do hủy",
+      title: t("cancel_title"),
+      label: t("cancel_label"),
       action: taskService.cancelTask,
       required: true,
     },
     REOPEN: {
-      title: "Mở lại Task",
-      label: "Lý do (tùy chọn)",
+      title: t("reopen_title"),
+      label: t("reopen_label"),
       action: taskService.reopenTask,
     },
   };
@@ -72,19 +75,19 @@ export function TaskWorkflowDialog({
 
   const handleSubmit = async () => {
     if (currentConfig.required && !note.trim()) {
-      toast.error("Vui lòng nhập nội dung");
+      toast.error(t("required_error"));
       return;
     }
 
     try {
       setLoading(true);
       await currentConfig.action(taskId, note);
-      toast.success("Thao tác thành công");
+      toast.success(tMessages("action_success"));
       onOpenChange(false);
       setNote("");
       onSuccess();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
+      toast.error(error?.response?.data?.message || tMessages("error"));
     } finally {
       setLoading(false);
     }
@@ -96,7 +99,7 @@ export function TaskWorkflowDialog({
         <DialogHeader>
           <DialogTitle>{currentConfig.title}</DialogTitle>
           <DialogDescription>
-            Hành động này sẽ cập nhật trạng thái của Task.
+            {t("description")}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-2 py-4">
@@ -107,17 +110,17 @@ export function TaskWorkflowDialog({
           <Textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            placeholder="Nhập nội dung..."
+            placeholder={t("placeholder")}
             rows={4}
           />
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Hủy
+            {t("cancel_button")}
           </Button>
           <Button onClick={handleSubmit} disabled={loading}>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Xác nhận
+            {t("confirm_button")}
           </Button>
         </DialogFooter>
       </DialogContent>

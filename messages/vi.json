@@ -290,6 +290,143 @@
       "active_desc": "Tài khoản đang active"
     }
   },
+  "Tasks": {
+    "title": "Quản lý Công việc",
+    "greeting": "Xin chào {name}",
+    "create_new": "Giao việc mới",
+    "no_data": "Không có dữ liệu.",
+    "search_placeholder": "Tìm kiếm...",
+    "filter": "Bộ lọc",
+    "status": {
+      "IN_PROGRESS": "Đang thực hiện",
+      "PENDING": "Đang chờ duyệt",
+      "APPROVED": "Đã duyệt",
+      "REJECTED": "Bị từ chối",
+      "OVERDUE": "Quá hạn",
+      "CANCELLED": "Đã hủy"
+    },
+    "priority": {
+      "LOW": "Thấp",
+      "MEDIUM": "Trung bình",
+      "HIGH": "Cao"
+    },
+    "tabs": {
+      "my_tasks": "Việc cần làm",
+      "assigned": "Việc đã giao",
+      "approvals": "Cần phê duyệt"
+    },
+    "table": {
+      "id": "ID",
+      "title": "Tiêu đề",
+      "status": "Trạng thái",
+      "priority": "Độ ưu tiên",
+      "due_date": "Hạn chót",
+      "sender": "Người giao",
+      "receiver": "Người thực hiện",
+      "actions": "Thao tác",
+      "quick_approve": "Duyệt nhanh"
+    },
+    "actions": {
+      "view_detail": "Xem chi tiết",
+      "edit": "Chỉnh sửa",
+      "delete": "Xóa Task",
+      "submit": "Gửi duyệt hoàn thành",
+      "approve": "Phê duyệt",
+      "reject": "Từ chối",
+      "cancel": "Hủy Task",
+      "reopen": "Mở lại"
+    },
+    "detail": {
+      "back_to_parent": "Quay lại Task cha",
+      "deadline": "Hạn:",
+      "assigned_by": "Giao bởi:",
+      "submit_complete": "Gửi duyệt hoàn thành",
+      "receiver_label": "Người nhận",
+      "start_date": "Ngày bắt đầu",
+      "description": "Mô tả",
+      "no_description": "Không có mô tả.",
+      "subtasks_list": "Danh sách công việc phụ",
+      "add_subtask": "Thêm",
+      "no_subtasks": "Chưa có công việc phụ nào",
+      "tabs": {
+        "info": "Thông tin",
+        "subtasks": "Việc phụ",
+        "activity": "Lịch sử"
+      }
+    },
+    "form": {
+      "title_create": "Tạo Task mới",
+      "title_edit": "Cập nhật Task",
+      "title_label": "Tiêu đề",
+      "title_placeholder": "Nhập tiêu đề task",
+      "team_label": "Team",
+      "team_placeholder": "Chọn team...",
+      "dept_label": "Dept Code",
+      "receiver_label": "Người nhận",
+      "receiver_placeholder": "Chọn người nhận",
+      "priority_label": "Độ ưu tiên",
+      "priority_placeholder": "Chọn độ ưu tiên",
+      "start_date_label": "Ngày bắt đầu",
+      "due_date_label": "Hạn hoàn thành",
+      "select_date": "Chọn ngày",
+      "description_label": "Mô tả chi tiết",
+      "description_placeholder": "Mô tả công việc...",
+      "cancel": "Hủy",
+      "save": "Lưu lại",
+      "required": "*"
+    },
+    "workflow": {
+      "submit_title": "Gửi duyệt Task",
+      "approve_title": "Phê duyệt Task",
+      "reject_title": "Từ chối Task",
+      "cancel_title": "Hủy Task",
+      "reopen_title": "Mở lại Task",
+      "submit_label": "Ghi chú hoàn thành",
+      "approve_label": "Ghi chú (tùy chọn)",
+      "reject_label": "Lý do từ chối",
+      "cancel_label": "Lý do hủy",
+      "reopen_label": "Lý do (tùy chọn)",
+      "description": "Hành động này sẽ cập nhật trạng thái của Task.",
+      "placeholder": "Nhập nội dung...",
+      "cancel_button": "Hủy",
+      "confirm_button": "Xác nhận",
+      "required_error": "Vui lòng nhập nội dung"
+    },
+    "subtask": {
+      "create_title": "Thêm việc phụ",
+      "parent_label": "Thuộc:",
+      "title_label": "Tiêu đề",
+      "receiver_label": "Người nhận",
+      "receiver_placeholder": "Chọn người nhận",
+      "priority_label": "Độ ưu tiên",
+      "start_date_label": "Ngày bắt đầu",
+      "due_date_label": "Hạn hoàn thành",
+      "select_date": "Chọn ngày",
+      "description_label": "Mô tả công việc",
+      "description_placeholder": "Mô tả...",
+      "cancel": "Hủy",
+      "create": "Tạo việc phụ",
+      "date_error_start": "Phải sau {date}",
+      "date_error_due": "Phải trước {date}"
+    },
+    "messages": {
+      "create_success": "Tạo task thành công",
+      "update_success": "Cập nhật thành công",
+      "delete_success": "Xóa thành công",
+      "action_success": "Thao tác thành công",
+      "error": "Có lỗi xảy ra",
+      "subtask_success": "Tạo Subtask thành công",
+      "subtask_error": "Lỗi tạo subtask"
+    },
+    "activity": {
+      "past_verb": "đã"
+    },
+    "confirm_delete": {
+      "title": "Xóa Task",
+      "description": "Không thể hoàn tác.",
+      "confirm": "Xóa"
+    }
+  },
   "Departments": {
     "title": "Quản lý phòng ban",
     "subtitle": "Cấu trúc tổ chức và quản trị phòng ban",
@@ -435,7 +572,40 @@
       "description": "Chúng tôi sẽ báo cho bạn khi có tin mới.",
       "no_unread": "Tuyệt vời! Bạn đã đọc hết thông báo."
     },
-    "new": "Mới"
+    "new": "Mới",
+    "actions": {
+      "view": "Xem"
+    }
+  },
+  "Roles": {
+    "title": "Phân quyền",
+    "subtitle": "Quản lý danh sách vai trò và quyền hạn chi tiết trong hệ thống. Kiểm tra kỹ trước khi phân quyền cho nhân sự.",
+    "tabs": {
+      "system": "Hệ thống",
+      "department": "Phòng ban",
+      "team": "Đội nhóm"
+    },
+    "search_placeholder": "Tìm kiếm Role, Code...",
+    "empty": {
+      "system": "Không tìm thấy Role hệ thống nào.",
+      "department": "Không tìm thấy Role phòng ban nào.",
+      "team": "Không tìm thấy Role đội nhóm nào."
+    },
+    "card": {
+      "no_description": "Chưa có mô tả cho vai trò này.",
+      "view_details": "Xem chi tiết",
+      "permissions_count": "{count} quyền"
+    },
+    "detail": {
+      "search_placeholder": "Tìm quyền hạn...",
+      "copy_success": "Đã copy JSON quyền hạn vào clipboard",
+      "results": "kết quả",
+      "no_results": "Không tìm thấy quyền nào phù hợp.",
+      "default_permission_description": "Quyền hạn hệ thống.",
+      "copy_json": "Copy JSON",
+      "close": "Đóng",
+      "id_label": "ID"
+    }
   },
   "EmployeeDetails": {
     "title": "Hồ sơ nhân viên",

@@ -3,6 +3,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
+import { useTranslations } from "next-intl";
 // [UPDATE 1] Import hooks điều hướng
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
@@ -52,6 +53,12 @@ import { useAuth } from "@/hooks/use-auth";
 import { usePermission } from "@/hooks/use-permission";
 
 export default function TasksPage() {
+  const t = useTranslations("Tasks");
+  const tActions = useTranslations("Tasks.actions");
+  const tTable = useTranslations("Tasks.table");
+  const tTabs = useTranslations("Tasks.tabs");
+  const tMessages = useTranslations("Tasks.messages");
+  const tConfirm = useTranslations("Tasks.confirm_delete");
   const { user, isLoading: isAuthLoading } = useAuth();
   const { hasPermission } = usePermission();
 
@@ -157,15 +164,15 @@ export default function TasksPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            Quản lý Công việc
+            {t("title")}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Xin chào {user.firstName}
+            {t("greeting", { name: user.firstName })}
           </p>
         </div>
         {canCreate && (
           <Button onClick={() => setIsCreateOpen(true)} className="shadow-sm">
-            <Plus className="mr-2 h-4 w-4" /> Giao việc mới
+            <Plus className="mr-2 h-4 w-4" /> {t("create_new")}
           </Button>
         )}
       </div>
@@ -179,16 +186,16 @@ export default function TasksPage() {
         <div className="flex items-center justify-between mb-4">
           <TabsList>
             <TabsTrigger value="my-tasks" className="gap-2">
-              <Briefcase className="h-4 w-4" /> Việc cần làm
+              <Briefcase className="h-4 w-4" /> {tTabs("my_tasks")}
             </TabsTrigger>
             {canManage && (
               <TabsTrigger value="assigned" className="gap-2">
-                <Send className="h-4 w-4" /> Việc đã giao
+                <Send className="h-4 w-4" /> {tTabs("assigned")}
               </TabsTrigger>
             )}
             {canManage && (
               <TabsTrigger value="approvals" className="gap-2">
-                <FileSignature className="h-4 w-4" /> Cần phê duyệt
+                <FileSignature className="h-4 w-4" /> {tTabs("approvals")}
               </TabsTrigger>
             )}
           </TabsList>
@@ -199,14 +206,14 @@ export default function TasksPage() {
             <div className="relative w-full sm:max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Tìm kiếm..."
+                placeholder={t("search_placeholder")}
                 className="pl-9"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
               />
             </div>
             <Button variant="outline" className="border-dashed gap-2">
-              <Filter className="h-4 w-4" /> Bộ lọc
+              <Filter className="h-4 w-4" /> {t("filter")}
             </Button>
           </CardContent>
         </Card>
@@ -215,16 +222,16 @@ export default function TasksPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/30">
-                <TableHead className="w-[50px]">ID</TableHead>
-                <TableHead className="w-[30%]">Tiêu đề</TableHead>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead>Độ ưu tiên</TableHead>
-                <TableHead>Hạn chót</TableHead>
+                <TableHead className="w-[50px]">{tTable("id")}</TableHead>
+                <TableHead className="w-[30%]">{tTable("title")}</TableHead>
+                <TableHead>{tTable("status")}</TableHead>
+                <TableHead>{tTable("priority")}</TableHead>
+                <TableHead>{tTable("due_date")}</TableHead>
                 <TableHead>
-                  {viewMode === "my-tasks" ? "Người giao" : "Người thực hiện"}
+                  {viewMode === "my-tasks" ? tTable("sender") : tTable("receiver")}
                 </TableHead>
                 <TableHead className="text-right">
-                  {viewMode === "approvals" ? "Duyệt nhanh" : "Thao tác"}
+                  {viewMode === "approvals" ? tTable("quick_approve") : tTable("actions")}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -244,7 +251,7 @@ export default function TasksPage() {
                     colSpan={7}
                     className="h-48 text-center text-muted-foreground"
                   >
-                    Không có dữ liệu.
+                    {t("no_data")}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -326,7 +333,7 @@ export default function TasksPage() {
                             <DropdownMenuItem
                               onClick={() => handleViewTask(task.id)}
                             >
-                              Xem chi tiết
+                              {tActions("view_detail")}
                             </DropdownMenuItem>
                             {viewMode === "assigned" && (
                               <>
@@ -336,13 +343,13 @@ export default function TasksPage() {
                                     setIsCreateOpen(true);
                                   }}
                                 >
-                                  Chỉnh sửa
+                                  {tActions("edit")}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   className="text-destructive"
                                   onClick={() => setDeletingId(task.id)}
                                 >
-                                  Xóa Task
+                                  {tActions("delete")}
                                 </DropdownMenuItem>
                               </>
                             )}
@@ -391,9 +398,9 @@ export default function TasksPage() {
       <ConfirmDialog
         open={!!deletingId}
         onOpenChange={(open) => !open && setDeletingId(null)}
-        title="Xóa Task"
-        description="Không thể hoàn tác."
-        confirmLabel="Xóa"
+        title={tConfirm("title")}
+        description={tConfirm("description")}
+        confirmLabel={tConfirm("confirm")}
         variant="destructive"
         onConfirm={handleDelete}
       />
