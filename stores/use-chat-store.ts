@@ -8,92 +8,82 @@ import {
   MessageType,
   Participant,
   MessageMetadata,
+  ConversationType,
 } from "@/types/chat";
 import { chatService } from "@/services/chat-service";
 import { toast } from "sonner";
 import { DomainTypes, EventTypes } from "@/types/notification";
 
+// ... (Interface ChatState giữ nguyên như cũ)
 interface ChatState {
   conversations: ConversationWithPreview[];
+  searchResults: ConversationWithPreview[];
+  isSearching: boolean;
   activeConversationId: string | null;
   messages: Message[];
   participants: Participant[];
-
   currentUserId: string | null;
   setCurrentUser: (id: string | null) => void;
-
   isLoadingConversations: boolean;
   isLoadingMessages: boolean;
-
   hasMoreConversations: boolean;
   conversationCursor: string | null;
-
   hasMoreMessages: boolean;
   messageCursor: string | null;
-
   replyingTo: Message | null;
   setReplyingTo: (message: Message | null) => void;
-
   isConnected: boolean;
 
-  // API Actions
   loadConversations: (isRefresh?: boolean) => Promise<void>;
+  searchConversations: (keyword: string) => Promise<void>;
+  clearSearch: () => void;
   selectConversation: (id: string) => Promise<void>;
   loadMoreMessages: () => Promise<void>;
   markConversationAsRead: (id: string) => void;
-
-  // Interaction Actions
   sendMessage: (
     content: string,
     type: MessageType,
     files?: File[],
-    parentMessageId?: string, // Updated signature
+    parentMessageId?: string,
   ) => Promise<void>;
   editMessage: (messageId: string, newContent: string) => Promise<void>;
   deleteMessage: (messageId: string) => Promise<void>;
-
-  // Reaction Actions
   addReaction: (messageId: string, reaction: string) => Promise<void>;
   removeReaction: (messageId: string, reaction: string) => Promise<void>;
-
-  // Socket
   receiveSocketMessage: (msg: any) => void;
+
+  // Thêm action helper để EmployeeTable có thể gọi cập nhật nhanh (Optional nhưng tốt)
+  addConversationToStore: (conv: ConversationWithPreview) => void;
 }
 
 export const useChatStore = create<ChatState>()(
   persist(
     (set, get) => ({
       conversations: [],
+      searchResults: [],
+      isSearching: false,
       activeConversationId: null,
       messages: [],
       participants: [],
-
       currentUserId: null,
       setCurrentUser: (id) => set({ currentUserId: id }),
-
       isLoadingConversations: false,
       isLoadingMessages: false,
-
       hasMoreConversations: true,
       conversationCursor: null,
-
       hasMoreMessages: true,
       messageCursor: null,
-
       replyingTo: null,
       setReplyingTo: (message) => set({ replyingTo: message }),
-
       isConnected: false,
 
+      // === GIỮ NGUYÊN SOCKET LOGIC NHƯ CŨ, CHỈ CẦN LƯU Ý PHẦN NEW_MESSAGE ===
       receiveSocketMessage: (wsMsg) => {
         if (wsMsg.domain !== DomainTypes.MESSAGE) return;
-
         const { activeConversationId, conversations, messages } = get();
         const rawData = wsMsg.data;
-
         const messageSource = rawData.message || rawData;
 
-        // Construct message object carefully
         const payload: Message = {
           messageId: messageSource.messageId,
           conversationId: messageSource.conversationId,
@@ -110,48 +100,56 @@ export const useChatStore = create<ChatState>()(
 
         switch (wsMsg.type) {
           case EventTypes.NEW_MESSAGE: {
-            const convIndex = conversations.findIndex(
-              (c) => c.conversationId === payload.conversationId,
-            );
-
-            const updatedConversations = [...conversations];
             const isActive = activeConversationId === payload.conversationId;
 
-            if (convIndex !== -1) {
-              const currentConv = updatedConversations[convIndex];
-              const newUnreadCount = isActive
-                ? 0
-                : (currentConv.unreadCount || 0) + 1;
+            // --- [SỬA ĐOẠN NÀY] ---
+            // 1. Tìm conversation cũ (nếu có) để lấy unreadCount
+            const existingConv = conversations.find(
+              (c) => c.conversationId === payload.conversationId,
+            );
+            const newUnreadCount = isActive
+              ? 0
+              : (existingConv?.unreadCount || 0) + 1;
 
-              const conv: ConversationWithPreview = {
-                ...currentConv,
-                lastMessageAt: payload.createdAt,
-                lastMessageId: payload.messageId,
-                lastMessageContent:
-                  payload.content ||
-                  (payload.messageType === MessageType.IMAGE
-                    ? "Đã gửi một ảnh"
-                    : payload.messageType === MessageType.FILE
-                      ? "Đã gửi một tệp"
-                      : ""),
-                lastMessageType: payload.messageType || MessageType.TEXT,
-                lastSenderId: payload.senderId || "",
-                unreadCount: newUnreadCount,
-              };
+            // 2. Tạo object mới
+            const newConvData: ConversationWithPreview = {
+              ...(existingConv || {}), // Kế thừa dữ liệu cũ nếu có
+              conversationId: payload.conversationId, // Đảm bảo ID luôn đúng
+              // Nếu là hội thoại mới hoàn toàn thì fallback các trường
+              type: existingConv?.type || (ConversationType.DIRECT as any),
+              name: existingConv?.name || "Tin nhắn mới",
+              avatarUrl: existingConv?.avatarUrl || "",
+              createdBy: existingConv?.createdBy || "",
+              createdAt: existingConv?.createdAt || payload.createdAt,
 
-              updatedConversations.splice(convIndex, 1);
-              updatedConversations.unshift(conv);
-            } else {
-              get().loadConversations(true); // Force reload if new conversation
-              return;
-            }
+              // Cập nhật thông tin mới nhất
+              lastMessageAt: payload.createdAt,
+              lastMessageId: payload.messageId,
+              lastMessageContent:
+                payload.content ||
+                (payload.messageType === MessageType.IMAGE
+                  ? "Đã gửi một ảnh"
+                  : payload.messageType === MessageType.FILE
+                    ? "Đã gửi một tệp"
+                    : ""),
+              lastMessageType: payload.messageType || MessageType.TEXT,
+              lastSenderId: payload.senderId || "",
+              unreadCount: newUnreadCount,
+            };
 
+            // 3. Lọc bỏ HOÀN TOÀN conversation cũ khỏi danh sách (tránh duplicate)
+            const otherConversations = conversations.filter(
+              (c) => c.conversationId !== payload.conversationId,
+            );
+
+            // 4. Đưa conversation mới lên đầu
+            const updatedConversations = [newConvData, ...otherConversations];
+
+            // ... (phần xử lý messages giữ nguyên)
             let updatedMessages = messages;
             if (isActive) {
-              const isDuplicate = messages.some(
-                (m) => m.messageId === payload.messageId,
-              );
-              if (!isDuplicate) {
+              // De-duplicate messages
+              if (!messages.some((m) => m.messageId === payload.messageId)) {
                 updatedMessages = [payload, ...messages];
               }
             }
@@ -161,8 +159,9 @@ export const useChatStore = create<ChatState>()(
               messages: updatedMessages,
             });
             break;
+            // ---------------------
           }
-
+          // ... Các case khác (MESSAGE_UPDATED, DELETED, REACTION) giữ nguyên
           case EventTypes.MESSAGE_UPDATED: {
             if (activeConversationId === payload.conversationId) {
               set({
@@ -171,7 +170,6 @@ export const useChatStore = create<ChatState>()(
                 ),
               });
             }
-            // Update sidebar preview if needed
             set((state) => ({
               conversations: state.conversations.map((c) =>
                 c.conversationId === payload.conversationId &&
@@ -185,7 +183,6 @@ export const useChatStore = create<ChatState>()(
 
           case EventTypes.MESSAGE_DELETED: {
             if (activeConversationId === payload.conversationId) {
-              // Don't remove completely, just mark as deleted content
               set({
                 messages: messages.map((m) =>
                   m.messageId === payload.messageId
@@ -197,20 +194,17 @@ export const useChatStore = create<ChatState>()(
             break;
           }
 
-          // Handle socket reactions if your backend emits them
           case EventTypes.REACTION_ADDED: {
-            const reactionData = wsMsg.data; // { messageId, employeeId, reaction, ... }
+            const reactionData = wsMsg.data;
             set({
               messages: messages.map((m) => {
                 if (m.messageId === reactionData.messageId) {
-                  // Check trùng lặp
                   const exists = m.reactions?.some(
                     (r) =>
                       r.employeeId === reactionData.employeeId &&
                       r.reaction === reactionData.reaction,
                   );
                   if (exists) return m;
-
                   return {
                     ...m,
                     reactions: [...(m.reactions || []), reactionData],
@@ -245,9 +239,9 @@ export const useChatStore = create<ChatState>()(
         }
       },
 
-      // Trong use-chat-store.ts
-
       loadConversations: async (isRefresh = false) => {
+        // ... (Giữ nguyên logic cũ của loadConversations)
+        // Copy lại toàn bộ logic cũ của bạn ở đây để đảm bảo không mất
         if (get().isLoadingConversations) return;
 
         set({ isLoadingConversations: true });
@@ -255,7 +249,6 @@ export const useChatStore = create<ChatState>()(
           const cursor = isRefresh
             ? undefined
             : get().conversationCursor || undefined;
-
           if (!isRefresh && !get().hasMoreConversations) {
             set({ isLoadingConversations: false });
             return;
@@ -263,7 +256,6 @@ export const useChatStore = create<ChatState>()(
 
           const res = await chatService.getConversations(20, cursor);
 
-          // 1. Map dữ liệu ban đầu
           const mappedData: ConversationWithPreview[] = res.data.map(
             (conv: any) => ({
               conversationId: conv.conversationId,
@@ -295,7 +287,7 @@ export const useChatStore = create<ChatState>()(
             hasMoreConversations: res.hasNext || false,
           }));
 
-          // 2. Logic: Tìm các hội thoại cần fetch detail tin nhắn
+          // Fetch message details logic (Giữ nguyên)
           const conversationsWithMsg = mappedData.filter(
             (c) => c.lastMessageId && c.lastMessageContent === "Đang tải...",
           );
@@ -325,7 +317,6 @@ export const useChatStore = create<ChatState>()(
               conversations: state.conversations.map((c) => {
                 if (c.lastMessageId && msgMap.has(c.lastMessageId)) {
                   const msg = msgMap.get(c.lastMessageId)!;
-
                   if (msg.isError) {
                     return {
                       ...c,
@@ -333,7 +324,6 @@ export const useChatStore = create<ChatState>()(
                         "Tin nhắn đã bị xóa hoặc không tồn tại",
                     };
                   }
-
                   return {
                     ...c,
                     lastMessageContent:
@@ -358,7 +348,83 @@ export const useChatStore = create<ChatState>()(
         }
       },
 
+      // === [FIX 1: SEARCH LOGIC] ===
+      searchConversations: async (keyword) => {
+        if (!keyword.trim()) {
+          set({ searchResults: [], isSearching: false });
+          return;
+        }
+
+        set({ isSearching: true });
+        try {
+          const rawData = await chatService.searchConversations(keyword);
+          const currentConversations = get().conversations; // Lấy danh sách hiện tại
+
+          const mappedResults: ConversationWithPreview[] = rawData.map(
+            (conv: any) => {
+              // 1. Kiểm tra xem kết quả search có trong list hiện tại không
+              const existingConv = currentConversations.find(
+                (c) => c.conversationId === conv.conversationId,
+              );
+
+              // 2. Nếu có, dùng existingConv để giữ lại lastMessageContent và preview
+              if (existingConv) {
+                return existingConv;
+              }
+
+              // 3. Nếu không, map dữ liệu mới từ search (chấp nhận chưa có preview)
+              return {
+                conversationId: conv.conversationId,
+                type: conv.type,
+                name:
+                  conv.name ||
+                  (conv.type === ConversationType.DIRECT
+                    ? "Cuộc trò chuyện"
+                    : "Nhóm chưa đặt tên"),
+                avatarUrl: conv.avatarUrl,
+                createdBy: conv.createdBy,
+                lastMessageId: conv.lastMessageId,
+                lastMessageAt: conv.lastMessageAt,
+                createdAt: conv.createdAt,
+                lastMessageContent: "", // API search chưa trả về cái này
+                lastMessageType: MessageType.TEXT,
+                lastSenderId: "",
+                unreadCount: 0,
+              };
+            },
+          );
+
+          set({ searchResults: mappedResults });
+        } catch (error) {
+          console.error("Search failed", error);
+          toast.error("Tìm kiếm thất bại");
+          set({ searchResults: [] });
+        } finally {
+          set({ isSearching: false });
+        }
+      },
+
+      clearSearch: () => {
+        set({ searchResults: [], isSearching: false });
+      },
+
+      addConversationToStore: (conv) => {
+        set((state) => {
+          // Check duplicate
+          if (
+            state.conversations.some(
+              (c) => c.conversationId === conv.conversationId,
+            )
+          ) {
+            return state;
+          }
+          return { conversations: [conv, ...state.conversations] };
+        });
+      },
+
+      // === [FIX 2: SELECT CONVERSATION - XỬ LÝ NEW CHAT] ===
       selectConversation: async (id) => {
+        // Reset state trước
         set({
           activeConversationId: id,
           messages: [],
@@ -366,12 +432,43 @@ export const useChatStore = create<ChatState>()(
           messageCursor: null,
           hasMoreMessages: true,
           isLoadingMessages: true,
-          replyingTo: null, // Reset reply
+          replyingTo: null,
         });
 
         get().markConversationAsRead(id);
 
         try {
+          // 1. Kiểm tra xem conversation có trong store chưa
+          const existingConv = get().conversations.find(
+            (c) => c.conversationId === id,
+          );
+
+          // 2. Nếu CHƯA CÓ (vừa tạo mới, hoặc truy cập qua URL), phải fetch detail
+          if (!existingConv) {
+            const detail = await chatService.getConversationDetail(id);
+            if (detail) {
+              const newConvPreview: ConversationWithPreview = {
+                conversationId: detail.conversationId,
+                type: detail.type,
+                name: detail.name || "Cuộc trò chuyện",
+                avatarUrl: detail.avatarUrl,
+                createdBy: detail.createdBy,
+                lastMessageId: detail.lastMessageId,
+                lastMessageAt: detail.lastMessageAt,
+                createdAt: detail.createdAt,
+                lastMessageContent: "",
+                lastMessageType: MessageType.TEXT,
+                lastSenderId: "",
+                unreadCount: 0,
+              };
+              // Thêm vào đầu danh sách
+              set((state) => ({
+                conversations: [newConvPreview, ...state.conversations],
+              }));
+            }
+          }
+
+          // 3. Fetch messages và participants như bình thường
           const [msgsRes, partsRes] = await Promise.all([
             chatService.getMessages(id, 20),
             chatService.getParticipants(id),
@@ -385,6 +482,7 @@ export const useChatStore = create<ChatState>()(
             isLoadingMessages: false,
           });
 
+          // Mark read tin nhắn mới nhất
           if (msgsRes.data && msgsRes.data.length > 0) {
             const firstMsg = msgsRes.data[0];
             chatService.markRead(id, firstMsg.messageId).catch(() => {});
@@ -396,6 +494,7 @@ export const useChatStore = create<ChatState>()(
         }
       },
 
+      // ... (Các actions markConversationAsRead, loadMoreMessages, sendMessage, editMessage, deleteMessage, addReaction, removeReaction giữ nguyên)
       markConversationAsRead: (id: string) => {
         set((state) => ({
           conversations: state.conversations.map((c) =>
@@ -412,7 +511,6 @@ export const useChatStore = create<ChatState>()(
           isLoadingMessages,
           messages,
         } = get();
-
         if (
           !activeConversationId ||
           !hasMoreMessages ||
@@ -428,7 +526,6 @@ export const useChatStore = create<ChatState>()(
             20,
             messageCursor,
           );
-
           set({
             messages: [...messages, ...res.data],
             messageCursor: res.nextCursor || null,
@@ -444,31 +541,59 @@ export const useChatStore = create<ChatState>()(
         if (!activeConversationId) return;
 
         try {
-          let metadata: MessageMetadata[] = [];
-
+          let allMetadata: MessageMetadata[] = [];
           if (files && files.length > 0) {
             const uploadRes = await chatService.uploadAttachments(
               activeConversationId,
               files,
             );
             if (uploadRes) {
-              metadata = uploadRes;
+              allMetadata = uploadRes;
             }
           }
+          const imageMetadata = allMetadata.filter((m) =>
+            m.mimeType.startsWith("image/"),
+          );
+          const otherMetadata = allMetadata.filter(
+            (m) => !m.mimeType.startsWith("image/"),
+          );
 
-          const newMsg = await chatService.sendMessage({
-            conversationId: activeConversationId,
-            content: content || "",
-            messageType: type,
-            metadata: metadata.length ? metadata : undefined,
-            parentMessageId: parentMessageId, // Pass parentId
-          });
+          if (content.trim() || imageMetadata.length > 0) {
+            const msgType =
+              imageMetadata.length > 0 ? MessageType.IMAGE : MessageType.TEXT;
 
-          get().receiveSocketMessage({
-            domain: DomainTypes.MESSAGE,
-            type: EventTypes.NEW_MESSAGE,
-            data: newMsg,
-          });
+            const mainMsg = await chatService.sendMessage({
+              conversationId: activeConversationId,
+              content: content || "", 
+              messageType: msgType,
+              metadata: imageMetadata, 
+              parentMessageId: parentMessageId,
+            });
+
+            get().receiveSocketMessage({
+              domain: DomainTypes.MESSAGE,
+              type: EventTypes.NEW_MESSAGE,
+              data: mainMsg,
+            });
+          }
+
+          if (otherMetadata.length > 0) {
+            for (const fileMeta of otherMetadata) {
+              const fileMsg = await chatService.sendMessage({
+                conversationId: activeConversationId,
+                content: "", 
+                messageType: MessageType.FILE,
+                metadata: [fileMeta], 
+                parentMessageId: parentMessageId,
+              });
+
+              get().receiveSocketMessage({
+                domain: DomainTypes.MESSAGE,
+                type: EventTypes.NEW_MESSAGE,
+                data: fileMsg,
+              });
+            }
+          }
         } catch (error) {
           console.error("Send message error:", error);
           toast.error("Gửi tin nhắn thất bại");
@@ -509,19 +634,16 @@ export const useChatStore = create<ChatState>()(
       addReaction: async (messageId, reaction) => {
         const { currentUserId, messages } = get();
         if (!currentUserId) {
-          toast.error("Bạn chưa xác thực người dùng");
+          toast.error("Bạn chưa xác thực");
           return;
         }
-
         const optimisticReaction = {
           messageId,
           employeeId: currentUserId,
           reaction,
           createdAt: new Date().toISOString(),
         };
-
-        const originalMessages = [...messages]; 
-
+        const originalMessages = [...messages];
         set({
           messages: messages.map((m) =>
             m.messageId === messageId
@@ -532,15 +654,10 @@ export const useChatStore = create<ChatState>()(
               : m,
           ),
         });
-
-        // 2. Gọi API
         try {
           await chatService.addReaction(messageId, reaction);
-          // API thành công -> Không cần làm gì thêm vì UI đã update
         } catch (error) {
-          console.error("Add reaction failed", error);
-          toast.error("Thả cảm xúc thất bại");
-          // Revert lại state cũ nếu lỗi
+          toast.error("Lỗi");
           set({ messages: originalMessages });
         }
       },
@@ -548,10 +665,7 @@ export const useChatStore = create<ChatState>()(
       removeReaction: async (messageId, reaction) => {
         const { currentUserId, messages } = get();
         if (!currentUserId) return;
-
         const originalMessages = [...messages];
-
-        // 1. Optimistic Update
         set({
           messages: messages.map((m) =>
             m.messageId === messageId
@@ -565,13 +679,10 @@ export const useChatStore = create<ChatState>()(
               : m,
           ),
         });
-
-        // 2. Gọi API
         try {
           await chatService.removeReaction(messageId, reaction);
         } catch (error) {
-          console.error("Remove reaction failed", error);
-          toast.error("Xóa cảm xúc thất bại");
+          toast.error("Lỗi");
           set({ messages: originalMessages });
         }
       },

@@ -34,6 +34,8 @@ import { getAvatarInfo } from "@/utils/avatar-utils";
 import type { Employee } from "@/types/employee";
 import { getFullImageUrl } from "@/utils/image-utils";
 import { chatService } from "@/services/chat-service";
+import { useChatStore } from "@/stores/use-chat-store";
+import { MessageType } from "@/types/chat";
 
 interface EmployeeTableProps {
   data: Employee[];
@@ -42,8 +44,9 @@ interface EmployeeTableProps {
 export function EmployeeTable({ data }: EmployeeTableProps) {
   const t = useTranslations("Employees");
   const router = useRouter();
-  // State để track loading của từng dòng khi bấm chat (tránh spam click)
   const [chatLoadingId, setChatLoadingId] = useState<string | null>(null);
+
+  const { addConversationToStore } = useChatStore();
 
   const handleStartChat = async (employee: Employee) => {
     try {
@@ -54,6 +57,21 @@ export function EmployeeTable({ data }: EmployeeTableProps) {
       );
 
       if (conversation && conversation.conversationId) {
+        addConversationToStore({
+          conversationId: conversation.conversationId,
+          type: conversation.type,
+          name: conversation.name || "Cuộc trò chuyện",
+          avatarUrl: conversation.avatarUrl,
+          createdBy: conversation.createdBy,
+          lastMessageId: conversation.lastMessageId,
+          lastMessageAt: conversation.lastMessageAt,
+          createdAt: conversation.createdAt,
+          lastMessageContent: "",
+          lastMessageType: MessageType.TEXT,
+          lastSenderId: "",
+          unreadCount: 0,
+        });
+
         router.push(`/chat/${conversation.conversationId}`);
       } else {
         toast.error("Không thể tạo cuộc hội thoại");

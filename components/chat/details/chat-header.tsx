@@ -4,8 +4,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { getFullImageUrl } from "@/utils/image-utils";
-import { Search, Bell, UserPlus } from "lucide-react";
+import { UserPlus, User } from "lucide-react";
 import { ConversationWithPreview } from "@/types/chat";
+import { useChatStore } from "@/stores/use-chat-store";
+import { useRouter } from "next/navigation";
 
 interface ChatHeaderProps {
   conversation: ConversationWithPreview;
@@ -37,7 +39,18 @@ const QuickAction = ({
   </div>
 );
 
-export function ChatHeader({ conversation, isGroup, onAddMember }: ChatHeaderProps) {
+export function ChatHeader({
+  conversation,
+  isGroup,
+  onAddMember,
+}: ChatHeaderProps) {
+  const { participants, currentUserId } = useChatStore();
+  const router = useRouter();
+
+  const partner = !isGroup
+    ? participants.find((p) => p.employeeId !== currentUserId)
+    : null;
+
   return (
     <div className="flex flex-col items-center pt-8 pb-6 px-4">
       <Avatar className="h-24 w-24 border-2 border-background shadow-lg mb-3">
@@ -53,13 +66,21 @@ export function ChatHeader({ conversation, isGroup, onAddMember }: ChatHeaderPro
         {isGroup ? "Nhóm trò chuyện" : "Tin nhắn trực tiếp"}
       </p>
 
-      {/* QUICK ACTIONS */}
       <div className="flex justify-center gap-6 mt-6">
+        {/* Nút thêm thành viên cho Group */}
         {isGroup && (
           <QuickAction
             icon={UserPlus}
             label="Thêm người"
             onClick={onAddMember}
+          />
+        )}
+
+        {!isGroup && partner && (
+          <QuickAction
+            icon={User}
+            label="Xem hồ sơ"
+            onClick={() => router.push(`/employees/${partner.employeeId}`)}
           />
         )}
       </div>

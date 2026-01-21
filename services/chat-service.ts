@@ -211,11 +211,12 @@ export const chatService = {
     return res.data.data;
   },
 
-  downloadFile: async (filePath: string) => {
-    const res = await http.get("/api/conversations/files/download", {
-      params: { filePath },
-      responseType: "blob",
-    });
+  downloadFile: async (conversationId: string, filePath: string) => {
+    const res = await http.post(
+      `/api/conversations/${conversationId}/files/download`,
+      { filePath },
+      { responseType: "blob" }, 
+    );
     return res.data;
   },
 
@@ -226,8 +227,18 @@ export const chatService = {
     const res = await http.post(
       `/api/conversations/${conversationId}/files/download-zip`,
       { files },
-      { responseType: "blob" },
+      { responseType: "blob" }, 
     );
     return res.data;
+  },
+
+  searchConversations: async (keyword: string, limit: number = 20) => {
+    const res = await http.get<{ data: Conversation[] }>(
+      "/api/conversations/search",
+      {
+        params: { keyword, limit },
+      },
+    );
+    return res.data.data;
   },
 };
