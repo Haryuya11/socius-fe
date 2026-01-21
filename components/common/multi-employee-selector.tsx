@@ -1,4 +1,3 @@
-// components/ui/multi-employee-selector.tsx
 "use client";
 
 import * as React from "react";
@@ -27,10 +26,11 @@ import { getAvatarInfo } from "@/utils/avatar-utils";
 import { getFullImageUrl } from "@/utils/image-utils";
 
 interface MultiEmployeeSelectorProps {
-  value: string[]; // Mảng ID
+  value: string[];
   onChange: (value: string[]) => void;
   placeholder?: string;
   disabled?: boolean;
+  excludeIds?: string[]; //  THÊM PROP NÀY
 }
 
 export function MultiEmployeeSelector({
@@ -38,20 +38,19 @@ export function MultiEmployeeSelector({
   onChange,
   placeholder = "Chọn thành viên...",
   disabled,
+  excludeIds = [], // Default value
 }: MultiEmployeeSelectorProps) {
   const [open, setOpen] = React.useState(false);
   const [employees, setEmployees] = React.useState<Employee[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [query, setQuery] = React.useState("");
 
-  // Cache selected employees để hiển thị label khi popover đóng
   const [selectedEmployees, setSelectedEmployees] = React.useState<Employee[]>(
     [],
   );
 
   const debouncedQuery = useDebounce(query, 300);
 
-  // Fetch employees
   React.useEffect(() => {
     if (!open) return;
     const fetch = async () => {
@@ -59,10 +58,16 @@ export function MultiEmployeeSelector({
       try {
         const res = await employeeService.fetchEmployees({
           page: 1,
-          size: 20,
+          size: 50, // Lấy nhiều hơn chút để bù cho việc filter client-side
           condition: { fullName: debouncedQuery },
         });
-        setEmployees(res.data);
+
+        // LOGIC LỌC: Loại bỏ những người có trong excludeIds
+        const filteredData = res.data.filter(
+          (emp) => !excludeIds.includes(emp.clientId),
+        );
+
+        setEmployees(filteredData);
       } catch (e) {
         console.error(e);
       } finally {
@@ -70,9 +75,8 @@ export function MultiEmployeeSelector({
       }
     };
     fetch();
-  }, [debouncedQuery, open]);
+  }, [debouncedQuery, open, excludeIds]); // Thêm excludeIds vào dependency
 
-  // Handle selection
   const handleSelect = (employee: Employee) => {
     const isSelected = value.includes(employee.clientId);
     let newValue: string[];
@@ -107,7 +111,7 @@ export function MultiEmployeeSelector({
           className="w-full justify-between pl-3 font-normal min-h-10 h-auto"
           disabled={disabled}
         >
-          <div className="flex flex-wrap gap-1 items-center">
+          <div className="flex flex-wrap gap-1 items-center text-left">
             {selectedEmployees.length > 0 ? (
               selectedEmployees.map((emp) => (
                 <Badge
@@ -116,13 +120,10 @@ export function MultiEmployeeSelector({
                   className="mr-1 mb-1"
                 >
                   {getAvatarInfo(emp).fullName}
-                  <span
-                    role="button"
+                  <button
                     className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        removeTag(emp.clientId);
-                      }
+                      if (e.key === "Enter") removeTag(emp.clientId);
                     }}
                     onMouseDown={(e) => {
                       e.preventDefault();
@@ -135,7 +136,7 @@ export function MultiEmployeeSelector({
                     }}
                   >
                     <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                  </span>
+                  </button>
                 </Badge>
               ))
             ) : (
@@ -163,44 +164,46 @@ export function MultiEmployeeSelector({
               </div>
             )}
             {!loading && employees.length === 0 && (
-              <CommandEmpty>Không tìm thấy.</CommandEmpty>
+              <CommandEmpty>Không tìm thấy nhân viên phù hợp.</CommandEmpty>
             )}
             <CommandGroup>
-              {employees.map((employee) => {
-                const isSelected = value.includes(employee.clientId);
-                const { fullName, initials, avatarUrl } =
-                  getAvatarInfo(employee);
-                return (
-                  <CommandItem
-                    key={employee.clientId}
-                    value={employee.clientId}
-                    onSelect={() => handleSelect(employee)}
-                  >
-                    <div
-                      className={cn(
-                        "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                        isSelected
-                          ? "bg-primary text-primary-foreground"
-                          : "opacity-50 [&_svg]:invisible",
-                      )}
+              <div className="max-h-[200px] overflow-y-auto">
+                {employees.map((employee) => {
+                  const isSelected = value.includes(employee.clientId);
+                  const { fullName, initials, avatarUrl } =
+                    getAvatarInfo(employee);
+                  return (
+                    <CommandItem
+                      key={employee.clientId}
+                      value={employee.clientId}
+                      onSelect={() => handleSelect(employee)}
                     >
-                      <Check className={cn("h-4 w-4")} />
-                    </div>
-                    <Avatar className="h-6 w-6 mr-2">
-                      <AvatarImage src={getFullImageUrl(avatarUrl)} />
-                      <AvatarFallback className="text-[10px]">
-                        {initials}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium">{fullName}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {employee.userId}
-                      </span>
-                    </div>
-                  </CommandItem>
-                );
-              })}
+                      <div
+                        className={cn(
+                          "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                          isSelected
+                            ? "bg-primary text-primary-foreground"
+                            : "opacity-50 [&_svg]:invisible",
+                        )}
+                      >
+                        <Check className={cn("h-4 w-4")} />
+                      </div>
+                      <Avatar className="h-6 w-6 mr-2">
+                        <AvatarImage src={getFullImageUrl(avatarUrl)} />
+                        <AvatarFallback className="text-[10px]">
+                          {initials}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium">{fullName}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {employee.userId}
+                        </span>
+                      </div>
+                    </CommandItem>
+                  );
+                })}
+              </div>
             </CommandGroup>
           </CommandList>
         </Command>
