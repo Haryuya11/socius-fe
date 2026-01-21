@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Team } from "@/types/teams";
 import { TeamDialog } from "./team-dialog";
+import { useTranslations } from "next-intl";
 // [NEW]
 import { usePermission } from "@/hooks/use-permission";
 
@@ -33,18 +34,17 @@ interface TeamTableProps {
 export function TeamTable({ data, onDelete, onSuccess }: TeamTableProps) {
   const router = useRouter();
   const { hasPermission } = usePermission();
+  const t = useTranslations("Teams");
 
   return (
     <Card className="shadow-sm border-border/50 overflow-hidden -py-6">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/30 hover:bg-muted/30 border-border/50">
-            <TableHead className="font-semibold pl-6">Mã Team</TableHead>
-            <TableHead className="font-semibold">Tên Team</TableHead>
-            <TableHead className="font-semibold">Phòng Ban</TableHead>
-            <TableHead className="text-right font-semibold pr-6">
-              Hành động
-            </TableHead>
+            <TableHead className="font-semibold pl-6">{t("table.team_code")}</TableHead>
+            <TableHead className="font-semibold">{t("table.team_name")}</TableHead>
+            <TableHead className="font-semibold">{t("table.department")}</TableHead>
+            <TableHead className="text-right font-semibold pr-6">{t("table.actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -97,14 +97,16 @@ export function TeamTable({ data, onDelete, onSuccess }: TeamTableProps) {
                             }
                             className="cursor-pointer"
                           >
-                            Xem chi tiết
+                            {t("actions.view")}
                           </DropdownMenuItem>
                         )}
 
                         {canUpdate && (
                           <TeamDialog initialData={team} onSuccess={onSuccess}>
                             <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground w-full">
-                              <Pencil className="mr-2 h-3.5 w-3.5" /> Chỉnh sửa
+                              <Pencil className="mr-2 h-3.5 w-3.5" /> {t(
+                                "actions.edit",
+                              )}
                             </div>
                           </TeamDialog>
                         )}
@@ -114,7 +116,9 @@ export function TeamTable({ data, onDelete, onSuccess }: TeamTableProps) {
                             className="text-destructive focus:text-destructive cursor-pointer"
                             onClick={() => onDelete(team.teamCode)}
                           >
-                            <Trash2 className="mr-2 h-4 w-4" /> Xóa Team
+                            <Trash2 className="mr-2 h-4 w-4" /> {t(
+                              "actions.delete",
+                            )}
                           </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>

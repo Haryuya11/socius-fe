@@ -662,6 +662,107 @@
       }
     }
   },
+  "Teams": {
+    "title": "Nhóm",
+    "description": "Tổ chức và quản lý các nhóm làm việc.",
+    "add_member": {
+      "title": "Thêm thành viên vào {code}",
+      "search_placeholder": "Tìm theo tên hoặc email...",
+      "no_results": "Không tìm thấy nhân viên.",
+      "hint": "Nhập tên để tìm kiếm.",
+      "add_button": "Thêm thành viên",
+      "added_success": "Đã thêm {count} thành viên vào nhóm.",
+      "add_failed": "Thêm thành viên thất bại"
+    },
+    "table": {
+      "team_code": "Mã Team",
+      "team_name": "Tên Team",
+      "department": "Phòng ban",
+      "actions": "Hành động"
+    },
+    "tree": {
+      "dept_label": "Phòng ban",
+      "teams_count": "{count} nhóm",
+      "details": "Chi tiết"
+    },
+    "members": {
+      "remove_success": "Đã xóa thành viên khỏi nhóm",
+      "remove_failed": "Xóa thành viên thất bại",
+      "promote_success": "Đã bổ nhiệm {name} làm Leader",
+      "promote_failed": "Bổ nhiệm thất bại",
+      "confirm_promote": "Bổ nhiệm Team Leader",
+      "confirm_promote_desc": "Bạn có chắc muốn bổ nhiệm {name} làm Leader mới của nhóm?",
+      "confirm_promote_note": "(Leader hiện tại sẽ trở thành thành viên thường)",
+      "confirm_promote_action": "Bổ nhiệm",
+      "confirm_remove": "Xóa thành viên",
+      "confirm_remove_desc": "Bạn có chắc chắn muốn xóa {name} khỏi nhóm?",
+      "confirm_remove_action": "Xóa thành viên",
+      "table": {
+        "employee": "Nhân viên",
+        "role": "Vai trò",
+        "system_role": "Vai trò hệ thống",
+        "actions": "Hành động",
+        "empty": "Chưa có thành viên nào."
+      },
+      "labels": {
+        "promote": "Bổ nhiệm Leader",
+        "transfer": "Điều chuyển",
+        "remove": "Xóa khỏi nhóm",
+        "leader": "Trưởng nhóm",
+        "member": "Thành viên"
+      }
+    },
+    "transfer": {
+      "transfer": "Điều chuyển",
+      "transfer_success": "Chuyển thành công!",
+      "transfer_failed": "Chuyển thất bại",
+      "transfer_title": "Chuyển thành viên",
+      "transfer_desc_prefix": "Chuyển",
+      "transfer_desc_suffix": "sang team khác.",
+      "to_label": "Team đích",
+      "to_placeholder": "Chọn team..."
+    },
+    "dialog": {
+      "cancel": "Hủy",
+      "save": "Lưu",
+      "add": "Thêm"
+    ,
+    "team_code_label": "Mã Team",
+    "team_name_label": "Tên Team",
+    "department_label": "Phòng ban",
+    "create_title": "Tạo Team mới",
+    "edit_title": "Chỉnh sửa Team",
+    "create_description": "Tạo team mới thuộc một phòng ban.",
+    "edit_description": "Chỉnh sửa thông tin cơ bản của Team.",
+    "create_action": "Tạo",
+    "update_action": "Cập nhật",
+    "create_success": "Tạo team thành công",
+    "update_success": "Cập nhật team thành công"
+    },
+    "detail": {
+      "total_members": "Tổng thành viên",
+      "members_title": "Thành viên nhóm",
+      "manage_description": "Quản lý danh sách thành viên và vai trò.",
+      "leader": "Trưởng nhóm",
+      "leader_unassigned": "Chưa có Leader",
+      "department": "Phòng ban"
+    },
+    "stats": {
+      "total_teams": "Tổng số Team",
+      "unique_departments": "Phòng ban liên quan",
+      "uptime": "Tình trạng hệ thống",
+      "total_teams_desc": "Nhóm làm việc đang hoạt động",
+      "unique_departments_desc": "Phòng ban có team",
+      "uptime_desc": "Trạng thái vận hành ổn định"
+    }
+    ,
+    "actions": {
+      "view": "Xem chi tiết",
+      "edit": "Chỉnh sửa",
+      "delete": "Xóa Team",
+      "manage_members": "Quản lý thành viên"
+    }
+  },
   "Theme": {
     "toggle": "Đổi giao diện",
     "loading": "Đang tải giao diện",

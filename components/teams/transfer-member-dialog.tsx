@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { ArrowRightLeft, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -58,6 +59,8 @@ export function TransferMemberDialog({
   // Ở đây tôi mock tạm data hoặc bạn dùng lại teamService.fetchTeams
   const [teams, setTeams] = useState<{ code: string; name: string }[]>([]);
 
+  const t = useTranslations("Teams");
+
   const form = useForm<{ toTeamCode: string }>({
     resolver: zodResolver(transferSchema),
     defaultValues: { toTeamCode: "" },
@@ -88,11 +91,11 @@ export function TransferMemberDialog({
         fromTeamCode: currentTeamCode,
         toTeamCode: values.toTeamCode,
       });
-      toast.success("Chuyển thành viên thành công!");
+      toast.success(t("transfer.transfer_success"));
       onOpenChange(false);
       onSuccess();
     } catch (error: any) {
-      const msg = error?.response?.data?.message || "Chuyển team thất bại";
+      const msg = error?.response?.data?.message || t("transfer.transfer_failed");
       toast.error(msg);
     }
   };
@@ -101,13 +104,13 @@ export function TransferMemberDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Điều chuyển nhân sự</DialogTitle>
+          <DialogTitle>{t("transfer.transfer_title")}</DialogTitle>
           <DialogDescription>
-            Chuyển{" "}
+            {t("transfer.transfer_desc_prefix")} {" "}
             <strong>
               {member?.employee.firstName} {member?.employee.lastName}
             </strong>{" "}
-            sang team khác.
+            {t("transfer.transfer_desc_suffix")}
           </DialogDescription>
         </DialogHeader>
 
@@ -118,14 +121,14 @@ export function TransferMemberDialog({
               name="toTeamCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Team đích</FormLabel>
+                  <FormLabel>{t("transfer.to_label")}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Chọn team..." />
+                        <SelectValue placeholder={t("transfer.to_placeholder")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -146,14 +149,14 @@ export function TransferMemberDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
               >
-                Hủy
+                {t("dialog.cancel")}
               </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
                 <ArrowRightLeft className="mr-2 h-4 w-4" />
-                Điều chuyển
+                {t("transfer.transfer")}
               </Button>
             </div>
           </form>

@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   MoreHorizontal,
   ShieldAlert,
@@ -49,6 +50,7 @@ export function TeamMemberTable({
   teamCode,
   onRefresh,
 }: TeamMemberTableProps) {
+  const t = useTranslations("Teams");
   const [transferMember, setTransferMember] = useState<TeamMember | null>(null);
   const [memberToPromote, setMemberToPromote] = useState<TeamMember | null>(
     null,
@@ -70,11 +72,11 @@ export function TeamMemberTable({
       await teamService.removeMembers(teamCode, [
         memberToRemove.employee.clientId,
       ]);
-      toast.success("Đã xóa thành viên khỏi nhóm");
+      toast.success(t("members.remove_success"));
       setMemberToRemove(null);
       onRefresh();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Xóa thất bại");
+      toast.error(error?.response?.data?.message || t("members.remove_failed"));
     } finally {
       setIsRemoving(false);
     }
@@ -88,13 +90,11 @@ export function TeamMemberTable({
         teamCode,
         memberToPromote.employee.clientId,
       );
-      toast.success(
-        `Đã bổ nhiệm ${memberToPromote.employee.firstName} làm Leader`,
-      );
+      toast.success(t("members.promote_success", { name: memberToPromote.employee.firstName }));
       setMemberToPromote(null);
       onRefresh();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Bổ nhiệm thất bại");
+      toast.error(error?.response?.data?.message || t("members.promote_failed"));
     } finally {
       setIsPromoting(false);
     }
@@ -108,10 +108,10 @@ export function TeamMemberTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Nhân viên</TableHead>
-              <TableHead>Vai trò</TableHead>
-              <TableHead>System Role</TableHead>
-              <TableHead className="text-right">Hành động</TableHead>
+              <TableHead>{t("members.table.employee")}</TableHead>
+              <TableHead>{t("members.table.role")}</TableHead>
+              <TableHead>{t("members.table.system_role")}</TableHead>
+              <TableHead className="text-right">{t("members.table.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -121,7 +121,7 @@ export function TeamMemberTable({
                   colSpan={4}
                   className="text-center h-24 text-muted-foreground"
                 >
-                  Chưa có thành viên nào.
+                  {t("members.table.empty")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -157,7 +157,7 @@ export function TeamMemberTable({
                       <Badge
                         variant={member.isLeader ? "default" : "secondary"}
                       >
-                        {member.isLeader ? "Leader" : "Member"}
+                        {member.isLeader ? t("members.labels.leader") : t("members.labels.member")}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -179,21 +179,23 @@ export function TeamMemberTable({
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             {/* Chỉ hiện Bổ nhiệm nếu user có quyền VÀ member này chưa phải Leader */}
-                            {canPromote && !member.isLeader && (
-                              <DropdownMenuItem
-                                onClick={() => setMemberToPromote(member)}
-                              >
-                                <ShieldAlert className="mr-2 h-4 w-4" /> Bổ
-                                nhiệm Leader
-                              </DropdownMenuItem>
-                            )}
+                              {canPromote && !member.isLeader && (
+                                <DropdownMenuItem
+                                  onClick={() => setMemberToPromote(member)}
+                                >
+                                  <ShieldAlert className="mr-2 h-4 w-4" /> {t(
+                                    "members.labels.promote",
+                                  )}
+                                </DropdownMenuItem>
+                              )}
 
                             {canTransfer && (
                               <DropdownMenuItem
                                 onClick={() => setTransferMember(member)}
                               >
-                                <ArrowRightLeft className="mr-2 h-4 w-4" /> Điều
-                                chuyển
+                                <ArrowRightLeft className="mr-2 h-4 w-4" /> {t(
+                                  "members.labels.transfer",
+                                )}
                               </DropdownMenuItem>
                             )}
 
@@ -204,8 +206,9 @@ export function TeamMemberTable({
                                 className="text-destructive focus:text-destructive"
                                 onClick={() => setMemberToRemove(member)}
                               >
-                                <Trash2 className="mr-2 h-4 w-4" /> Xóa khỏi
-                                nhóm
+                                <Trash2 className="mr-2 h-4 w-4" /> {t(
+                                  "members.labels.remove",
+                                )}
                               </DropdownMenuItem>
                             )}
                           </DropdownMenuContent>
@@ -230,22 +233,19 @@ export function TeamMemberTable({
       <ConfirmDialog
         open={!!memberToPromote}
         onOpenChange={(open) => !open && setMemberToPromote(null)}
-        title="Bổ nhiệm Team Leader"
+        title={t("members.confirm_promote")}
         description={
           <span>
-            Bạn có chắc muốn bổ nhiệm{" "}
-            <strong>
-              {memberToPromote?.employee.firstName}{" "}
-              {memberToPromote?.employee.lastName}
-            </strong>{" "}
-            làm Leader mới của nhóm?
+            {t("members.confirm_promote_desc", {
+              name: `${memberToPromote?.employee.firstName} ${memberToPromote?.employee.lastName}`,
+            })}
             <br />
             <span className="text-xs text-muted-foreground">
-              (Leader hiện tại sẽ trở thành thành viên thường)
+              {t("members.confirm_promote_note")}
             </span>
           </span>
         }
-        confirmLabel="Bổ nhiệm"
+        confirmLabel={t("members.confirm_promote_action")}
         isLoading={isPromoting}
         onConfirm={handlePromote}
       />
@@ -253,18 +253,15 @@ export function TeamMemberTable({
       <ConfirmDialog
         open={!!memberToRemove}
         onOpenChange={(open) => !open && setMemberToRemove(null)}
-        title="Xóa thành viên"
+        title={t("members.confirm_remove")}
         description={
           <span>
-            Bạn có chắc muốn xóa{" "}
-            <strong>
-              {memberToRemove?.employee.firstName}{" "}
-              {memberToRemove?.employee.lastName}
-            </strong>{" "}
-            khỏi nhóm này không?
+            {t("members.confirm_remove_desc", {
+              name: `${memberToRemove?.employee.firstName} ${memberToRemove?.employee.lastName}`,
+            })}
           </span>
         }
-        confirmLabel="Xóa thành viên"
+        confirmLabel={t("members.confirm_remove_action")}
         variant="destructive"
         isLoading={isRemoving}
         onConfirm={handleRemove}
