@@ -1,0 +1,42 @@
+import { Department } from "./department";
+import { SystemRole } from "./roles";
+import { TeamInfo } from "./teams";
+
+export interface Employee {
+  clientId: string;
+  userId: string;
+  firstName: string;
+  lastName: string;
+  systemRole: SystemRole;
+  imageUrl: string;
+  departments: Department[];
+  teams: TeamInfo[];
+}
+
+export interface EmployeeDetail {
+  clientId: string;
+  userId: string;
+  firstName: string;
+  lastName: string;
+  systemRole: SystemRole;
+  imageUrl: string;
+  salary: number;
+}
+
+export interface EmployeeListData {
+  data: Employee[];
+  totalItems: number;
+  totalPages: number;
+  currentPage: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
+}
+
+export interface CreateEmployeeResponse {
+  clientId: string;
+}
+
+export interface AvatarUploadResponse {
+  path: string;
+  url: string;
+}

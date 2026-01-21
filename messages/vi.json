@@ -1,0 +1,448 @@
+{
+  "Metadata": {
+    "default": {
+      "site_name": "Socius",
+      "description": "Hệ thống quản lý nhân sự hiệu quả và xây dựng cộng đồng."
+    },
+    "auth": {
+      "title": "Đăng nhập",
+      "description": "Đăng nhập vào hệ thống Socius."
+    },
+    "profile": {
+      "title": "Hồ sơ",
+      "description": "Xem và quản lý hồ sơ của bạn trên Socius."
+    },
+    "dashboard": {
+      "title": "Bảng điều khiển",
+      "description": "Tổng quan hoạt động và thông tin nhân sự."
+    },
+    "not_found": {
+      "title": "404 - Trang không tồn tại"
+    },
+    "privacy": {
+      "title": "Chính sách bảo mật",
+      "description": "Tìm hiểu cách Socius bảo vệ dữ liệu cá nhân và thông tin nhân sự của bạn."
+    },
+    "terms": {
+      "title": "Điều khoản dịch vụ",
+      "description": "Hiểu rõ các điều khoản và điều kiện khi sử dụng hệ thống quản lý nhân sự Socius."
+    }
+  },
+  "Common": {
+    "pagination": {
+      "page": "Trang",
+      "of": "trên",
+      "showing": "Hiển thị",
+      "previous": "Trước",
+      "next": "Sau"
+    },
+    "status": {
+      "loading": "Đang tải...",
+      "no_data": "Không tìm thấy dữ liệu"
+    },
+    "avatar_picker": {
+      "upload_text": "Tải lên",
+      "remove_tooltip": "Xóa ảnh",
+      "edit_dialog_title": "Chỉnh sửa ảnh",
+      "zoom_out": "Thu nhỏ",
+      "zoom_in": "Phóng to",
+      "cancel": "Hủy",
+      "confirm": "Xác nhận"
+    }
+  },
+  "Dashboard": {
+    "welcome": "Chào mừng trở lại!",
+    "email": "Email",
+    "departments": "Phòng ban",
+    "teams": "Nhóm",
+    "token": "Mã token",
+    "token_copied": "Đã sao chép token!",
+    "logout": "Đăng xuất"
+  },
+  "Auth": {
+    "help": "Trợ giúp",
+    "welcome": "Chào mừng trở lại",
+    "instruction": "Vui lòng đăng nhập bằng tài khoản tổ chức của bạn để tiếp tục.",
+    "agreement": "Bằng cách tiếp tục, bạn đồng ý với <terms>Điều khoản dịch vụ</terms> và <privacy>Chính sách bảo mật</privacy> của chúng tôi.",
+    "slogan": "Kết nối mọi người, quản lý nhân sự hiệu quả và xây dựng cộng đồng vững mạnh cùng Socius.",
+    "team": "Đội ngũ Socius",
+    "login_with_microsoft": "Đăng nhập với Microsoft",
+    "system_name": "Hệ thống Socius Web",
+    "login_success": "Chào mừng trở lại, {name}!",
+    "login_failed": "Đăng nhập thất bại. Vui lòng thử lại.",
+    "session_expired": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại."
+  },
+  "NotFound": {
+    "title": "404",
+    "heading": "Trang không tồn tại",
+    "description": "Xin lỗi, chúng tôi không thể tìm thấy trang bạn đang tìm kiếm. Trang có thể đã bị xóa hoặc liên kết không chính xác.",
+    "back": "Quay lại",
+    "home": "Trang chủ",
+    "footer": "Hệ thống Socius Web"
+  },
+  "Profile": {
+    "my_profile": "Hồ sơ của tôi",
+    "settings": "Cài đặt",
+    "logout": "Đăng xuất",
+    "logged_out_success": "Đăng xuất thành công",
+    "employee_profile": "Hồ sơ nhân viên",
+    "back": "Quay lại",
+    "export": "Xuất file",
+    "edit_profile": "Chỉnh sửa",
+    "nav": {
+      "overview": "Tổng quan",
+      "details": "Thông tin cá nhân",
+      "organization": "Tổ chức",
+      "compensation": "Lương thưởng"
+    },
+    "stats": {
+      "annual_salary": "Lương hàng năm",
+      "departments": "Phòng ban",
+      "teams": "Nhóm"
+    },
+    "details": {
+      "title": "Thông tin cá nhân",
+      "client_id": "Client ID",
+      "unique_identifier": "Mã định danh duy nhất",
+      "system_role": "Vai trò hệ thống",
+      "access_level": "Cấp độ truy cập",
+      "email": "Địa chỉ Email",
+      "primary_contact": "Liên hệ chính",
+      "compensation": "Thu nhập hàng năm",
+      "base_salary": "Lương cơ bản"
+    },
+    "org": {
+      "title": "Tổ chức",
+      "departments": "Phòng ban",
+      "teams": "Nhóm",
+      "primary_dept": "Phòng ban chính",
+      "member": "Thành viên",
+      "no_dept": "Chưa thuộc phòng ban nào",
+      "team_leader": "Trưởng nhóm",
+      "active_member": "Thành viên",
+      "no_team": "Chưa thuộc nhóm nào"
+    },
+    "change_password": {
+      "button_label": "Đổi mật khẩu",
+      "title": "Đổi mật khẩu",
+      "description": "Để bảo mật, vui lòng không chia sẻ mật khẩu của bạn cho người khác.",
+      "current_password": "Mật khẩu hiện tại",
+      "new_password": "Mật khẩu mới",
+      "confirm_password": "Xác nhận mật khẩu",
+      "cancel": "Hủy",
+      "update": "Cập nhật",
+      "success_msg": "Đổi mật khẩu thành công!",
+      "error_generic": "Đã có lỗi xảy ra."
+    },
+    "validation": {
+      "current_password_required": "Vui lòng nhập mật khẩu hiện tại",
+      "new_password_min": "Mật khẩu mới phải có ít nhất 6 ký tự",
+      "password_uppercase": "Cần ít nhất 1 chữ hoa",
+      "password_number": "Cần ít nhất 1 số",
+      "password_special": "Cần ít nhất 1 ký tự đặc biệt",
+      "confirm_password_required": "Vui lòng xác nhận mật khẩu mới",
+      "passwords_not_match": "Mật khẩu xác nhận không khớp"
+    },
+    "avatar_dialog": {
+      "title": "Cập nhật ảnh đại diện",
+      "click_to_upload": "Nhấn để chọn ảnh",
+      "drag_drop": "hoặc kéo thả vào đây",
+      "helper_text": "JPG, PNG, GIF tối đa 5MB",
+      "zoom_out": "Thu nhỏ",
+      "zoom_in": "Phóng to",
+      "change_image": "Chọn ảnh khác",
+      "cancel": "Hủy",
+      "save": "Lưu thay đổi",
+      "success": "Cập nhật ảnh đại diện thành công!",
+      "error": "Có lỗi xảy ra khi tải ảnh.",
+      "crop_error": "Không thể cắt ảnh."
+    }
+  },
+  "Employees": {
+    "title": "Danh sách nhân viên",
+    "subtitle": "Quản lý và xem nhân sự trong tổ chức của bạn",
+    "total_label": "nhân viên",
+    "add_new": "Thêm nhân viên",
+    "search_placeholder": "Tìm kiếm theo Tên...",
+    "filter": "Bộ lọc",
+    "filters": {
+      "title": "Bộ lọc nâng cao",
+      "user_id_label": "User ID / Email",
+      "last_name_label": "Họ",
+      "first_name_label": "Tên",
+      "role_label": "Vai trò hệ thống",
+      "select_role": "Chọn vai trò",
+      "all_roles": "Tất cả vai trò"
+    },
+    "views": {
+      "table": "Dạng bảng",
+      "grid": "Dạng lưới",
+      "tree": "Sơ đồ cây"
+    },
+    "loading": "Đang tải danh sách nhân viên...",
+    "empty": {
+      "title": "Không tìm thấy nhân viên",
+      "desc_search": "Không có kết quả cho \"{query}\". Hãy thử từ khóa khác.",
+      "desc_filtered": "Không có nhân viên nào khớp với bộ lọc hiện tại.",
+      "desc_default": "Bắt đầu bằng cách thêm nhân viên đầu tiên của bạn."
+    },
+    "table": {
+      "employee": "Nhân viên",
+      "system_role": "Vai trò",
+      "departments": "Phòng ban",
+      "teams": "Nhóm",
+      "actions": "Thao tác"
+    },
+    "actions": {
+      "view_profile": "Xem hồ sơ",
+      "view_details": "Xem chi tiết",
+      "details": "Chi tiết",
+      "edit_details": "Chỉnh sửa",
+      "apply": "Áp dụng",
+      "reset": "Đặt lại",
+      "clear_filters": "Xóa bộ lọc"
+    },
+    "cards": {
+      "primary_dept": "Phòng ban chính",
+      "not_assigned": "Chưa gán",
+      "teams_count": "Nhóm ({count})",
+      "client_id": "Client ID",
+      "department_label": "{count, plural, =0 {Phòng ban} other {Phòng ban}}",
+      "team_label": "{count, plural, =0 {Nhóm} other {Nhóm}}",
+      "no_dept": "Chưa thuộc phòng ban nào",
+      "no_team": "Chưa thuộc nhóm nào"
+    },
+    "org": {
+      "departments": "Phòng ban",
+      "teams": "Nhóm",
+      "primary": "Chính",
+      "leader": "Trưởng nhóm",
+      "team_leader": "Trưởng nhóm"
+    }
+  },
+  "Theme": {
+    "toggle": "Đổi giao diện",
+    "loading": "Đang tải giao diện",
+    "light": "Sáng",
+    "dark": "Tối",
+    "system": "Hệ thống"
+  },
+  "Navigation": {
+    "dashboard": "Bảng điều khiển",
+    "my_team": "Đội ngũ của tôi",
+    "tasks": "Công việc",
+    "calendar": "Lịch",
+    "messages": "Tin nhắn",
+    "notifications": "Thông báo",
+    "directory": "Danh bạ",
+    "documents": "Tài liệu",
+    "settings": "Cài đặt",
+    "employees": "Nhân viên",
+    "admin_panel": "Trang quản lý",
+    "departments": "Phòng ban",
+    "teams": "Quản lý nhóm"
+  },
+  "PasswordStrength": {
+    "label": "Độ mạnh:",
+    "weak": "Yếu",
+    "fair": "Trung bình",
+    "good": "Tốt",
+    "strong": "Mạnh"
+  },
+  "Notifications": {
+    "title": "Thông báo",
+    "mark_all_read": "Đánh dấu tất cả đã đọc",
+    "view_all": "Xem tất cả thông báo",
+    "filters": {
+      "all": "Tất cả",
+      "unread": "Chưa đọc"
+    },
+    "empty": {
+      "message": "Bạn không có thông báo nào.",
+      "description": "Chúng tôi sẽ báo cho bạn khi có tin mới.",
+      "no_unread": "Tuyệt vời! Bạn đã đọc hết thông báo."
+    },
+    "new": "Mới"
+  },
+  "EmployeeDetails": {
+    "title": "Hồ sơ nhân viên",
+    "back": "Quay lại",
+    "loading": "Đang tải thông tin nhân viên...",
+    "copied": "Đã sao chép!",
+    "sections": {
+      "overview": "Tổng quan",
+      "personal": "Thông tin cá nhân",
+      "organization": "Tổ chức"
+    },
+    "actions": {
+      "edit": "Chỉnh sửa",
+      "menu_label": "Thao tác",
+      "copy_id": "Sao chép ID",
+      "suspend": "Đình chỉ tài khoản",
+      "active_status": "Đang hoạt động"
+    },
+    "fields": {
+      "full_name": "Họ và tên",
+      "email": "Địa chỉ Email",
+      "role": "Vai trò hệ thống",
+      "salary": "Mức lương",
+      "client_id": "Client ID"
+    },
+    "descriptions": {
+      "unique_id": "Mã định danh duy nhất",
+      "access_level": "Cấp độ truy cập hệ thống",
+      "primary_contact": "Liên hệ chính",
+      "base_salary": "Lương cơ bản",
+      "job_title": "Nhân viên Socius"
+    },
+    "org": {
+      "title": "Tổ chức",
+      "departments": "Phòng ban",
+      "teams": "Nhóm",
+      "no_dept": "Chưa thuộc phòng ban nào",
+      "no_team": "Chưa tham gia nhóm nào"
+    },
+    "error": {
+      "title": "Không tìm thấy nhân viên",
+      "description": "Nhân viên này không tồn tại hoặc đã bị xóa."
+    }
+  },
+  "Privacy": {
+    "title": "Chính sách bảo mật",
+    "back": "Quay lại trang đăng nhập",
+    "last_updated": "Cập nhật lần cuối",
+    "date": "12 tháng 1, 2026",
+    "footer": "Bản quyền thuộc về Socius.",
+    "intro": {
+      "title": "Giới thiệu",
+      "content": "Socius là hệ thống quản lý nhân sự nội bộ dành riêng cho nhân viên trong tổ chức của chúng tôi. Chúng tôi cam kết bảo vệ quyền riêng tư và bảo mật thông tin cá nhân cũng như dữ liệu nhân sự của bạn. Chính sách bảo mật này giải thích cách chúng tôi thu thập, sử dụng, lưu trữ và bảo vệ dữ liệu nhân viên trong hệ thống. Khi là nhân viên được cấp quyền truy cập Socius, bạn xác nhận rằng bạn đã đọc và hiểu chính sách này."
+    },
+    "collection": {
+      "title": "Thông tin chúng tôi thu thập",
+      "intro": "Là hệ thống quản lý nhân sự, Socius thu thập các loại thông tin cần thiết cho việc quản lý lực lượng lao động hiệu quả:",
+      "items": {
+        "personal": "Thông tin cá nhân: Họ tên đầy đủ, địa chỉ email, thông tin liên hệ, ngày sinh và số định danh",
+        "employment": "Thông tin tuyển dụng: Chức danh công việc, mã nhân viên, ngày bắt đầu làm việc, trạng thái làm việc và lịch sử công việc",
+        "organization": "Dữ liệu tổ chức: Phân bổ phòng ban, thành viên nhóm, cấu trúc báo cáo và quan hệ quản lý",
+        "compensation": "Dữ liệu lương thưởng: Thông tin lương, thưởng, phúc lợi và chi tiết bảng lương",
+        "system": "Dữ liệu sử dụng hệ thống: Hoạt động đăng nhập, sử dụng tính năng, nhật ký xác thực và tương tác hệ thống"
+      }
+    },
+    "usage": {
+      "title": "Cách chúng tôi sử dụng thông tin của bạn",
+      "intro": "Chúng tôi sử dụng thông tin thu thập được cho các mục đích kinh doanh hợp pháp bao gồm:",
+      "items": {
+        "management": "Quản lý nhân viên và lập kế hoạch lực lượng lao động",
+        "communication": "Giao tiếp nội bộ và cộng tác trong tổ chức của bạn",
+        "compensation": "Xử lý bảng lương và quản lý lương thưởng",
+        "analytics": "Phân tích hiệu suất và thông tin chi tiết về tổ chức",
+        "security": "Bảo mật hệ thống, kiểm soát truy cập và tuân thủ kiểm toán"
+      }
+    },
+    "protection": {
+      "title": "Bảo vệ và bảo mật dữ liệu",
+      "content": "Chúng tôi triển khai các biện pháp bảo mật tiêu chuẩn ngành để bảo vệ thông tin của bạn, bao gồm mã hóa, xác thực an toàn qua Microsoft Azure AD, kiểm soát truy cập dựa trên vai trò, kiểm toán bảo mật thường xuyên và các giao thức truyền dữ liệu an toàn. Quyền truy cập vào thông tin nhạy cảm được hạn chế dựa trên vai trò công việc và nhu cầu kinh doanh."
+    },
+    "sharing": {
+      "title": "Chia sẻ và tiết lộ dữ liệu",
+      "intro": "Thông tin của bạn chỉ được chia sẻ trong các trường hợp sau:",
+      "items": {
+        "authorized": "Với nhân viên được ủy quyền trong tổ chức của bạn dựa trên vai trò và quyền truy cập của họ",
+        "legal": "Khi được yêu cầu theo luật định, quy trình pháp lý hoặc tuân thủ quy định",
+        "consent": "Với sự đồng ý rõ ràng của bạn cho các mục đích cụ thể"
+      }
+    },
+    "rights": {
+      "title": "Quyền của bạn",
+      "intro": "Bạn có các quyền sau đối với thông tin cá nhân của mình:",
+      "items": {
+        "access": "Truy cập và xem xét thông tin cá nhân của bạn được lưu trữ trong hệ thống",
+        "correction": "Yêu cầu sửa đổi thông tin không chính xác hoặc không đầy đủ",
+        "deletion": "Yêu cầu xóa dữ liệu của bạn theo yêu cầu pháp lý và quy định",
+        "objection": "Phản đối một số loại xử lý dữ liệu nhất định"
+      }
+    },
+    "retention": {
+      "title": "Lưu trữ dữ liệu",
+      "content": "Chúng tôi lưu giữ thông tin của bạn trong suốt thời gian làm việc của bạn và trong một khoảng thời gian sau đó theo yêu cầu của pháp luật, tuân thủ quy định hoặc mục đích kinh doanh hợp pháp. Hồ sơ làm việc có thể được lưu giữ theo yêu cầu pháp luật ngay cả sau khi chấm dứt hợp đồng lao động."
+    },
+    "contact": {
+      "title": "Liên hệ với chúng tôi",
+      "content": "Nếu bạn có thắc mắc về Chính sách bảo mật này hoặc dữ liệu cá nhân của bạn, vui lòng liên hệ với bộ phận Nhân sự của tổ chức cho các vấn đề về quyền riêng tư hoặc quản trị viên hệ thống cho các thắc mắc kỹ thuật. Chúng tôi sẽ phản hồi trong vòng 5-10 ngày làm việc."
+    },
+    "updates": {
+      "title": "Cập nhật chính sách",
+      "content": "Chúng tôi có thể cập nhật Chính sách bảo mật này định kỳ để phản ánh các thay đổi trong thực tiễn hoặc yêu cầu pháp lý của chúng tôi. Chúng tôi sẽ thông báo cho người dùng về các thay đổi đáng kể thông qua tính năng thông báo hệ thống. Việc tiếp tục sử dụng Socius sau các thay đổi đồng nghĩa với việc chấp nhận chính sách đã cập nhật."
+    }
+  },
+  "Terms": {
+    "title": "Điều khoản dịch vụ",
+    "last_updated": "Cập nhật lần cuối",
+    "date": "12 tháng 1, 2026",
+    "footer": "Bảo lưu mọi quyền.",
+    "intro": {
+      "title": "Giới thiệu",
+      "content": "Chào mừng đến với Socius, hệ thống Quản lý Nhân sự nội bộ dành cho nhân viên của tổ chức chúng tôi. Các Điều khoản dịch vụ này điều chỉnh quyền truy cập và sử dụng nền tảng nội bộ này. Khi là nhân viên được cấp quyền truy cập Socius, bạn xác nhận rằng bạn đã đọc, hiểu và đồng ý bị ràng buộc bởi các điều khoản này. Quyền truy cập vào hệ thống này chỉ dành cho nhân viên được ủy quyền."
+    },
+    "acceptance": {
+      "title": "Chấp nhận điều khoản",
+      "content": "Bằng cách đăng nhập với thông tin nhân viên của bạn hoặc sử dụng bất kỳ tính năng nào của hệ thống Socius, bạn đồng ý tuân thủ các Điều khoản dịch vụ này và tất cả các luật và quy định hiện hành. Việc bạn tiếp tục sử dụng hệ thống đồng nghĩa với việc chấp nhận liên tục các điều khoản này, bao gồm bất kỳ sửa đổi nào chúng tôi có thể thực hiện theo thời gian. Quyền truy cập được cấp cho bạn với tư cách là nhân viên của tổ chức."
+    },
+    "accounts": {
+      "title": "Quyền truy cập nhân viên",
+      "intro": "Quyền truy cập vào Socius được cấp dành riêng cho nhân viên của tổ chức thông qua thông tin đăng nhập do công ty cấp. Bạn có trách nhiệm duy trì tính bảo mật và bí mật của thông tin đăng nhập tài khoản của mình.",
+      "items": {
+        "authentication": "Xác thực: Tài khoản được xác thực thông qua Microsoft Azure Active Directory của tổ chức bạn. Bạn phải sử dụng thông tin đăng nhập hợp lệ do tổ chức cung cấp.",
+        "security": "Bảo mật: Bạn phải giữ bí mật mật khẩu và thông tin tài khoản của mình. Thông báo ngay cho quản trị viên hệ thống nếu có bất kỳ truy cập trái phép hoặc vi phạm bảo mật nào.",
+        "responsibility": "Trách nhiệm: Bạn chịu trách nhiệm cho tất cả các hoạt động xảy ra dưới tài khoản của mình. Không chia sẻ thông tin đăng nhập hoặc cho phép người khác truy cập tài khoản của bạn."
+      }
+    },
+    "usage": {
+      "title": "Về việc sử dụng hệ thống",
+      "intro": "Socius được thiết kế riêng cho các mục đích quản lý nhân sự hợp pháp trong tổ chức của bạn. Bạn đồng ý sử dụng hệ thống một cách thích hợp:",
+      "items": {
+        "purpose": "Chỉ sử dụng hệ thống cho các hoạt động quản lý nhân sự được ủy quyền như quản lý dữ liệu nhân viên, giám sát cấu trúc tổ chức và các hoạt động kinh doanh hợp pháp.",
+        "compliance": "Tuân thủ tất cả các luật, quy định hiện hành và các chính sách nội bộ của tổ chức khi sử dụng hệ thống.",
+        "professional": "Duy trì hành vi chuyên nghiệp và sử dụng hệ thống theo cách phù hợp với tiêu chuẩn nơi làm việc và hướng dẫn đạo đức."
+      }
+    },
+    "data": {
+      "title": "Trách nhiệm về dữ liệu",
+      "content": "Bạn thừa nhận rằng Socius xử lý dữ liệu nhân viên và tổ chức nhạy cảm. Bạn đồng ý xử lý tất cả dữ liệu được truy cập thông qua hệ thống theo luật bảo mật hiện hành, quy định bảo vệ dữ liệu và chính sách dữ liệu của tổ chức. Bạn không được trích xuất, sao chép hoặc sử dụng dữ liệu cho các mục đích ngoài phạm vi vai trò được ủy quyền của mình."
+    },
+    "prohibited": {
+      "title": "Các hoạt động bị cấm",
+      "intro": "Các hoạt động sau đây bị nghiêm cấm khi sử dụng Socius:",
+      "items": {
+        "unauthorized": "Cố gắng truy cập dữ liệu, tính năng hoặc khu vực của hệ thống mà bạn không có quyền truy cập hợp lệ.",
+        "misuse": "Sử dụng hệ thống để truyền, lưu trữ hoặc xử lý mã độc hại, vi-rút hoặc bất kỳ nội dung có hại nào.",
+        "interference": "Can thiệp hoặc làm gián đoạn hoạt động của hệ thống, các tính năng bảo mật hoặc quyền truy cập của người dùng khác vào nền tảng.",
+        "violation": "Sử dụng hệ thống theo bất kỳ cách nào vi phạm luật pháp, quy định hiện hành hoặc xâm phạm quyền của người khác."
+      }
+    },
+    "intellectual": {
+      "title": "Sở hữu trí tuệ",
+      "content": "Tất cả nội dung, tính năng, chức năng và quyền sở hữu trí tuệ trong Socius, bao gồm nhưng không giới hạn ở mã phần mềm, thiết kế, đồ họa, giao diện người dùng và tài liệu, thuộc sở hữu của Socius hoặc các bên cấp phép. Bạn được cấp giấy phép hạn chế, không độc quyền, không thể chuyển nhượng để sử dụng hệ thống chỉ cho mục đích quản lý nhân sự dự định. Bạn không được sao chép, sửa đổi, phân phối, bán hoặc tạo các sản phẩm phái sinh từ bất kỳ phần nào của hệ thống."
+    },
+    "liability": {
+      "title": "Giới hạn trách nhiệm pháp lý",
+      "content": "Socius được cung cấp \"nguyên trạng\" mà không có bất kỳ bảo đảm nào, dù rõ ràng hay ngụ ý. Trong phạm vi tối đa được luật pháp cho phép, chúng tôi không bảo đảm về tính khả dụng của hệ thống, độ chính xác của dữ liệu hoặc sự phù hợp cho một mục đích cụ thể. Chúng tôi sẽ không chịu trách nhiệm cho bất kỳ thiệt hại gián tiếp, ngẫu nhiên, đặc biệt, hậu quả hoặc trừng phạt phát sinh từ việc bạn sử dụng hoặc không thể sử dụng hệ thống. Việc tổ chức của bạn sử dụng Socius là tự chịu rủi ro."
+    },
+    "termination": {
+      "title": "Chấm dứt tài khoản",
+      "content": "Chúng tôi bảo lưu quyền tạm ngưng hoặc chấm dứt quyền truy cập của bạn vào Socius bất cứ lúc nào, có hoặc không có lý do, và có hoặc không có thông báo, đặc biệt nếu chúng tôi tin rằng bạn đã vi phạm các Điều khoản dịch vụ này. Khi chấm dứt, quyền truy cập và sử dụng hệ thống của bạn sẽ chấm dứt ngay lập tức. Tổ chức của bạn cũng có thể chấm dứt quyền truy cập tài khoản của bạn theo các chính sách và thủ tục nội bộ."
+    },
+    "changes": {
+      "title": "Thay đổi điều khoản",
+      "content": "Chúng tôi bảo lưu quyền sửa đổi các Điều khoản dịch vụ này bất cứ lúc nào để phản ánh các thay đổi trong dịch vụ, yêu cầu pháp lý hoặc hoạt động kinh doanh của chúng tôi. Chúng tôi sẽ thông báo về những thay đổi đáng kể thông qua tính năng thông báo hệ thống. Việc bạn tiếp tục sử dụng Socius sau những thay đổi đó đồng nghĩa với việc bạn chấp nhận các điều khoản đã sửa đổi. Chúng tôi khuyến khích bạn xem xét các điều khoản này định kỳ."
+    },
+    "contact": {
+      "title": "Thông tin liên hệ",
+      "content": "Nếu bạn có câu hỏi về các Điều khoản dịch vụ này, vui lòng liên hệ với quản trị viên hệ thống hoặc bộ phận Nhân sự của tổ chức để được hỗ trợ."
+    },
+    "governing": {
+      "title": "Luật điều chỉnh",
+      "content": "Các Điều khoản dịch vụ này sẽ được điều chỉnh và giải thích theo luật hiện hành. Bất kỳ tranh chấp nào phát sinh từ các điều khoản này hoặc việc sử dụng Socius của bạn sẽ thuộc thẩm quyền độc quyền của các tòa án thích hợp."
+    }
+  }
+}
