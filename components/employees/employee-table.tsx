@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -18,13 +19,21 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Building2, MoreHorizontal, Users } from "lucide-react";
+import {
+  Building2,
+  MoreHorizontal,
+  Users,
+  MessageSquareText,
+  Loader2,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-// UPDATE: Import hàm tiện ích chung
 import { getAvatarInfo } from "@/utils/avatar-utils";
 import type { Employee } from "@/types/employee";
 import { getFullImageUrl } from "@/utils/image-utils";
+import { chatService } from "@/services/chat-service";
 
 interface EmployeeTableProps {
   data: Employee[];
@@ -32,6 +41,30 @@ interface EmployeeTableProps {
 
 export function EmployeeTable({ data }: EmployeeTableProps) {
   const t = useTranslations("Employees");
+  const router = useRouter();
+  // State để track loading của từng dòng khi bấm chat (tránh spam click)
+  const [chatLoadingId, setChatLoadingId] = useState<string | null>(null);
+
+  const handleStartChat = async (employee: Employee) => {
+    try {
+      setChatLoadingId(employee.clientId);
+
+      const conversation = await chatService.createDirectConversation(
+        employee.clientId,
+      );
+
+      if (conversation && conversation.conversationId) {
+        router.push(`/chat/${conversation.conversationId}`);
+      } else {
+        toast.error("Không thể tạo cuộc hội thoại");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Lỗi kết nối khi tạo hội thoại");
+    } finally {
+      setChatLoadingId(null);
+    }
+  };
 
   return (
     <Card className="shadow-sm border-border/50 overflow-hidden -py-6">
@@ -59,11 +92,12 @@ export function EmployeeTable({ data }: EmployeeTableProps) {
           {data.map((emp) => {
             const { fullName, initials, avatarUrl } = getAvatarInfo(emp);
             const displayAvatarUrl = getFullImageUrl(avatarUrl);
+            const isChatLoading = chatLoadingId === emp.clientId;
 
             return (
               <TableRow
                 key={emp.clientId}
-                className="hover:bg-muted/40 transition-colors border-border/50"
+                className="hover:bg-muted/40 transition-colors border-border/50 group"
               >
                 <TableCell className="pl-6">
                   <div className="flex items-center gap-3">
@@ -144,26 +178,47 @@ export function EmployeeTable({ data }: EmployeeTableProps) {
                   </div>
                 </TableCell>
 
-                {/* THÊM pr-6 VÀO ĐÂY (Cột cuối - Body) */}
                 <TableCell className="text-right pr-6">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="h-8 w-8 p-0 hover:bg-muted/50"
-                      >
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-40">
-                      <DropdownMenuItem className="cursor-pointer">
-                        {t("actions.view_profile")}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer">
-                        {t("actions.edit_details")}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <div className="flex items-center justify-end gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                      onClick={() => handleStartChat(emp)}
+                      disabled={isChatLoading}
+                      title="mes"
+                    >
+                      {isChatLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <MessageSquareText className="h-4 w-4" />
+                      )}
+                    </Button>
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          className="h-8 w-8 p-0 hover:bg-muted/50"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onClick={() =>
+                            router.push(`/employees/${emp.clientId}`)
+                          }
+                        >
+                          {t("actions.view_profile")}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="cursor-pointer">
+                          {t("actions.edit_details")}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </TableCell>
               </TableRow>
             );

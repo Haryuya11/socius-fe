@@ -1,4 +1,4 @@
-// 1. Define Enums based on Java Code
+
 export enum DomainTypes {
   MESSAGE = "MESSAGE",
   NOTIFICATION = "NOTIFICATION",
@@ -11,8 +11,10 @@ export enum EventTypes {
   MESSAGE_DELETED = "MESSAGE_DELETED",
   TYPING_INDICATOR = "TYPING_INDICATOR",
 
-  NEW_NOTIFICATION = "NEW_NOTIFICATION",
+  REACTION_ADDED = "REACTION_ADDED",
+  REACTION_REMOVED = "REACTION_REMOVED",
 
+  NEW_NOTIFICATION = "NEW_NOTIFICATION",
   SYSTEM_BROADCAST = "SYSTEM_BROADCAST",
 }
 
@@ -27,13 +29,13 @@ export interface WsNotificationPayload {
 }
 
 export interface NotificationMessage {
-  id: number | string; 
+  id: number | string;
   title: string;
   content: string;
-  redirectUrl?: string; 
-  isRead: number; 
+  redirectUrl?: string;
+  isRead: number;
   createdAt: string;
-  deliveryType?: number; 
+  deliveryType?: number;
 }
 
 export interface WebSocketMessage<T> {

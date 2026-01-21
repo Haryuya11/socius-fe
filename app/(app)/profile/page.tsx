@@ -410,9 +410,6 @@ export default function ProfilePage() {
                                     <Star className="h-3.5 w-3.5 text-green-600 fill-green-600" />
                                   )}
                                 </p>
-                                <p className="text-sm text-muted-foreground">
-                                  {dept.roleName}
-                                </p>
                               </div>
                               <Badge variant="outline" className="text-xs">
                                 {dept.departmentCode}
