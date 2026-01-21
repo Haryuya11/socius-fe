@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Building2, Users, ArrowRight } from "lucide-react";
 import { Team } from "@/types/teams";
 import { Card } from "@/components/ui/card";
@@ -13,6 +14,7 @@ interface TeamTreeViewProps {
 
 export function TeamTreeView({ data }: TeamTreeViewProps) {
   const router = useRouter();
+  const t = useTranslations("Teams");
 
   // Gom nhóm team theo Department Code
   const groupedData = data.reduce((acc, team) => {
@@ -36,9 +38,9 @@ export function TeamTreeView({ data }: TeamTreeViewProps) {
               <Building2 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
             </div>
             <div>
-              <h3 className="text-lg font-bold">Phòng ban: {deptCode}</h3>
+              <h3 className="text-lg font-bold">{t("tree.dept_label")} {deptCode}</h3>
               <p className="text-xs text-muted-foreground">
-                {teams.length} team trực thuộc
+                {t("tree.teams_count", { count: teams.length })}
               </p>
             </div>
           </div>
@@ -74,7 +76,7 @@ export function TeamTreeView({ data }: TeamTreeViewProps) {
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={() => router.push(`/teams/${team.teamCode}`)}
                 >
-                  Chi tiết <ArrowRight className="ml-1 h-3 w-3" />
+                  {t("tree.details")} <ArrowRight className="ml-1 h-3 w-3" />
                 </Button>
               </div>
             ))}

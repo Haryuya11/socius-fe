@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Check, Loader2, Search, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useTranslations } from "next-intl";
 
 import {
   Dialog,
@@ -36,6 +37,7 @@ export function AddMemberDialog({
   onSuccess,
   children,
 }: AddMemberDialogProps) {
+  const t = useTranslations("Teams");
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Employee[]>([]);
@@ -87,13 +89,13 @@ export function AddMemberDialog({
     try {
       const payload = selectedIds.map((id) => ({ employeeId: id }));
       await teamService.addMembers(teamCode, payload);
-      toast.success(`Đã thêm ${selectedIds.length} thành viên vào team.`);
+      toast.success(t("add_member.added_success", { count: selectedIds.length }));
       setOpen(false);
       setSelectedIds([]);
       setQuery("");
       onSuccess();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Thêm thất bại");
+      toast.error(error?.response?.data?.message || t("add_member.add_failed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -105,24 +107,24 @@ export function AddMemberDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {children ? (
+          {children ? (
           children
         ) : (
           <Button className="gap-2">
-            <UserPlus className="h-4 w-4" /> Thêm thành viên
+            <UserPlus className="h-4 w-4" /> {t("add_member.add_button")}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Thêm thành viên vào nhóm {teamCode}</DialogTitle>
+          <DialogTitle>{t("add_member.title", { code: teamCode })}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Tìm theo tên nhân viên..."
+              placeholder={t("add_member.search_placeholder")}
               className="pl-9"
               value={query}
               onChange={(e) => handleSearch(e.target.value)}
@@ -136,9 +138,7 @@ export function AddMemberDialog({
               </div>
             ) : results.length === 0 ? (
               <div className="text-center text-sm text-muted-foreground p-4">
-                {query
-                  ? "Không tìm thấy nhân viên nào."
-                  : "Nhập tên để tìm kiếm."}
+                {query ? t("add_member.no_results") : t("add_member.hint")}
               </div>
             ) : (
               <div className="space-y-1">
@@ -176,7 +176,7 @@ export function AddMemberDialog({
 
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setOpen(false)}>
-              Hủy
+              {t("dialog.cancel")}
             </Button>
             <Button
               onClick={handleSubmit}
@@ -185,7 +185,7 @@ export function AddMemberDialog({
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Thêm ({selectedIds.length})
+              {t("dialog.add")} ({selectedIds.length})
             </Button>
           </div>
         </div>

@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Loader2, Plus, Pencil, Save } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import {
   Dialog,
@@ -42,6 +43,7 @@ export function TeamDialog({
   initialData,
   onSuccess,
 }: TeamDialogProps) {
+  const t = useTranslations("Teams");
   const [open, setOpen] = useState(false);
   const isEdit = !!initialData;
 
@@ -68,17 +70,17 @@ export function TeamDialog({
     try {
       if (isEdit) {
         await teamService.updateTeam(initialData.teamCode, data);
-        toast.success("Cập nhật team thành công!");
+        toast.success(t("dialog.update_action") || "Updated");
       } else {
         await teamService.createTeam(data);
-        toast.success("Tạo team mới thành công!");
+        toast.success(t("dialog.create_success") || "Created");
       }
 
       setOpen(false);
       if (onSuccess) onSuccess();
     } catch (error: any) {
       console.error(error);
-      toast.error(error.response?.data?.message || "Có lỗi xảy ra");
+      toast.error(error.response?.data?.message || (t("dialog.create_failed") as string) || "Error");
     }
   };
 
@@ -94,19 +96,17 @@ export function TeamDialog({
             ) : (
               <Plus className="h-4 w-4" />
             )}
-            {isEdit ? "Cập nhật" : "Thêm Team"}
+            {isEdit ? t("dialog.update_action") : t("dialog.create_action")}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>
-            {isEdit ? "Cập nhật Team" : "Thêm Team mới"}
+            {isEdit ? t("dialog.edit_title") : t("dialog.create_title")}
           </DialogTitle>
           <DialogDescription>
-            {isEdit
-              ? "Chỉnh sửa thông tin cơ bản của Team."
-              : "Tạo team mới thuộc một phòng ban."}
+            {isEdit ? t("dialog.edit_description") : t("dialog.create_description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -121,7 +121,7 @@ export function TeamDialog({
               name="teamCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mã Team (Team Code)</FormLabel>
+                  <FormLabel>{t("dialog.team_code_label")}</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="TEAM_001"
@@ -141,7 +141,7 @@ export function TeamDialog({
               name="teamName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tên Team</FormLabel>
+                  <FormLabel>{t("dialog.team_name_label")}</FormLabel>
                   <FormControl>
                     <Input placeholder="Vd: Mobile App Team" {...field} />
                   </FormControl>
@@ -155,7 +155,7 @@ export function TeamDialog({
               name="departmentCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phòng Ban Trực Thuộc</FormLabel>
+                  <FormLabel>{t("dialog.department_label")}</FormLabel>
                   <FormControl>
                     <DepartmentSelector
                       value={field.value}
@@ -174,14 +174,14 @@ export function TeamDialog({
                 variant="outline"
                 onClick={() => setOpen(false)}
               >
-                Hủy
+                {t("dialog.cancel")}
               </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
                 <Save className="mr-2 h-4 w-4" />
-                {isEdit ? "Lưu thay đổi" : "Tạo mới"}
+                {isEdit ? t("dialog.save") : t("dialog.add")}
               </Button>
             </div>
           </form>

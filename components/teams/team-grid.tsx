@@ -8,6 +8,7 @@ import {
   Users,
 } from "lucide-react";
 import { Team } from "@/types/teams";
+import { useTranslations } from "next-intl";
 import {
   Card,
   CardContent,
@@ -36,6 +37,7 @@ interface TeamGridProps {
 export function TeamGrid({ data, onDelete, onSuccess }: TeamGridProps) {
   const router = useRouter();
   const { hasPermission } = usePermission();
+  const t = useTranslations("Teams");
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -81,14 +83,14 @@ export function TeamGrid({ data, onDelete, onSuccess }: TeamGridProps) {
                         <DropdownMenuItem
                           onClick={() => router.push(`/teams/${team.teamCode}`)}
                         >
-                          Xem chi tiết
+                          {t("actions.view")}
                         </DropdownMenuItem>
                       )}
 
                       {canUpdate && (
                         <TeamDialog initialData={team} onSuccess={onSuccess}>
                           <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground w-full">
-                            <Pencil className="mr-2 h-4 w-4" /> Chỉnh sửa
+                            <Pencil className="mr-2 h-4 w-4" /> {t("actions.edit")}
                           </div>
                         </TeamDialog>
                       )}
@@ -98,7 +100,7 @@ export function TeamGrid({ data, onDelete, onSuccess }: TeamGridProps) {
                           className="text-destructive focus:text-destructive"
                           onClick={() => onDelete(team.teamCode)}
                         >
-                          <Trash2 className="mr-2 h-4 w-4" /> Xóa Team
+                            <Trash2 className="mr-2 h-4 w-4" /> {t("actions.delete")}
                         </DropdownMenuItem>
                       )}
                     </DropdownMenuContent>
@@ -117,9 +119,9 @@ export function TeamGrid({ data, onDelete, onSuccess }: TeamGridProps) {
                 <Hash className="mr-2 h-4 w-4 opacity-70" />
                 <span className="font-mono text-xs">{team.teamCode}</span>
               </div>
-              <div className="flex items-center text-sm">
+                <div className="flex items-center text-sm">
                 <Building2 className="mr-2 h-4 w-4 text-blue-500" />
-                <span className="text-muted-foreground mr-2">Dept:</span>
+                <span className="text-muted-foreground mr-2">{t("tree.dept_label")}:</span>
                 <Badge
                   variant="outline"
                   className="bg-blue-50 text-blue-700 border-blue-200"
@@ -136,7 +138,7 @@ export function TeamGrid({ data, onDelete, onSuccess }: TeamGridProps) {
                   className="w-full hover:bg-primary hover:text-primary-foreground group-hover:border-primary/50"
                   onClick={() => router.push(`/teams/${team.teamCode}`)}
                 >
-                  Quản lý thành viên
+                  {t("actions.manage_members")}
                 </Button>
               )}
             </CardFooter>

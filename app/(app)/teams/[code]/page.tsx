@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Users, Building2, Crown } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ import { AddMemberDialog } from "@/components/teams/add-member-dialog";
 import { usePermission } from "@/hooks/use-permission";
 
 export default function TeamDetailsPage() {
+  const t = useTranslations("Teams");
   const params = useParams();
   const router = useRouter();
   const teamCode = params.code as string;
@@ -98,8 +100,8 @@ export default function TeamDetailsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Tổng thành viên
-            </CardTitle>
+                {t("detail.total_members")}
+              </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -109,7 +111,7 @@ export default function TeamDetailsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Team Leader</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("detail.leader")}</CardTitle>
             <Crown className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
@@ -121,7 +123,7 @@ export default function TeamDetailsPage() {
               </div>
             ) : (
               <div className="text-sm text-muted-foreground italic">
-                Chưa có Leader
+                {t("detail.leader_unassigned")}
               </div>
             )}
           </CardContent>
@@ -129,7 +131,7 @@ export default function TeamDetailsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Phòng ban</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("detail.department")}</CardTitle>
             <Building2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -142,9 +144,9 @@ export default function TeamDetailsPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Thành viên nhóm</CardTitle>
+            <CardTitle>{t("detail.members_title")}</CardTitle>
             <CardDescription>
-              Quản lý danh sách thành viên và vai trò.
+              {t("detail.manage_description")}
             </CardDescription>
           </div>
           {canAddMember && (

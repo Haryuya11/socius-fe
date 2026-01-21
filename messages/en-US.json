@@ -241,6 +241,12 @@
       "actions": "Actions"
     },
     "actions": {
+    "stats": {
+      "members": "Members",
+      "department": "Department"
+    },
+    "leader_badge": "Team Leader",
+    "your_role": "Your role",
       "view_profile": "View profile",
       "view_details": "View Details",
       "details": "Details",
@@ -590,6 +596,112 @@
     "members": {
       "title": "Team Members",
       "description": "Members in {name} team"
+    }
+  ,
+  "dialog": {
+    "cancel": "Cancel",
+    "save": "Save"
+  }
+  },
+  "Teams": {
+    "title": "Teams",
+    "description": "Organization and management of work teams.",
+    "add_member": {
+      "title": "Add member to {code}",
+      "search_placeholder": "Search by name or email...",
+      "no_results": "No employees found.",
+      "hint": "Type a name to search.",
+      "add_button": "Add member",
+      "added_success": "Added {count} members to the team.",
+      "add_failed": "Failed to add members"
+    },
+    "table": {
+      "team_code": "Team Code",
+      "team_name": "Team Name",
+      "department": "Department",
+      "actions": "Actions"
+    },
+    "tree": {
+      "dept_label": "Department",
+      "teams_count": "{count} teams",
+      "details": "Details"
+    },
+    "members": {
+      "remove_success": "Member removed from team",
+      "remove_failed": "Failed to remove member",
+      "promote_success": "Promoted {name} to Leader",
+      "promote_failed": "Failed to promote member",
+      "confirm_promote": "Promote to Team Leader",
+      "confirm_promote_desc": "Are you sure you want to promote {name} to be the new team leader?",
+      "confirm_promote_note": "(The current leader will become a regular member)",
+      "confirm_promote_action": "Promote",
+      "confirm_remove": "Remove member",
+      "confirm_remove_desc": "Are you sure to remove {name} from the team?",
+      "confirm_remove_action": "Remove member",
+      "table": {
+        "employee": "Employee",
+        "role": "Role",
+        "system_role": "System Role",
+        "actions": "Actions",
+        "empty": "No members yet."
+      },
+      "labels": {
+        "promote": "Promote to Leader",
+        "transfer": "Transfer",
+        "remove": "Remove from team",
+        "leader": "Leader",
+        "member": "Member"
+      }
+    },
+    "transfer": {
+      "transfer": "Transfer",
+      "transfer_success": "Transfer successful!",
+      "transfer_failed": "Transfer failed",
+      "transfer_title": "Transfer member",
+      "transfer_desc_prefix": "Transfer",
+      "transfer_desc_suffix": "to another team.",
+      "to_label": "Target team",
+      "to_placeholder": "Select a team..."
+    },
+    "dialog": {
+      "cancel": "Cancel",
+      "save": "Save",
+      "add": "Add"
+    ,
+    "team_code_label": "Team Code",
+    "team_name_label": "Team Name",
+    "department_label": "Department",
+    "create_title": "Create New Team",
+    "edit_title": "Edit Team",
+    "create_description": "Create a new team under a department.",
+    "edit_description": "Edit basic team information.",
+    "create_action": "Create",
+    "update_action": "Update",
+    "create_success": "Team created successfully",
+    "update_success": "Team updated successfully"
+    },
+    "detail": {
+      "total_members": "Total Members",
+      "members_title": "Team Members",
+      "manage_description": "Manage the list of members and their roles.",
+      "leader": "Team Leader",
+      "leader_unassigned": "No leader assigned",
+      "department": "Department"
+    },
+    "stats": {
+      "total_teams": "Total Teams",
+      "unique_departments": "Related Departments",
+      "uptime": "System Health",
+      "total_teams_desc": "Active working teams",
+      "unique_departments_desc": "Departments that have teams",
+      "uptime_desc": "Operational status is stable"
+    }
+    ,
+    "actions": {
+      "view": "View details",
+      "edit": "Edit",
+      "delete": "Delete Team",
+      "manage_members": "Manage members"
     }
   },
   "Directory": {
