@@ -592,6 +592,76 @@
       "description": "Members in {name} team"
     }
   },
+  "Directory": {
+    "title": "Directory",
+    "subtitle": "Find and connect with colleagues in your organization",
+    "total_count": "{count} people",
+    "search_placeholder": "Search by name...",
+    "filter": "Filter",
+    "stats": {
+      "total_people": "Total People",
+      "total_people_desc": "All employees in the organization",
+      "organization": "Organization",
+      "organization_desc": "Current company"
+    },
+    "filters": {
+      "title": "Search Filters",
+      "email_label": "Email",
+      "department_label": "Department",
+      "team_label": "Team"
+    },
+    "actions": {
+      "reset": "Reset",
+      "cancel": "Cancel",
+      "apply": "Apply",
+      "clear_filters": "Clear filters"
+    },
+    "empty": {
+      "title": "No results found",
+      "description": "Try adjusting your search or filters"
+    },
+    "cards": {
+      "department": "Department",
+      "not_assigned": "Not assigned",
+      "teams_count": "{count} teams",
+      "no_teams": "No teams"
+    },
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "department": "Department",
+      "teams": "Teams",
+      "actions": "Actions"
+    },
+    "chat": "Chat",
+    "detail": {
+      "back": "Back",
+      "active_status": "Active",
+      "sections": {
+        "overview": "Overview",
+        "contact": "Contact Information",
+        "organization": "Organization"
+      },
+      "fields": {
+        "email": "Email",
+        "role": "Role"
+      },
+      "descriptions": {
+        "primary_contact": "Primary contact email",
+        "access_level": "System access level"
+      },
+      "departments": "Departments",
+      "teams": "Teams",
+      "primary": "Primary",
+      "leader": "Leader",
+      "no_departments": "Not assigned to any department",
+      "no_teams": "Not assigned to any team",
+      "error": {
+        "title": "Not Found",
+        "description": "Unable to load this person's information"
+      }
+    }
+  },
   "Chat": {
     "create_failed": "Unable to create conversation",
     "connect_failed": "Connection error when creating conversation"

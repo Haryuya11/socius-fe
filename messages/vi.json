@@ -592,6 +592,76 @@
       "description": "Các thành viên trong nhóm {name}"
     }
   },
+  "Directory": {
+    "title": "Danh bạ",
+    "subtitle": "Tìm kiếm và liên hệ với đồng nghiệp trong tổ chức",
+    "total_count": "{count} người",
+    "search_placeholder": "Tìm theo tên...",
+    "filter": "Lọc",
+    "stats": {
+      "total_people": "Tổng số người",
+      "total_people_desc": "Tất cả nhân viên trong tổ chức",
+      "organization": "Tổ chức",
+      "organization_desc": "Công ty hiện tại"
+    },
+    "filters": {
+      "title": "Bộ lọc tìm kiếm",
+      "email_label": "Email",
+      "department_label": "Phòng ban",
+      "team_label": "Nhóm"
+    },
+    "actions": {
+      "reset": "Đặt lại",
+      "cancel": "Hủy",
+      "apply": "Áp dụng",
+      "clear_filters": "Xóa bộ lọc"
+    },
+    "empty": {
+      "title": "Không tìm thấy kết quả",
+      "description": "Thử thay đổi từ khóa hoặc bộ lọc tìm kiếm"
+    },
+    "cards": {
+      "department": "Phòng ban",
+      "not_assigned": "Chưa phân bổ",
+      "teams_count": "{count} nhóm",
+      "no_teams": "Chưa có nhóm"
+    },
+    "table": {
+      "name": "Họ và tên",
+      "email": "Email",
+      "department": "Phòng ban",
+      "teams": "Nhóm",
+      "actions": "Thao tác"
+    },
+    "chat": "Nhắn tin",
+    "detail": {
+      "back": "Quay lại",
+      "active_status": "Đang hoạt động",
+      "sections": {
+        "overview": "Tổng quan",
+        "contact": "Thông tin liên hệ",
+        "organization": "Tổ chức"
+      },
+      "fields": {
+        "email": "Email",
+        "role": "Vai trò"
+      },
+      "descriptions": {
+        "primary_contact": "Email liên hệ chính",
+        "access_level": "Cấp độ truy cập hệ thống"
+      },
+      "departments": "Phòng ban",
+      "teams": "Nhóm",
+      "primary": "Chính",
+      "leader": "Trưởng nhóm",
+      "no_departments": "Chưa thuộc phòng ban nào",
+      "no_teams": "Chưa thuộc nhóm nào",
+      "error": {
+        "title": "Không tìm thấy",
+        "description": "Không thể tải thông tin người này"
+      }
+    }
+  },
   "Theme": {
     "toggle": "Đổi giao diện",
     "loading": "Đang tải giao diện",
