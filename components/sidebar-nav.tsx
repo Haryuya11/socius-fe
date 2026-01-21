@@ -20,6 +20,8 @@ import {
   Briefcase,
   Building2,
   Waypoints,
+  FileTerminal,
+  
 } from "lucide-react";
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -91,21 +93,27 @@ export default function SidebarNav({
 
   const adminNavItems: NavItem[] = [
     {
-      title: t("employees"), 
+      title: t("employees"),
       href: "/employees",
       icon: Users,
       roles: ["SYS_ADMIN"],
     },
     {
-      title: t("departments"), 
+      title: t("departments"),
       href: "/departments",
       icon: Building2,
       roles: ["SYS_ADMIN"],
     },
     {
       title: t("teams"),
-      href: "/teams", 
+      href: "/teams",
       icon: Waypoints,
+      roles: ["SYS_ADMIN"],
+    },
+    {
+      title: "roles",
+      href: "/roles",
+      icon: FileTerminal,
       roles: ["SYS_ADMIN"],
     },
     {
