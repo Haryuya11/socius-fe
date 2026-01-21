@@ -20,7 +20,7 @@ export const taskService = {
   updateTask: async (id: number, data: UpdateTaskInput): Promise<Task> => {
     const response = await http.put<ApiResponse<Task>>(
       `/api/tasks/${id}`,
-      data
+      data,
     );
     return response.data.data;
   },
@@ -35,33 +35,31 @@ export const taskService = {
     return response.data.success;
   },
 
-
   createSubTask: async (
     parentId: number,
-    data: CreateSubTaskInput
+    data: CreateSubTaskInput,
   ): Promise<boolean> => {
     const response = await http.post<ApiResponse<null>>(
       `/api/tasks/${parentId}/sub-tasks`,
-      data
+      data,
     );
     return response.data.success;
   },
 
   getSubTasks: async (parentId: number): Promise<Task[]> => {
     const response = await http.get<ApiResponse<Task[]>>(
-      `/api/tasks/${parentId}/sub-tasks`
+      `/api/tasks/${parentId}/sub-tasks`,
     );
     return response.data.data;
   },
 
-
   searchTasks: async (
-    params?: TaskQueryParams
+    params?: TaskQueryParams,
   ): Promise<PaginatedResponse<Task>> => {
     const page = params?.page || 1;
     const size = params?.size || 10;
     const condition = params?.condition || {
-      receiverId: "me", 
+      receiverId: "me",
       senderId: null,
       teamCode: null,
       departmentCode: null,
@@ -88,62 +86,58 @@ export const taskService = {
 
     const response = await http.post<ApiResponse<PaginatedResponse<Task>>>(
       "/api/tasks/search",
-      payload
+      payload,
     );
     return response.data.data;
   },
 
   getMyTasks: async (): Promise<PaginatedResponse<Task>> => {
     const response = await http.get<ApiResponse<PaginatedResponse<Task>>>(
-      "/api/tasks/my-tasks"
+      "/api/tasks/my-tasks",
     );
     return response.data.data;
   },
 
   getAssignedByMe: async (): Promise<PaginatedResponse<Task>> => {
     const response = await http.get<ApiResponse<PaginatedResponse<Task>>>(
-      "/api/tasks/assigned-by-me"
+      "/api/tasks/assigned-by-me",
     );
     return response.data.data;
   },
 
   getTasksByTeam: async (
-    teamCode: string
+    teamCode: string,
   ): Promise<PaginatedResponse<Task>> => {
     const response = await http.get<ApiResponse<PaginatedResponse<Task>>>(
-      `/api/tasks/team/${teamCode}`
+      `/api/tasks/team/${teamCode}`,
     );
     return response.data.data;
   },
 
   getTasksByDepartment: async (
-    deptCode: string
+    deptCode: string,
   ): Promise<PaginatedResponse<Task>> => {
     const response = await http.get<ApiResponse<PaginatedResponse<Task>>>(
-      `/api/tasks/department/${deptCode}`
+      `/api/tasks/department/${deptCode}`,
     );
     return response.data.data;
   },
 
-
   submitReview: async (
     id: number,
-    completionNote: string
+    completionNote: string,
   ): Promise<boolean> => {
     const response = await http.put<ApiResponse<null>>(
       `/api/tasks/${id}/submit-review`,
-      { completionNote }
+      { completionNote },
     );
     return response.data.success;
   },
 
-  approveTask: async (
-    id: number,
-    completionNote?: string
-  ): Promise<boolean> => {
+  approveTask: async (id: number, reviewNote?: string): Promise<boolean> => {
     const response = await http.put<ApiResponse<null>>(
       `/api/tasks/${id}/approve`,
-      { completionNote }
+      { reviewNote },
     );
     return response.data.success;
   },
@@ -151,18 +145,18 @@ export const taskService = {
   rejectTask: async (id: number, rejectionReason: string): Promise<boolean> => {
     const response = await http.put<ApiResponse<null>>(
       `/api/tasks/${id}/reject`,
-      { rejectionReason }
+      { rejectionReason },
     );
     return response.data.success;
   },
 
   cancelTask: async (
     id: number,
-    cancellationReason: string
+    cancellationReason: string,
   ): Promise<boolean> => {
     const response = await http.put<ApiResponse<null>>(
       `/api/tasks/${id}/cancel`,
-      { cancellationReason }
+      { cancellationReason },
     );
     return response.data.success;
   },
@@ -170,15 +164,14 @@ export const taskService = {
   reopenTask: async (id: number, reason?: string): Promise<boolean> => {
     const response = await http.put<ApiResponse<null>>(
       `/api/tasks/${id}/reopen`,
-      { cancellationReason: reason }
+      { reopenReason: reason },
     );
     return response.data.success;
   },
 
-
   getTaskActivities: async (id: number): Promise<TaskActivity[]> => {
     const response = await http.get<ApiResponse<TaskActivity[]>>(
-      `/api/tasks/${id}/activities`
+      `/api/tasks/${id}/activities`,
     );
     return response.data.data;
   },

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState, useMemo } from "react";
@@ -15,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { MultiEmployeeSelector } from "@/components/common/multi-employee-selector";
 import { toast } from "sonner";
-import { ScrollArea } from "@/components/ui/scroll-area"; // Import ScrollArea
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface MemberSectionProps {
   isAddMemberOpen: boolean;

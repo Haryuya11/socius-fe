@@ -14,6 +14,7 @@ import {
   File as FileIcon,
   Info,
   ArrowDown,
+  Reply,
 } from "lucide-react";
 import MessageItem from "./message-item";
 import { useDropzone } from "react-dropzone";
@@ -24,12 +25,14 @@ import { getFullImageUrl } from "@/utils/image-utils";
 export default function ChatWindow() {
   const {
     activeConversationId,
-    messages, // Store lưu: [Mới nhất, ..., Cũ nhất]
+    messages,
     isLoadingMessages,
     sendMessage,
     loadMoreMessages,
     hasMoreMessages,
     conversations,
+    replyingTo,
+    setReplyingTo,
   } = useChatStore();
 
   const [inputText, setInputText] = useState("");
@@ -37,51 +40,40 @@ export default function ChatWindow() {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [showScrollBottom, setShowScrollBottom] = useState(false);
 
-  // --- REFS ---
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Observer: Đặt ở visual TOP (tức là cuối DOM do flex-col-reverse)
   const { ref: loadMoreRef, inView } = useInView({
     threshold: 0,
-    rootMargin: "100px 0px 0px 0px", // Trigger sớm khi cách đỉnh 100px
+    rootMargin: "100px 0px 0px 0px",
   });
 
   const currentConversation = conversations.find(
     (c) => c.conversationId === activeConversationId,
   );
 
-  // --- LOGIC 1: LOAD MORE ---
   useEffect(() => {
-    // Chỉ load khi thấy observer, còn tin cũ, và không đang loading
     if (inView && hasMoreMessages && !isLoadingMessages) {
       const timer = setTimeout(() => {
         loadMoreMessages();
-      }, 200); // Debounce nhẹ
+      }, 200);
       return () => clearTimeout(timer);
     }
   }, [inView, hasMoreMessages, isLoadingMessages, loadMoreMessages]);
 
-  // --- LOGIC 2: SCROLL BUTTON ---
   const handleScroll = () => {
     if (!scrollContainerRef.current) return;
-    // Trong flex-col-reverse, scrollTop = 0 nghĩa là ở Đáy.
-    // Khi scroll lên (về quá khứ), scrollTop sẽ thay đổi (âm hoặc dương tùy trình duyệt)
     const { scrollTop } = scrollContainerRef.current;
-
-    // Nếu cách đáy > 300px thì hiện nút
     const isFarFromBottom = Math.abs(scrollTop) > 300;
     setShowScrollBottom(isFarFromBottom);
   };
 
   const handleScrollToBottom = () => {
     if (scrollContainerRef.current) {
-      // Scroll về 0 là về Đáy (tin mới nhất)
       scrollContainerRef.current.scrollTo({ top: 0, behavior: "smooth" });
       setShowScrollBottom(false);
     }
   };
 
-  // --- LOGIC 3: QUICK REPLY & EMPTY STATE ---
   const handleQuickReply = (text: string) => {
     sendMessage(text, MessageType.TEXT, []);
   };
@@ -94,7 +86,6 @@ export default function ChatWindow() {
     const name = currentConversation.name || "Người dùng";
     const initials = name.charAt(0).toUpperCase();
 
-    // Cấu hình nội dung khác nhau cho Group và Direct
     const config = isGroup
       ? {
           description:
@@ -150,7 +141,6 @@ export default function ChatWindow() {
     );
   };
 
-  // --- LOGIC 4: FILE UPLOAD & SEND ---
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setSelectedFiles((prev) => [...prev, ...acceptedFiles]);
   }, []);
@@ -176,17 +166,16 @@ export default function ChatWindow() {
 
     const content = inputText;
     const files = selectedFiles;
+    const parentId = replyingTo?.messageId;
 
     setInputText("");
     setSelectedFiles([]);
-
-    // Scroll về đáy ngay khi gửi
+    setReplyingTo(null);
     handleScrollToBottom();
 
-    await sendMessage(content, type, files);
+    await sendMessage(content, type, files, parentId);
   };
 
-  // Loading state ban đầu (khi chưa có ID conversation)
   if (!activeConversationId && messages.length === 0) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -202,7 +191,6 @@ export default function ChatWindow() {
       {...getRootProps()}
       className="flex flex-col h-full w-full relative overflow-hidden bg-background"
     >
-      {/* Drag & Drop Overlay */}
       {isDragActive && (
         <div className="absolute inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center border-2 border-dashed border-primary m-4 rounded-xl">
           <div className="flex flex-col items-center gap-2 animate-bounce">
@@ -228,14 +216,13 @@ export default function ChatWindow() {
         </Button>
       </div>
 
-      {/* BODY: MESSAGE LIST OR EMPTY STATE */}
+      {/* BODY */}
       <div className="flex-1 min-h-0 relative group">
         {messages.length > 0 ? (
-          // TRƯỜNG HỢP 1: CÓ TIN NHẮN
           <div
             ref={scrollContainerRef}
             onScroll={handleScroll}
-            className="h-full overflow-y-auto p-4 scroll-smooth-disable flex flex-col-reverse gap-4"
+            className="h-full overflow-y-auto overflow-x-hidden p-4 scroll-smooth-disable flex flex-col-reverse gap-4"
             style={{ overflowAnchor: "none" }}
           >
             {messages.map((msg) => (
@@ -244,7 +231,6 @@ export default function ChatWindow() {
               </div>
             ))}
 
-            {/* Loading Indicator ở đỉnh (khi scroll load more) */}
             <div className="h-10 w-full shrink-0 flex items-center justify-center py-2">
               {hasMoreMessages ? (
                 <div
@@ -265,7 +251,6 @@ export default function ChatWindow() {
             </div>
           </div>
         ) : isLoadingMessages ? (
-          //  TRƯỜNG HỢP 2: ĐANG TẢI LẦN ĐẦU (Mảng rỗng + Loading = True)
           <div className="flex h-full w-full items-center justify-center">
             <div className="flex flex-col items-center gap-2">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -275,11 +260,9 @@ export default function ChatWindow() {
             </div>
           </div>
         ) : (
-          // TRƯỜNG HỢP 3: THỰC SỰ TRỐNG (Mảng rỗng + Loading = False)
           renderEmptyState()
         )}
 
-        {/* Nút Scroll to Bottom (Giữ nguyên) */}
         {showScrollBottom && (
           <Button
             size="icon"
@@ -291,8 +274,30 @@ export default function ChatWindow() {
         )}
       </div>
 
-      {/* FOOTER: INPUT & FILES */}
+      {/* FOOTER */}
       <div className="border-t shrink-0 bg-background">
+        {/* REPLY BANNER */}
+        {replyingTo && (
+          <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b border-l-4 border-l-primary animate-in slide-in-from-bottom-2">
+            <div className="flex flex-col overflow-hidden">
+              <span className="text-xs font-bold text-primary flex items-center gap-1">
+                <Reply className="h-3 w-3" /> Đang trả lời
+              </span>
+              <span className="text-sm truncate text-muted-foreground max-w-[300px]">
+                {replyingTo.content || "File đính kèm"}
+              </span>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6"
+              onClick={() => setReplyingTo(null)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+
         {/* File Preview */}
         {selectedFiles.length > 0 && (
           <div className="flex gap-3 px-4 py-3 overflow-x-auto border-b bg-muted/30">
@@ -361,7 +366,7 @@ export default function ChatWindow() {
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
             placeholder="Nhập tin nhắn..."
-            className="flex-1 min-h-[40px]"
+            className="flex-1 min-h-10"
           />
 
           <Button

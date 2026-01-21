@@ -27,11 +27,6 @@ export const chatService = {
     };
   },
 
-  getMessageDetail: async (messageId: string) => {
-    const res = await http.get<{ data: Message }>(`/api/messages/${messageId}`);
-    return res.data.data;
-  },
-
   getConversationDetail: async (id: string) => {
     const res = await http.get<{ data: Conversation }>(
       `/api/conversations/${id}`,
@@ -85,11 +80,10 @@ export const chatService = {
   uploadConversationAvatar: async (id: string, file: File) => {
     const formData = new FormData();
     formData.append("file", file);
-    // Lưu ý: Content-Type multipart/form-data thường được axios tự set khi thấy FormData
     const res = await http.post(`/api/conversations/${id}/avatar`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    return res.data.data; // { path, url }
+    return res.data.data;
   },
 
   // --- PARTICIPANTS ---
@@ -112,7 +106,6 @@ export const chatService = {
   },
 
   removeParticipants: async (conversationId: string, employeeIds: string[]) => {
-    // Axios delete body config
     return http.delete(`/api/conversations/${conversationId}/participants`, {
       data: employeeIds,
     });
@@ -138,6 +131,11 @@ export const chatService = {
       nextCursor: responseData.nextCursor,
       hasNext: responseData.hasNext,
     };
+  },
+
+  getMessageDetail: async (messageId: string) => {
+    const res = await http.get<{ data: Message }>(`/api/messages/${messageId}`);
+    return res.data.data;
   },
 
   sendMessage: async (payload: {
@@ -211,5 +209,25 @@ export const chatService = {
       `/api/messages/${messageId}/reactions`,
     );
     return res.data.data;
+  },
+
+  downloadFile: async (filePath: string) => {
+    const res = await http.get("/api/conversations/files/download", {
+      params: { filePath },
+      responseType: "blob",
+    });
+    return res.data;
+  },
+
+  downloadZip: async (
+    conversationId: string,
+    files: { filePath: string }[],
+  ) => {
+    const res = await http.post(
+      `/api/conversations/${conversationId}/files/download-zip`,
+      { files },
+      { responseType: "blob" },
+    );
+    return res.data;
   },
 };
