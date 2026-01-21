@@ -56,11 +56,11 @@ export function EmployeeTable({ data }: EmployeeTableProps) {
       if (conversation && conversation.conversationId) {
         router.push(`/chat/${conversation.conversationId}`);
       } else {
-        toast.error("Không thể tạo cuộc hội thoại");
+        toast.error(t("chat.create_failed") || "Unable to create conversation");
       }
     } catch (error) {
       console.error(error);
-      toast.error("Lỗi kết nối khi tạo hội thoại");
+      toast.error(t("chat.connect_failed") || "Connection error when creating conversation");
     } finally {
       setChatLoadingId(null);
     }

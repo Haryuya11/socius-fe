@@ -50,7 +50,7 @@
       "confirm": "Xác nhận"
     }
   },
-  "Dashboard": {
+  "Homepage": {
     "welcome": "Chào mừng trở lại!",
     "email": "Email",
     "departments": "Phòng ban",
@@ -58,6 +58,53 @@
     "token": "Mã token",
     "token_copied": "Đã sao chép token!",
     "logout": "Đăng xuất"
+  },
+  "Dashboard": {
+    "title": "Bảng điều khiển",
+    "greeting": "Xin chào {name}, hôm nay có gì mới?",
+    "roles": {
+      "leader": "TRƯỞNG NHÓM",
+      "member": "THÀNH VIÊN"
+    },
+    "stats": {
+      "overall_progress": "Tiến độ chung",
+      "done_of_total": "Đã xong {completed} trên tổng {total} việc",
+      "in_progress": "Đang thực hiện",
+      "ongoing_tasks": "Nhiệm vụ đang diễn ra",
+      "need_review": "Cần duyệt ngay",
+      "pending_from_staff": "Yêu cầu từ nhân viên đang chờ",
+      "no_pending": "Không có yêu cầu mới",
+      "achievement": "Thành quả",
+      "tasks_completed": "Task đã hoàn thành tốt",
+      "status": "Trạng thái",
+      "stable": "Ổn định",
+      "at_risk": "Cần chú ý",
+      "overdue_alert": "Có {count} task đã quá hạn!"
+    },
+    "charts": {
+      "status_overview": "Tổng quan trạng thái",
+      "in_progress": "Đang làm",
+      "pending": "Chờ duyệt",
+      "completed": "Hoàn thành",
+      "overdue": "Quá hạn"
+    },
+    "urgent": {
+      "title": "Cần xử lý gấp",
+      "description": "Các công việc sắp đến hạn hoặc quá hạn",
+      "empty": "Tuyệt vời! Không có công việc gấp.",
+      "go_to_tasks": "Đến trang quản lý"
+    },
+    "calendar": {
+      "title": "Lịch công việc",
+      "select_date": "Chọn ngày",
+      "empty": "Không có công việc nào hạn chót hôm nay.",
+      "view_all": "Xem tất cả",
+      "task_count": "{count} công việc",
+      "sender": "Người giao",
+      "priority_high": "Cao",
+      "deadline": "Deadline",
+      "no_description": "Không có mô tả chi tiết."
+    }
   },
   "Auth": {
     "help": "Trợ giúp",
@@ -218,7 +265,133 @@
       "primary": "Chính",
       "leader": "Trưởng nhóm",
       "team_leader": "Trưởng nhóm"
+    },
+    "dialog": {
+      "cancel": "Hủy"
+    },
+    "add_dialog": {
+      "title": "Thêm nhân viên mới",
+      "first_name": "Họ",
+      "last_name": "Tên",
+      "email": "Email",
+      "role": "Vai trò",
+      "select_role": "Chọn vai trò",
+      "salary": "Lương",
+      "save": "Lưu",
+      "success": "Thêm nhân viên thành công!",
+      "failed": "Thêm thất bại"
+    },
+    "stats": {
+      "total_staff_title": "Tổng nhân sự",
+      "total_staff_desc": "Nhân viên trong hệ thống",
+      "admins_title": "Quản trị viên",
+      "admins_desc": "Có quyền Admin/Manager",
+      "active_title": "Đang hoạt động",
+      "active_desc": "Tài khoản đang active"
     }
+  },
+  "Departments": {
+    "title": "Quản lý phòng ban",
+    "subtitle": "Cấu trúc tổ chức và quản trị phòng ban",
+    "detail": {
+      "header_subtitle": "Chi tiết phòng ban",
+      "total_staff": {
+        "title": "Tổng nhân sự",
+        "desc": "Trong đó có {managerCount} Quản lý (MGR)"
+      },
+      "director": {
+        "title": "Giám đốc",
+        "desc": "Người đứng đầu phòng ban"
+      },
+      "director_unassigned": "Chưa bổ nhiệm",
+      "teams": {
+        "title": "Các nhóm trực thuộc",
+        "empty": "Chưa có team nào thuộc phòng ban này.",
+        "view_details": "Xem chi tiết"
+      },
+      "teams_count": {
+        "title": "Số lượng Team",
+        "desc": "Các nhóm trực thuộc"
+      },
+      "members": {
+        "title": "Danh sách nhân sự",
+        "desc": "Quản lý danh sách và phân quyền vai trò."
+      }
+    },
+    "table": {
+      "employee": "Nhân viên",
+      "role": "Vai trò",
+      "status": "Trạng thái"
+    },
+    "total_label": "đơn vị",
+    "create": "Tạo phòng ban",
+    "delete_success": "Xóa phòng ban thành công",
+    "delete_failed": "Không thể xóa phòng ban",
+    "empty": {
+      "title": "Không tìm thấy phòng ban",
+      "desc_search": "Thử thay đổi từ khóa tìm kiếm.",
+      "desc_default": "Hiện chưa có phòng ban nào trong hệ thống."
+    },
+    "stats": {
+      "total_departments": "Tổng số phòng ban",
+      "active_units": "Đơn vị đang hoạt động"
+    },
+    "toolbar": {
+      "search_placeholder": "Tìm theo tên phòng ban...",
+      "clear_filters": "Xóa bộ lọc"
+    },
+    "grid": {
+      "manage_staff": "Quản lý nhân sự",
+      "units_display": "{count} đơn vị (hiển thị)"
+    },
+    "dialog": {
+      "create_title": "Tạo phòng ban",
+      "edit_title": "Chỉnh sửa phòng ban",
+      "department_code": "Mã phòng ban",
+      "department_name": "Tên phòng ban",
+      "cancel": "Hủy",
+      "save": "Lưu"
+    },
+    "member": {
+      "update_role_success": "Cập nhật vai trò thành công",
+      "update_role_failed": "Cập nhật vai trò thất bại",
+      "remove_success": "Đã xóa thành viên khỏi phòng ban",
+      "remove_failed": "Xóa thành viên thất bại",
+      "empty": "Chưa có thành viên.",
+      "primary": "Chính",
+      "secondary": "Phụ",
+      "change_role": "Thay đổi vai trò",
+      "transfer": "Chuyển",
+      "remove": "Xóa",
+      "confirm_title": "Xóa thành viên",
+      "confirm_desc_prefix": "Bạn có chắc chắn muốn xóa",
+      "confirm_desc_suffix": "khỏi phòng ban?",
+      "confirm_action": "Xóa thành viên",
+      "add_success": "Thêm thành viên thành công",
+      "add_failed": "Thêm thành viên thất bại",
+      "add_button": "Thêm thành viên",
+      "add_title": "Thêm thành viên vào {code}",
+      "select_label": "Chọn nhân viên",
+      "select_placeholder": "Tìm theo tên hoặc email...",
+      "role_label": "Vai trò",
+      "primary_label": "Phòng ban chính?",
+      "transfer_success": "Chuyển thành công!",
+      "transfer_failed": "Chuyển thất bại",
+      "transfer_title": "Chuyển thành viên",
+      "transfer_desc_prefix": "Chuyển",
+      "transfer_desc_suffix": "sang phòng ban khác.",
+      "to_department_label": "Phòng ban đích",
+      "new_role_label": "Vai trò mới",
+      "status_label": "Trạng thái",
+      "transfer_confirm": "Xác nhận"
+    },
+    "actions": {
+      "view": "Xem chi tiết",
+      "delete_confirm": "Xóa phòng ban",
+      "delete_button": "Xóa phòng ban"
+    }
+    ,
+    "actions_label": "Thao tác"
   },
   "Theme": {
     "toggle": "Đổi giao diện",

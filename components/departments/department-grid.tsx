@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DepartmentDialog } from "./department-dialog";
+import { useTranslations } from "next-intl";
 
 interface Props {
   data: Department[];
@@ -32,6 +33,7 @@ export function DepartmentGrid({
   onSuccess,
 }: Props) {
   const router = useRouter();
+  const t = useTranslations("Departments");
 
   if (isLoading) {
     return (
@@ -46,7 +48,7 @@ export function DepartmentGrid({
   if (data.length === 0) {
     return (
       <div className="text-center py-20 text-muted-foreground">
-        Không tìm thấy phòng ban nào.
+        {t("empty.title")}
       </div>
     );
   }
@@ -79,18 +81,18 @@ export function DepartmentGrid({
                       router.push(`/departments/${dept.departmentCode}`)
                     }
                   >
-                    Xem chi tiết
+                    {t("actions.view") || "View details"}
                   </DropdownMenuItem>
                   <DepartmentDialog initialData={dept} onSuccess={onSuccess}>
                     <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent w-full">
-                      <Pencil className="mr-2 h-4 w-4" /> Chỉnh sửa
+                      <Pencil className="mr-2 h-4 w-4" /> {t("dialog.edit_title")}
                     </div>
                   </DepartmentDialog>
                   <DropdownMenuItem
                     className="text-destructive"
                     onClick={() => onDelete(dept.departmentCode)}
                   >
-                    <Trash2 className="mr-2 h-4 w-4" /> Vô hiệu hóa
+                    <Trash2 className="mr-2 h-4 w-4" /> {t("actions.delete_button")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -114,7 +116,7 @@ export function DepartmentGrid({
               className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-50"
               onClick={() => router.push(`/departments/${dept.departmentCode}`)}
             >
-              <Users className="mr-2 h-4 w-4" /> Quản lý nhân sự
+              <Users className="mr-2 h-4 w-4" /> {t("grid.manage_staff")}
             </Button>
           </CardFooter>
         </Card>

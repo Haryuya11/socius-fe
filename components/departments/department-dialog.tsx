@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/form";
 import { departmentService } from "@/services/department-service";
 import { Department } from "@/types/department";
+import { useTranslations } from "next-intl";
 
 import {
   departmentSchema,
@@ -43,6 +44,7 @@ export function DepartmentDialog({
   onSuccess,
   children,
 }: DepartmentDialogProps) {
+  const t = useTranslations("Departments");
   const [open, setOpen] = useState(false);
   const isEdit = !!initialData;
 
@@ -69,15 +71,15 @@ export function DepartmentDialog({
         await departmentService.updateDepartment(initialData.departmentCode, {
           departmentName: values.departmentName,
         });
-        toast.success("Cập nhật phòng ban thành công");
+        toast.success(t("dialog.edit_title") || "Department updated successfully");
       } else {
         await departmentService.createDepartment(values);
-        toast.success("Tạo phòng ban thành công");
+        toast.success(t("create") || "Department created successfully");
       }
       setOpen(false);
       onSuccess();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
+      toast.error(error?.response?.data?.message || t("dialog.save") || "An error occurred");
     }
   };
 
@@ -88,14 +90,14 @@ export function DepartmentDialog({
           children
         ) : (
           <Button className="shadow-sm">
-            <Plus className="mr-2 h-4 w-4" /> Tạo Phòng Ban
+            <Plus className="mr-2 h-4 w-4" /> {t("create")}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>
-            {isEdit ? "Cập nhật Phòng Ban" : "Tạo Phòng Ban Mới"}
+            {isEdit ? t("dialog.edit_title") : t("dialog.create_title")}
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -108,12 +110,12 @@ export function DepartmentDialog({
               name="departmentCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mã Phòng Ban (Code)</FormLabel>
+                  <FormLabel>{t("dialog.department_code")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       disabled={isEdit}
-                      placeholder="Vd: HR, DEV_Team..."
+                      placeholder={t("dialog.department_code")}
                       className="font-mono uppercase"
                     />
                   </FormControl>
@@ -126,9 +128,9 @@ export function DepartmentDialog({
               name="departmentName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tên Phòng Ban</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Vd: Human Resources..." />
+                  <FormLabel>{t("dialog.department_name")}</FormLabel>
+                    <FormControl>
+                    <Input {...field} placeholder={t("dialog.department_name")} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -140,13 +142,13 @@ export function DepartmentDialog({
                 variant="outline"
                 onClick={() => setOpen(false)}
               >
-                Hủy
+                {t("dialog.cancel")}
               </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && (
                   <Loader2 className="animate-spin mr-2 h-4 w-4" />
                 )}
-                {isEdit ? "Lưu thay đổi" : "Tạo mới"}
+                {isEdit ? t("dialog.save") : t("create")}
               </Button>
             </div>
           </form>

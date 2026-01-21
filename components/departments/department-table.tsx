@@ -29,6 +29,7 @@ import { usePermission } from "@/hooks/use-permission";
 
 import { Department } from "@/types/department";
 import { DepartmentDialog } from "./department-dialog";
+import { useTranslations } from "next-intl";
 
 interface DepartmentTableProps {
   data: Department[];
@@ -43,17 +44,18 @@ export function DepartmentTable({
 }: DepartmentTableProps) {
   const router = useRouter();
   const { hasPermission } = usePermission();
+  const t = useTranslations("Departments");
 
   return (
     <Card className="shadow-sm border-border/50 overflow-hidden -py-6">
       <Table>
-        <TableHeader className="bg-muted/30">
+          <TableHeader className="bg-muted/30">
           <TableRow>
-            <TableHead className="w-[150px] pl-6">Mã Phòng Ban</TableHead>
+            <TableHead className="w-[150px] pl-6">{t("dialog.department_code")}</TableHead>
 
-            <TableHead>Tên Phòng Ban</TableHead>
+            <TableHead>{t("dialog.department_name")}</TableHead>
 
-            <TableHead className="text-right pr-6">Hành động</TableHead>
+            <TableHead className="text-right pr-6">{t("actions") || "Actions"}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -94,7 +96,7 @@ export function DepartmentTable({
                           router.push(`/departments/${dept.departmentCode}`)
                         }
                       >
-                        <Users className="h-4 w-4 mr-1" /> Chi tiết
+                        <Users className="h-4 w-4 mr-1" /> {t("grid.manage_staff")}
                       </Button>
                     </div>
 
@@ -114,7 +116,7 @@ export function DepartmentTable({
                             router.push(`/departments/${dept.departmentCode}`)
                           }
                         >
-                          <ArrowRight className="mr-2 h-4 w-4" /> Xem chi tiết
+                          <ArrowRight className="mr-2 h-4 w-4" /> {t("actions.view") || "View details"}
                         </DropdownMenuItem>
 
                         {canEdit && (
@@ -123,17 +125,17 @@ export function DepartmentTable({
                             onSuccess={onRefresh}
                           >
                             <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground w-full">
-                              <Pencil className="mr-2 h-4 w-4" /> Chỉnh sửa
+                              <Pencil className="mr-2 h-4 w-4" /> {t("dialog.edit_title")}
                             </div>
                           </DepartmentDialog>
                         )}
 
                         {canDelete && (
-                          <DropdownMenuItem
+                            <DropdownMenuItem
                             className="text-destructive focus:text-destructive"
                             onClick={() => onDelete(dept.departmentCode)}
                           >
-                            <Trash2 className="mr-2 h-4 w-4" /> Xóa
+                            <Trash2 className="mr-2 h-4 w-4" /> {t("actions.delete_button")}
                           </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>

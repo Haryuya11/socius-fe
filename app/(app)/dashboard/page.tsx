@@ -3,7 +3,8 @@
 
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { vi } from "date-fns/locale";
+import { useTranslations, useLocale } from "next-intl";
+import { vi, enUS } from "date-fns/locale";
 
 import { useAuth } from "@/hooks/use-auth";
 import { usePermission } from "@/hooks/use-permission";
@@ -20,6 +21,9 @@ import { DashboardHeaderSkeleton } from "@/components/skeleton/dashboard/header-
 export default function DashboardPage() {
   const { user, isLoading: isAuthLoading } = useAuth();
   const { hasPermission } = usePermission();
+  const t = useTranslations("Dashboard");
+  const locale = useLocale();
+  const dateLocale = locale === "vi" ? vi : enUS;
 
   const [stats, setStats] = useState({
     total: 0,
@@ -112,10 +116,10 @@ export default function DashboardPage() {
 
 
   const chartData = [
-    { name: "Đang làm", total: stats.inProgress, color: "#3b82f6" },
-    { name: "Chờ duyệt", total: stats.pendingReview, color: "#f97316" },
-    { name: "Hoàn thành", total: stats.completed, color: "#22c55e" },
-    { name: "Quá hạn", total: stats.overdue, color: "#ef4444" },
+    { name: t("charts.in_progress"), total: stats.inProgress, color: "#3b82f6" },
+    { name: t("charts.pending"), total: stats.pendingReview, color: "#f97316" },
+    { name: t("charts.completed"), total: stats.completed, color: "#22c55e" },
+    { name: t("charts.overdue"), total: stats.overdue, color: "#ef4444" },
   ];
 
   return (
@@ -126,14 +130,14 @@ export default function DashboardPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
           <div>
             <h2 className="text-3xl font-bold tracking-tight text-foreground">
-              Dashboard
+              {t("title")}
             </h2>
             {/* Dùng Optional Chaining (?) để tránh lỗi nếu user chưa kịp load */}
             <p className="text-muted-foreground mt-1">
-              Xin chào {user?.firstName}, hôm nay có gì mới?
+              {t("greeting", { name: user?.firstName })}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              {format(new Date(), "EEEE, d MMMM yyyy", { locale: vi })}
+              {format(new Date(), "EEEE, d MMMM yyyy", { locale: dateLocale })}
             </p>
           </div>
         </div>

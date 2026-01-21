@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { format, startOfDay, endOfDay } from "date-fns";
 import { Calendar as CalendarIcon, Loader2, MapPin, Clock } from "lucide-react";
+import { vi, enUS } from "date-fns/locale";
+import { useTranslations, useLocale } from "next-intl";
 
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -36,6 +38,10 @@ export function DashboardCalendar({
 }) {
   const { user } = useAuth();
   const router = useRouter();
+
+  const t = useTranslations("Dashboard");
+  const locale = useLocale();
+  const dateLocale = locale === "vi" ? vi : enUS;
 
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -94,8 +100,8 @@ export function DashboardCalendar({
     <Card className="w-full h-fit shadow-sm border-border/60 flex flex-col">
       <CardHeader className="pb-2">
         <CardTitle className="text-base font-semibold flex items-center gap-2">
-          <CalendarIcon className="h-4 w-4 text-muted-foreground" /> Lịch công
-          việc
+          <CalendarIcon className="h-4 w-4 text-muted-foreground" /> 
+          {t("calendar.title")}
         </CardTitle>
       </CardHeader>
 
@@ -107,6 +113,7 @@ export function DashboardCalendar({
             onSelect={setDate}
             className="p-0"
             required
+            locale={dateLocale}
           />
         </div>
       </CardContent>
@@ -114,10 +121,10 @@ export function DashboardCalendar({
       <CardFooter className="flex flex-col items-start gap-3 px-4 pt-4 pb-4 bg-muted/10 flex-1">
         <div className="flex w-full items-center justify-between">
           <div className="text-sm font-medium text-foreground">
-            {date ? format(date, "EEEE, dd/MM/yyyy") : "Chọn ngày"}
+            {date ? format(date, "EEEE, dd/MM/yyyy", { locale: dateLocale }) : t("calendar.select_date")}
           </div>
           <Badge variant="secondary" className="text-xs font-normal">
-            {tasks.length} task
+            {t("calendar.task_count", { count: tasks.length })}
           </Badge>
         </div>
 
@@ -129,7 +136,7 @@ export function DashboardCalendar({
               </div>
             ) : tasks.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground text-xs">
-                Không có công việc nào hạn chót hôm nay.
+                {t("calendar.empty")}
               </div>
             ) : (
               tasks.map((task) => (
@@ -146,7 +153,7 @@ export function DashboardCalendar({
                         {task.priority === "HIGH" && (
                           <span
                             className="flex h-2 w-2 rounded-full bg-red-500 shrink-0 mt-1"
-                            title="Ưu tiên cao"
+                            title={t("calendar.priority_high")}
                           />
                         )}
                       </div>
@@ -174,13 +181,13 @@ export function DashboardCalendar({
                             variant="destructive"
                             className="text-[10px] h-5 px-1"
                           >
-                            Cao
+                            {t("calendar.priority_high")}
                           </Badge>
                         )}
                       </div>
 
                       <p className="text-xs text-muted-foreground line-clamp-3">
-                        {task.description || "Không có mô tả chi tiết."}
+                        {task.description || t("calendar.no_description")}
                       </p>
 
                       <Separator />
@@ -194,7 +201,7 @@ export function DashboardCalendar({
                           </Avatar>
                           <div>
                             <span className="text-muted-foreground block text-[10px]">
-                              Người giao
+                              {t("calendar.sender")}
                             </span>
                             <span className="font-medium">
                               {task.senderName}
@@ -203,7 +210,7 @@ export function DashboardCalendar({
                         </div>
                         <div className="flex flex-col justify-center">
                           <span className="text-muted-foreground block text-[10px] mb-0.5">
-                            Trạng thái
+                            {t("stats.status")}
                           </span>
                           <Badge
                             variant="outline"
@@ -234,7 +241,7 @@ export function DashboardCalendar({
           className="w-full text-xs text-muted-foreground h-8 mt-1"
           onClick={() => router.push("/tasks")}
         >
-          Xem tất cả
+          {t("calendar.view_all")}
         </Button>
       </CardFooter>
     </Card>

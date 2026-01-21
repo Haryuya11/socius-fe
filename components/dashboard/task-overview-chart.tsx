@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TaskOverviewChartSkeleton } from "../skeleton/dashboard/chart-skeleton";
+import { useTranslations } from "next-intl";
 
 interface TaskOverviewChartProps {
   data: { name: string; total: number; color: string }[];
@@ -21,12 +22,13 @@ export function TaskOverviewChart({
   data,
   isLoading = false,
 }: TaskOverviewChartProps) {
+  const t = useTranslations("Dashboard.charts");
   if (isLoading) return <TaskOverviewChartSkeleton />;
 
   return (
     <Card className="shadow-sm">
       <CardHeader>
-        <CardTitle className="text-base">Tổng quan trạng thái</CardTitle>
+        <CardTitle className="text-base">{t("status_overview")}</CardTitle>
       </CardHeader>
       <CardContent className="pl-2">
         <ResponsiveContainer width="100%" height={350}>

@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Loader2, Plus, Save } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import {
   Dialog,
@@ -51,6 +52,7 @@ export function AddEmployeeDialog({
   children,
   onSuccess,
 }: AddEmployeeDialogProps) {
+  const t = useTranslations("Employees");
   const [open, setOpen] = useState(false);
   const [imageBlob, setImageBlob] = useState<Blob | null>(null);
 
@@ -87,7 +89,7 @@ export function AddEmployeeDialog({
       // BƯỚC 3: Gọi API tạo nhân viên
       await employeeService.createEmployee(payload);
 
-      toast.success("Thêm nhân viên thành công!");
+      toast.success(t("add_dialog.success") || "Employee created successfully!");
 
       setOpen(false);
       form.reset();
@@ -98,7 +100,7 @@ export function AddEmployeeDialog({
       }
     } catch (error: any) {
       console.error(error);
-      const msg = error?.response?.data?.message || "Thêm thất bại";
+      const msg = error?.response?.data?.message || t("add_dialog.failed") || "Create failed";
       toast.error(msg);
     }
   };
@@ -111,13 +113,13 @@ export function AddEmployeeDialog({
         ) : (
           <Button className="gap-2">
             <Plus className="h-4 w-4" />
-            Thêm nhân viên
+            {t("add_new")}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Thêm nhân viên mới</DialogTitle>
+          <DialogTitle>{t("add_dialog.title")}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -137,7 +139,7 @@ export function AddEmployeeDialog({
                 name="firstName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Họ (First Name)</FormLabel>
+                    <FormLabel>{t("add_dialog.first_name")}</FormLabel>
                     <FormControl>
                       <Input placeholder="Nguyễn" {...field} />
                     </FormControl>
@@ -152,7 +154,7 @@ export function AddEmployeeDialog({
                 name="lastName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tên (Last Name)</FormLabel>
+                    <FormLabel>{t("add_dialog.last_name")}</FormLabel>
                     <FormControl>
                       <Input placeholder="Văn A" {...field} />
                     </FormControl>
@@ -168,7 +170,7 @@ export function AddEmployeeDialog({
               name="userId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t("add_dialog.email")}</FormLabel>
                   <FormControl>
                     <Input placeholder="email@example.com" {...field} />
                   </FormControl>
@@ -184,14 +186,14 @@ export function AddEmployeeDialog({
                 name="systemRole"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Vai trò</FormLabel>
+                    <FormLabel>{t("add_dialog.role")}</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Chọn vai trò" />
+                          <SelectTrigger>
+                          <SelectValue placeholder={t("add_dialog.select_role")} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -213,7 +215,7 @@ export function AddEmployeeDialog({
                 name="salary"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Lương cơ bản</FormLabel>
+                    <FormLabel>{t("add_dialog.salary")}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -240,14 +242,14 @@ export function AddEmployeeDialog({
                 variant="outline"
                 onClick={() => setOpen(false)}
               >
-                Hủy
+                {t("dialog.cancel")}
               </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
                 <Save className="mr-2 h-4 w-4" />
-                Lưu nhân viên
+                {t("add_dialog.save")}
               </Button>
             </DialogFooter>
           </form>

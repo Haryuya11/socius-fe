@@ -39,6 +39,7 @@ import { ConfirmDialog } from "@/components/confirm-dialog";
 import { TransferDeptMemberDialog } from "./transfer-dept-member-dialog";
 import { usePermission } from "@/hooks/use-permission";
 import { ROLE_LABELS, DEPT_ROLES, ROLE_COLORS, RoleCode } from "@/types/roles";
+import { useTranslations } from "next-intl";
 
 interface Props {
   members: DepartmentMember[];
@@ -47,6 +48,7 @@ interface Props {
 }
 
 export function DepartmentMemberTable({ members, deptCode, onRefresh }: Props) {
+  const t = useTranslations("Departments");
   const [memberToRemove, setMemberToRemove] = useState<DepartmentMember | null>(
     null,
   );
@@ -71,10 +73,10 @@ export function DepartmentMemberTable({ members, deptCode, onRefresh }: Props) {
   const handleRoleChange = async (memberId: string, newRole: string) => {
     try {
       await departmentService.updateMemberRole(deptCode, memberId, newRole);
-      toast.success("Cập nhật vai trò thành công");
+      toast.success(t("member.update_role_success") || "Role updated successfully");
       onRefresh();
     } catch (e) {
-      toast.error("Lỗi cập nhật vai trò");
+      toast.error(t("member.update_role_failed") || "Failed to update role");
     }
   };
 
@@ -84,10 +86,10 @@ export function DepartmentMemberTable({ members, deptCode, onRefresh }: Props) {
       await departmentService.removeMembers(deptCode, [
         memberToRemove.employee.clientId,
       ]);
-      toast.success("Đã xóa nhân viên khỏi phòng ban");
+      toast.success(t("member.remove_success") || "Member removed from department");
       onRefresh();
     } catch (e) {
-      toast.error("Xóa thất bại");
+      toast.error(t("member.remove_failed") || "Remove failed");
     } finally {
       setMemberToRemove(null);
     }
@@ -100,21 +102,21 @@ export function DepartmentMemberTable({ members, deptCode, onRefresh }: Props) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Nhân viên</TableHead>
-              <TableHead>Vai trò</TableHead>
-              <TableHead>Trạng thái</TableHead>
-              <TableHead className="text-right">Hành động</TableHead>
+              <TableHead>{t("table.employee") || "Employee"}</TableHead>
+              <TableHead>{t("table.role") || "Role"}</TableHead>
+              <TableHead>{t("table.status") || "Status"}</TableHead>
+              <TableHead className="text-right">{t("actions_label") || "Actions"}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {members.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={4}
-                  className="text-center h-24 text-muted-foreground"
-                >
-                  Chưa có thành viên nào.
-                </TableCell>
+                    colSpan={4}
+                    className="text-center h-24 text-muted-foreground"
+                  >
+                    {t("member.empty") || "No members found."}
+                  </TableCell>
               </TableRow>
             ) : (
               members.map((m) => {
@@ -168,11 +170,11 @@ export function DepartmentMemberTable({ members, deptCode, onRefresh }: Props) {
                           variant="outline"
                           className="font-normal text-xs"
                         >
-                          Chính
+                          {t("member.primary") || "Primary"}
                         </Badge>
                       ) : (
                         <span className="text-xs text-muted-foreground">
-                          Phụ
+                          {t("member.secondary") || "Secondary"}
                         </span>
                       )}
                     </TableCell>
@@ -192,7 +194,7 @@ export function DepartmentMemberTable({ members, deptCode, onRefresh }: Props) {
                             {canUpdateRole && (
                               <>
                                 <DropdownMenuLabel>
-                                  Thay đổi vai trò
+                                  {t("member.change_role") || "Change role"}
                                 </DropdownMenuLabel>
                                 <DropdownMenuRadioGroup
                                   value={m.roleCode}
@@ -220,8 +222,7 @@ export function DepartmentMemberTable({ members, deptCode, onRefresh }: Props) {
                               <DropdownMenuItem
                                 onClick={() => setMemberToTransfer(m)}
                               >
-                                <ArrowRightLeft className="mr-2 h-4 w-4" /> Điều
-                                chuyển
+                                <ArrowRightLeft className="mr-2 h-4 w-4" /> {t("member.transfer") || "Transfer"}
                               </DropdownMenuItem>
                             )}
 
@@ -230,7 +231,7 @@ export function DepartmentMemberTable({ members, deptCode, onRefresh }: Props) {
                                 className="text-destructive focus:text-destructive"
                                 onClick={() => setMemberToRemove(m)}
                               >
-                                <UserX className="mr-2 h-4 w-4" /> Xóa khỏi nhóm
+                                <UserX className="mr-2 h-4 w-4" /> {t("member.remove") || "Remove from group"}
                               </DropdownMenuItem>
                             )}
                           </DropdownMenuContent>
@@ -248,19 +249,19 @@ export function DepartmentMemberTable({ members, deptCode, onRefresh }: Props) {
       <ConfirmDialog
         open={!!memberToRemove}
         onOpenChange={(o) => !o && setMemberToRemove(null)}
-        title="Xóa thành viên"
+        title={t("member.confirm_title") || "Remove member"}
         description={
           <span>
-            Bạn có chắc muốn xóa{" "}
+            {t("member.confirm_desc_prefix") || "Are you sure to remove"} {" "}
             <strong>
-              {memberToRemove?.employee.firstName}{" "}
+              {memberToRemove?.employee.firstName} {" "}
               {memberToRemove?.employee.lastName}
             </strong>{" "}
-            khỏi phòng ban?
+            {t("member.confirm_desc_suffix") || "from the department?"}
           </span>
         }
         onConfirm={handleRemove}
-        confirmLabel="Xóa thành viên"
+        confirmLabel={t("member.confirm_action") || "Remove member"}
         variant="destructive"
       />
 

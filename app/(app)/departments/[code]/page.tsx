@@ -11,6 +11,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { usePermission } from "@/hooks/use-permission";
 import { getAvatarInfo } from "@/utils/avatar-utils";
 
@@ -35,6 +36,7 @@ import { DepartmentMemberTable } from "@/components/departments/department-membe
 import { DepartmentDetailSkeleton } from "@/components/skeleton/departments/department-detail-skeleton";
 
 export default function DepartmentDetailPage() {
+  const t = useTranslations("Departments");
   const params = useParams();
   const deptCode = params.code as string;
   const router = useRouter();
@@ -107,7 +109,7 @@ export default function DepartmentDetailPage() {
               {dept.departmentCode}
             </span>
             <span>•</span>
-            <Building2 className="h-3.5 w-3.5" /> Chi tiết phòng ban
+            <Building2 className="h-3.5 w-3.5" /> {t("detail.header_subtitle")}
           </div>
         </div>
       </div>
@@ -117,13 +119,13 @@ export default function DepartmentDetailPage() {
         {/* Card 1: Tổng nhân sự */}
         <Card className="shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tổng nhân sự</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("detail.total_staff.title")}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{members.length}</div>
             <p className="text-xs text-muted-foreground mt-1">
-              Trong đó có {managerCount} Quản lý (MGR)
+              {t("detail.total_staff.desc", { managerCount })}
             </p>
           </CardContent>
         </Card>
@@ -132,7 +134,7 @@ export default function DepartmentDetailPage() {
         <Card className="shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Giám đốc (Director)
+              {t("detail.director.title")}
             </CardTitle>
             <Crown className="h-4 w-4 text-yellow-500" />
           </CardHeader>
@@ -148,11 +150,11 @@ export default function DepartmentDetailPage() {
               </div>
             ) : (
               <div className="text-sm text-muted-foreground italic">
-                Chưa bổ nhiệm
+                {t("detail.director_unassigned")}
               </div>
             )}
             <p className="text-xs text-muted-foreground mt-1">
-              Người đứng đầu phòng ban
+              {t("detail.director.desc")}
             </p>
           </CardContent>
         </Card>
@@ -160,7 +162,7 @@ export default function DepartmentDetailPage() {
         {/* Card 3: Số lượng Team */}
         <Card className="shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Số lượng Team</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("detail.teams_count.title")}</CardTitle>
             <Layers className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -168,7 +170,7 @@ export default function DepartmentDetailPage() {
               {teams.length}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Các nhóm trực thuộc
+              {t("detail.teams_count.desc")}
             </p>
           </CardContent>
         </Card>
@@ -177,14 +179,13 @@ export default function DepartmentDetailPage() {
       {/* --- TEAMS LIST SECTION --- */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold flex items-center gap-2 text-foreground/90">
-          <Layers className="h-5 w-5 text-purple-600" /> Các nhóm trực thuộc
-          (Teams)
+          <Layers className="h-5 w-5 text-purple-600" /> {t("detail.teams.title")}
         </h3>
 
         {teams.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 bg-muted/30 border border-dashed rounded-lg text-muted-foreground">
             <Layers className="h-8 w-8 mb-2 opacity-50" />
-            <p>Chưa có team nào thuộc phòng ban này.</p>
+            <p>{t("detail.teams.empty")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -207,11 +208,11 @@ export default function DepartmentDetailPage() {
                     </span>
                   </CardDescription>
                 </CardHeader>
-                <CardFooter className="pt-2 pb-4 px-4">
-                  <div className="text-xs font-medium text-muted-foreground group-hover:text-purple-600 flex items-center gap-1 transition-colors ml-auto">
-                    Xem chi tiết <ArrowRight className="h-3 w-3" />
-                  </div>
-                </CardFooter>
+                    <CardFooter className="pt-2 pb-4 px-4">
+                      <div className="text-xs font-medium text-muted-foreground group-hover:text-purple-600 flex items-center gap-1 transition-colors ml-auto">
+                        {t("detail.teams.view_details")} <ArrowRight className="h-3 w-3" />
+                      </div>
+                    </CardFooter>
               </Card>
             ))}
           </div>
@@ -222,9 +223,9 @@ export default function DepartmentDetailPage() {
       <Card className="shadow-sm border-border/60">
         <CardHeader className="flex flex-row items-center justify-between border-b bg-muted/20 py-4 px-6">
           <div>
-            <CardTitle>Danh sách nhân sự</CardTitle>
+            <CardTitle>{t("detail.members.title")}</CardTitle>
             <CardDescription className="mt-1">
-              Quản lý danh sách và phân quyền vai trò.
+              {t("detail.members.desc")}
             </CardDescription>
           </div>
           {canAddMember && (
