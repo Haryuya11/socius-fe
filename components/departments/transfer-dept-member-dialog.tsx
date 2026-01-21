@@ -97,7 +97,11 @@ export function TransferDeptMemberDialog({
       onOpenChange(false);
       onSuccess();
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || t("member.transfer_failed") || "Transfer failed");
+      toast.error(
+        e?.response?.data?.message ||
+          t("member.transfer_failed") ||
+          "Transfer failed",
+      );
     }
   };
 
@@ -107,7 +111,7 @@ export function TransferDeptMemberDialog({
         <DialogHeader>
           <DialogTitle>{t("member.transfer_title")}</DialogTitle>
           <DialogDescription>
-            {t("member.transfer_desc_prefix")} {" "}
+            {t("member.transfer_desc_prefix")}{" "}
             <strong>
               {member.employee.firstName} {member.employee.lastName}
             </strong>{" "}
@@ -124,7 +128,12 @@ export function TransferDeptMemberDialog({
                   <FormLabel>{t("member.to_department_label")}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder={t("member.select_placeholder") || "Select department..."} />
+                      <SelectValue
+                        placeholder={
+                          t("member.select_placeholder") ||
+                          "Select department..."
+                        }
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {depts.map((d) => (

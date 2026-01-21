@@ -1,11 +1,9 @@
-
 export const SYSTEM_ROLES = {
   ADMIN: "SYS_ADMIN",
   USER: "USER",
 } as const;
 
 export type SystemRole = (typeof SYSTEM_ROLES)[keyof typeof SYSTEM_ROLES];
-
 
 export const DEPT_ROLES = {
   DIRECTOR: "DEPT_DIR",
@@ -15,14 +13,12 @@ export const DEPT_ROLES = {
 
 export type DepartmentRole = (typeof DEPT_ROLES)[keyof typeof DEPT_ROLES];
 
-
 export const TEAM_ROLES = {
   LEADER: "TEAM_LEAD",
   MEMBER: "TEAM_MEM",
 } as const;
 
 export type TeamRole = (typeof TEAM_ROLES)[keyof typeof TEAM_ROLES];
-
 
 export type RoleCode = SystemRole | DepartmentRole | TeamRole;
 export const ROLE_LABELS: Record<RoleCode, string> = {
@@ -48,7 +44,7 @@ export const ROLE_COLORS: Record<
   [SYSTEM_ROLES.ADMIN]: "destructive",
   [SYSTEM_ROLES.USER]: "secondary",
 
-  [DEPT_ROLES.DIRECTOR]: "yellow", 
+  [DEPT_ROLES.DIRECTOR]: "yellow",
   [DEPT_ROLES.MANAGER]: "blue",
   [DEPT_ROLES.MEMBER]: "outline",
 
