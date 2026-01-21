@@ -56,7 +56,7 @@ export function AddDeptMemberDialog({
     resolver: zodResolver(addMemberSchema),
     defaultValues: {
       employeeId: "",
-      roleCode: DEPT_ROLES.MEMBER, 
+      roleCode: DEPT_ROLES.MEMBER,
       isPrimary: false,
     },
   });
@@ -85,13 +85,17 @@ export function AddDeptMemberDialog({
       setOpen(false);
       onSuccess();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || t("member.add_failed") || "Failed to add member");
+      toast.error(
+        error?.response?.data?.message ||
+          t("member.add_failed") ||
+          "Failed to add member",
+      );
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
+      <DialogTrigger asChild>
         <Button className="gap-2 shadow-sm">
           <UserPlus className="h-4 w-4" /> {t("member.add_button")}
         </Button>
@@ -112,12 +116,17 @@ export function AddDeptMemberDialog({
               name="employeeId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("member.select_label") || "Select employee"}</FormLabel>
+                  <FormLabel>
+                    {t("member.select_label") || "Select employee"}
+                  </FormLabel>
                   <FormControl>
                     <EmployeeSelector
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder={t("member.select_placeholder") || "Search by name or email..."}
+                      placeholder={
+                        t("member.select_placeholder") ||
+                        "Search by name or email..."
+                      }
                     />
                   </FormControl>
                   <FormMessage />

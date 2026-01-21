@@ -389,9 +389,71 @@
       "view": "Xem chi tiết",
       "delete_confirm": "Xóa phòng ban",
       "delete_button": "Xóa phòng ban"
-    }
-    ,
+    },
     "actions_label": "Thao tác"
+  },
+  "MyDepartment": {
+    "title": "Phòng ban của tôi",
+    "subtitle": "Xem thông tin và quản lý các phòng ban bạn thuộc về",
+    "department_count": "{count} phòng ban",
+    "primary": "Chính",
+    "your_role": "Vai trò của bạn",
+    "director": "Giám đốc",
+    "view_details": "Xem chi tiết",
+    "load_failed": "Không thể tải thông tin phòng ban",
+    "access_denied": "Bạn không có quyền truy cập phòng ban này",
+    "stats": {
+      "members": "Thành viên",
+      "managers": "Quản lý",
+      "teams": "Nhóm"
+    },
+    "empty": {
+      "title": "Bạn chưa thuộc phòng ban nào",
+      "description": "Hãy liên hệ với quản trị viên để được thêm vào phòng ban."
+    },
+    "teams": {
+      "title": "Các nhóm trực thuộc",
+      "description": "Danh sách các nhóm thuộc phòng ban {name}",
+      "empty": "Chưa có nhóm nào trong phòng ban này.",
+      "view_details": "Xem chi tiết",
+      "not_member": "Bạn không thuộc nhóm này"
+    },
+    "members": {
+      "title": "Danh sách thành viên",
+      "description": "Các thành viên trong phòng ban {name}"
+    }
+  },
+  "MyTeam": {
+    "title": "Đội ngũ của tôi",
+    "subtitle": "Xem thông tin và quản lý các nhóm bạn thuộc về",
+    "team_count": "{count} nhóm",
+    "leader_badge": "Trưởng nhóm",
+    "your_role": "Vai trò của bạn",
+    "leader": "Trưởng nhóm",
+    "view_details": "Xem chi tiết",
+    "load_failed": "Không thể tải thông tin nhóm",
+    "access_denied": "Bạn không có quyền truy cập nhóm này",
+    "stats": {
+      "members": "Thành viên",
+      "department": "Phòng ban"
+    },
+    "empty": {
+      "title": "Bạn chưa thuộc nhóm nào",
+      "description": "Hãy liên hệ với quản trị viên để được thêm vào nhóm."
+    },
+    "detail": {
+      "total_members": "Tổng thành viên",
+      "total_members_desc": "Số thành viên trong nhóm",
+      "leader": "Trưởng nhóm",
+      "leader_unassigned": "Chưa có trưởng nhóm",
+      "leader_desc": "Người dẫn dắt nhóm",
+      "department": "Phòng ban",
+      "department_desc": "Phòng ban quản lý"
+    },
+    "members": {
+      "title": "Danh sách thành viên",
+      "description": "Các thành viên trong nhóm {name}"
+    }
   },
   "Theme": {
     "toggle": "Đổi giao diện",
@@ -402,6 +464,7 @@
   },
   "Navigation": {
     "dashboard": "Bảng điều khiển",
+    "my_department": "Phòng ban của tôi",
     "my_team": "Đội ngũ của tôi",
     "tasks": "Công việc",
     "calendar": "Lịch",

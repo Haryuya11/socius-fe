@@ -21,7 +21,6 @@ import {
   Building2,
   Waypoints,
   FileTerminal,
-  
 } from "lucide-react";
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -58,6 +57,11 @@ export default function SidebarNav({
       title: t("tasks"),
       href: "/tasks",
       icon: CheckSquare,
+    },
+    {
+      title: t("my_department"), // Phòng ban của user
+      href: "/my-department",
+      icon: Building2,
     },
     {
       title: t("my_team"), // Team của chính user đó

@@ -392,6 +392,69 @@
     },
     "actions_label": "Actions"
   },
+  "MyDepartment": {
+    "title": "My Departments",
+    "subtitle": "View information and manage departments you belong to",
+    "department_count": "{count} departments",
+    "primary": "Primary",
+    "your_role": "Your role",
+    "director": "Director",
+    "view_details": "View details",
+    "load_failed": "Unable to load department information",
+    "access_denied": "You don't have access to this department",
+    "stats": {
+      "members": "Members",
+      "managers": "Managers",
+      "teams": "Teams"
+    },
+    "empty": {
+      "title": "You are not assigned to any department",
+      "description": "Please contact your administrator to be added to a department."
+    },
+    "teams": {
+      "title": "Teams",
+      "description": "List of teams under {name}",
+      "empty": "No teams in this department yet.",
+      "view_details": "View details",
+      "not_member": "You are not a member"
+    },
+    "members": {
+      "title": "Members",
+      "description": "Members in {name} department"
+    }
+  },
+  "MyTeam": {
+    "title": "My Teams",
+    "subtitle": "View information and manage teams you belong to",
+    "team_count": "{count} teams",
+    "leader_badge": "Leader",
+    "your_role": "Your role",
+    "leader": "Leader",
+    "view_details": "View details",
+    "load_failed": "Unable to load team information",
+    "access_denied": "You don't have access to this team",
+    "stats": {
+      "members": "Members",
+      "department": "Department"
+    },
+    "empty": {
+      "title": "You are not assigned to any team",
+      "description": "Please contact your administrator to be added to a team."
+    },
+    "detail": {
+      "total_members": "Total Members",
+      "total_members_desc": "Number of members in team",
+      "leader": "Team Leader",
+      "leader_unassigned": "No leader assigned",
+      "leader_desc": "Person leading the team",
+      "department": "Department",
+      "department_desc": "Managing department"
+    },
+    "members": {
+      "title": "Team Members",
+      "description": "Members in {name} team"
+    }
+  },
   "Chat": {
     "create_failed": "Unable to create conversation",
     "connect_failed": "Connection error when creating conversation"
@@ -405,6 +468,7 @@
   },
   "Navigation": {
     "dashboard": "Dashboard",
+    "my_department": "My Department",
     "my_team": "My Team",
     "tasks": "Tasks",
     "calendar": "Calendar",
@@ -417,7 +481,6 @@
     "admin_panel": "Admin Panel",
     "departments": "Departments",
     "teams": "Manage Teams"
-
   },
   "PasswordStrength": {
     "label": "Password Strength:",

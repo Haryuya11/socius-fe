@@ -89,7 +89,9 @@ export function AddEmployeeDialog({
       // BƯỚC 3: Gọi API tạo nhân viên
       await employeeService.createEmployee(payload);
 
-      toast.success(t("add_dialog.success") || "Employee created successfully!");
+      toast.success(
+        t("add_dialog.success") || "Employee created successfully!",
+      );
 
       setOpen(false);
       form.reset();
@@ -100,7 +102,10 @@ export function AddEmployeeDialog({
       }
     } catch (error: any) {
       console.error(error);
-      const msg = error?.response?.data?.message || t("add_dialog.failed") || "Create failed";
+      const msg =
+        error?.response?.data?.message ||
+        t("add_dialog.failed") ||
+        "Create failed";
       toast.error(msg);
     }
   };
@@ -192,8 +197,10 @@ export function AddEmployeeDialog({
                       defaultValue={field.value}
                     >
                       <FormControl>
-                          <SelectTrigger>
-                          <SelectValue placeholder={t("add_dialog.select_role")} />
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t("add_dialog.select_role")}
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>

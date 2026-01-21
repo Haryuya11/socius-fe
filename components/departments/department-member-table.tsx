@@ -1,12 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  MoreHorizontal,
-  UserX,
-  ArrowRightLeft,
-  Crown,
-} from "lucide-react";
+import { MoreHorizontal, UserX, ArrowRightLeft, Crown } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -73,7 +68,9 @@ export function DepartmentMemberTable({ members, deptCode, onRefresh }: Props) {
   const handleRoleChange = async (memberId: string, newRole: string) => {
     try {
       await departmentService.updateMemberRole(deptCode, memberId, newRole);
-      toast.success(t("member.update_role_success") || "Role updated successfully");
+      toast.success(
+        t("member.update_role_success") || "Role updated successfully",
+      );
       onRefresh();
     } catch (e) {
       toast.error(t("member.update_role_failed") || "Failed to update role");
@@ -86,7 +83,9 @@ export function DepartmentMemberTable({ members, deptCode, onRefresh }: Props) {
       await departmentService.removeMembers(deptCode, [
         memberToRemove.employee.clientId,
       ]);
-      toast.success(t("member.remove_success") || "Member removed from department");
+      toast.success(
+        t("member.remove_success") || "Member removed from department",
+      );
       onRefresh();
     } catch (e) {
       toast.error(t("member.remove_failed") || "Remove failed");
@@ -105,18 +104,20 @@ export function DepartmentMemberTable({ members, deptCode, onRefresh }: Props) {
               <TableHead>{t("table.employee") || "Employee"}</TableHead>
               <TableHead>{t("table.role") || "Role"}</TableHead>
               <TableHead>{t("table.status") || "Status"}</TableHead>
-              <TableHead className="text-right">{t("actions_label") || "Actions"}</TableHead>
+              <TableHead className="text-right">
+                {t("actions_label") || "Actions"}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {members.length === 0 ? (
               <TableRow>
                 <TableCell
-                    colSpan={4}
-                    className="text-center h-24 text-muted-foreground"
-                  >
-                    {t("member.empty") || "No members found."}
-                  </TableCell>
+                  colSpan={4}
+                  className="text-center h-24 text-muted-foreground"
+                >
+                  {t("member.empty") || "No members found."}
+                </TableCell>
               </TableRow>
             ) : (
               members.map((m) => {
@@ -222,7 +223,8 @@ export function DepartmentMemberTable({ members, deptCode, onRefresh }: Props) {
                               <DropdownMenuItem
                                 onClick={() => setMemberToTransfer(m)}
                               >
-                                <ArrowRightLeft className="mr-2 h-4 w-4" /> {t("member.transfer") || "Transfer"}
+                                <ArrowRightLeft className="mr-2 h-4 w-4" />{" "}
+                                {t("member.transfer") || "Transfer"}
                               </DropdownMenuItem>
                             )}
 
@@ -231,7 +233,8 @@ export function DepartmentMemberTable({ members, deptCode, onRefresh }: Props) {
                                 className="text-destructive focus:text-destructive"
                                 onClick={() => setMemberToRemove(m)}
                               >
-                                <UserX className="mr-2 h-4 w-4" /> {t("member.remove") || "Remove from group"}
+                                <UserX className="mr-2 h-4 w-4" />{" "}
+                                {t("member.remove") || "Remove from group"}
                               </DropdownMenuItem>
                             )}
                           </DropdownMenuContent>
@@ -252,9 +255,9 @@ export function DepartmentMemberTable({ members, deptCode, onRefresh }: Props) {
         title={t("member.confirm_title") || "Remove member"}
         description={
           <span>
-            {t("member.confirm_desc_prefix") || "Are you sure to remove"} {" "}
+            {t("member.confirm_desc_prefix") || "Are you sure to remove"}{" "}
             <strong>
-              {memberToRemove?.employee.firstName} {" "}
+              {memberToRemove?.employee.firstName}{" "}
               {memberToRemove?.employee.lastName}
             </strong>{" "}
             {t("member.confirm_desc_suffix") || "from the department?"}
