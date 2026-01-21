@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
+import { vi, enUS } from "date-fns/locale";
 import { ArrowRight } from "lucide-react";
 import {
   Card,
@@ -13,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Task } from "@/types/task";
 import { UrgentTasksSkeleton } from "../skeleton/dashboard/urgent-tasks-skeleton";
+import { useTranslations, useLocale } from "next-intl";
 
 export function UrgentTasks({
   tasks,
@@ -22,6 +24,9 @@ export function UrgentTasks({
   isLoading?: boolean;
 }) {
   const router = useRouter();
+  const t = useTranslations("Dashboard");
+  const locale = useLocale();
+  const dateLocale = locale === "vi" ? vi : enUS;
 
   if (isLoading) return <UrgentTasksSkeleton />;
 
@@ -29,16 +34,16 @@ export function UrgentTasks({
     <Card className="shadow-sm flex flex-col border-border/60">
       <CardHeader>
         <CardTitle className="text-base text-destructive flex items-center gap-2">
-          Cần xử lý gấp
+          {t("urgent.title")}
         </CardTitle>
         <CardDescription>
-          Các công việc sắp đến hạn hoặc quá hạn
+          {t("urgent.description")}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-2">
         {tasks.length === 0 ? (
           <div className="py-8 flex items-center justify-center text-sm text-muted-foreground bg-muted/10 rounded-lg border border-dashed">
-            Tuyệt vời! Không có công việc gấp.
+            {t("urgent.empty")}
           </div>
         ) : (
           <div className="space-y-3">
@@ -73,7 +78,7 @@ export function UrgentTasks({
                 </div>
                 {task.priority === "HIGH" && (
                   <Badge variant="destructive" className="h-5 text-[10px]">
-                    Cao
+                    {t("calendar.priority_high")}
                   </Badge>
                 )}
               </div>
@@ -88,7 +93,7 @@ export function UrgentTasks({
           className="w-full justify-between text-muted-foreground hover:text-primary"
           onClick={() => router.push("/tasks")}
         >
-          Đến trang quản lý <ArrowRight className="h-4 w-4" />
+          {t("urgent.go_to_tasks")} <ArrowRight className="h-4 w-4" />
         </Button>
       </div>
     </Card>

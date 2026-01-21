@@ -10,7 +10,7 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/hooks/use-auth";
 
 export default function HomePage() {
-  const t = useTranslations("Dashboard");
+  const t = useTranslations("Homepage");
   const { user, isLoading, logout } = useAuth();
   const [copied, setCopied] = useState(false);
 

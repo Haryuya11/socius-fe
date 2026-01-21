@@ -38,6 +38,7 @@ import {
   AddMemberFormValues,
   addMemberSchema,
 } from "@/lib/validations/department";
+import { useTranslations } from "next-intl";
 
 // Schema Validation
 
@@ -48,6 +49,7 @@ export function AddDeptMemberDialog({
   deptCode: string;
   onSuccess: () => void;
 }) {
+  const t = useTranslations("Departments");
   const [open, setOpen] = useState(false);
 
   const form = useForm<AddMemberFormValues>({
@@ -79,24 +81,24 @@ export function AddDeptMemberDialog({
         },
       ];
       await departmentService.addMembers(deptCode, payload);
-      toast.success("Thêm thành viên thành công");
+      toast.success(t("member.add_success") || "Member added successfully");
       setOpen(false);
       onSuccess();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Thêm thành viên thất bại");
+      toast.error(error?.response?.data?.message || t("member.add_failed") || "Failed to add member");
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+        <DialogTrigger asChild>
         <Button className="gap-2 shadow-sm">
-          <UserPlus className="h-4 w-4" /> Thêm thành viên
+          <UserPlus className="h-4 w-4" /> {t("member.add_button")}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
-          <DialogTitle>Thêm nhân sự vào {deptCode}</DialogTitle>
+          <DialogTitle>{t("member.add_title", { code: deptCode })}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -110,12 +112,12 @@ export function AddDeptMemberDialog({
               name="employeeId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Chọn nhân viên</FormLabel>
+                  <FormLabel>{t("member.select_label") || "Select employee"}</FormLabel>
                   <FormControl>
                     <EmployeeSelector
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder="Tìm theo tên hoặc email..."
+                      placeholder={t("member.select_placeholder") || "Search by name or email..."}
                     />
                   </FormControl>
                   <FormMessage />
@@ -130,7 +132,7 @@ export function AddDeptMemberDialog({
                 name="roleCode"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Vai trò</FormLabel>
+                    <FormLabel>{t("member.role_label") || "Role"}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -158,7 +160,7 @@ export function AddDeptMemberDialog({
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-2 space-y-0">
                       <FormLabel className="cursor-pointer text-sm font-normal">
-                        Phòng chính?
+                        {t("member.primary_label") || "Primary department?"}
                       </FormLabel>
                       <FormControl>
                         <Switch
@@ -178,13 +180,13 @@ export function AddDeptMemberDialog({
                 variant="outline"
                 onClick={() => setOpen(false)}
               >
-                Hủy
+                {t("dialog.cancel") || "Cancel"}
               </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Thêm nhân sự
+                {t("member.add_button")}
               </Button>
             </div>
           </form>

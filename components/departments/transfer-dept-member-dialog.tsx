@@ -38,6 +38,7 @@ import {
   transferMemberSchema,
   TransferMemberFormValues,
 } from "@/lib/validations/department";
+import { useTranslations } from "next-intl";
 
 interface TransferProps {
   open: boolean;
@@ -54,6 +55,7 @@ export function TransferDeptMemberDialog({
   currentDeptCode,
   onSuccess,
 }: TransferProps) {
+  const t = useTranslations("Departments");
   const [depts, setDepts] = useState<Department[]>([]);
 
   const form = useForm<TransferMemberFormValues>({
@@ -91,11 +93,11 @@ export function TransferDeptMemberDialog({
         fromDepartmentCode: currentDeptCode,
         ...values,
       });
-      toast.success("Điều chuyển thành công!");
+      toast.success(t("member.transfer_success") || "Transfer successful!");
       onOpenChange(false);
       onSuccess();
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || "Lỗi điều chuyển");
+      toast.error(e?.response?.data?.message || t("member.transfer_failed") || "Transfer failed");
     }
   };
 
@@ -103,13 +105,13 @@ export function TransferDeptMemberDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Điều chuyển nhân sự</DialogTitle>
+          <DialogTitle>{t("member.transfer_title")}</DialogTitle>
           <DialogDescription>
-            Chuyển{" "}
+            {t("member.transfer_desc_prefix")} {" "}
             <strong>
               {member.employee.firstName} {member.employee.lastName}
             </strong>{" "}
-            sang phòng ban khác.
+            {t("member.transfer_desc_suffix")}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -119,10 +121,10 @@ export function TransferDeptMemberDialog({
               name="toDepartmentCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phòng ban đích</FormLabel>
+                  <FormLabel>{t("member.to_department_label")}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Chọn phòng ban..." />
+                      <SelectValue placeholder={t("member.select_placeholder") || "Select department..."} />
                     </SelectTrigger>
                     <SelectContent>
                       {depts.map((d) => (
@@ -149,7 +151,7 @@ export function TransferDeptMemberDialog({
                 name="roleCode"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Vai trò mới</FormLabel>
+                    <FormLabel>{t("member.new_role_label")}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger>
                         <SelectValue />
@@ -166,7 +168,7 @@ export function TransferDeptMemberDialog({
                 )}
               />
               <div className="flex flex-col justify-end pb-3 space-y-2">
-                <Label>Trạng thái</Label>
+                <Label>{t("member.status_label")}</Label>
                 <div className="flex items-center gap-2 border p-2 rounded">
                   <FormField
                     control={form.control}
@@ -178,7 +180,7 @@ export function TransferDeptMemberDialog({
                       />
                     )}
                   />
-                  <span className="text-sm">Là phòng chính</span>
+                  <span className="text-sm">{t("member.primary_label")}</span>
                 </div>
               </div>
             </div>
@@ -188,13 +190,13 @@ export function TransferDeptMemberDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
               >
-                Hủy
+                {t("dialog.cancel")}
               </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && (
                   <Loader2 className="animate-spin mr-2 h-4 w-4" />
                 )}
-                Xác nhận
+                {t("member.transfer_confirm")}
               </Button>
             </div>
           </form>

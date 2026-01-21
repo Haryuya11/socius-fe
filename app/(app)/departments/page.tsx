@@ -23,9 +23,11 @@ import { DepartmentDialog } from "@/components/departments/department-dialog";
 import { DepartmentTable } from "@/components/departments/department-table";
 import { DepartmentGrid } from "@/components/departments/department-grid";
 import { departmentService } from "@/services/department-service";
+import { useTranslations } from "next-intl";
 import { Department } from "@/types/department";
 
 export default function DepartmentsPage() {
+  const t = useTranslations("Departments");
   const { hasPermission } = usePermission();
 
   const [data, setData] = useState<Department[]>([]);
@@ -60,7 +62,7 @@ export default function DepartmentsPage() {
       setFilteredTotalItems(res.totalItems);
     } catch (e) {
       console.error(e);
-      toast.error("Lỗi tải danh sách phòng ban");
+      toast.error(t("delete_failed") || "Failed to load departments");
     } finally {
       setIsLoadingData(false);
     }
@@ -113,7 +115,7 @@ export default function DepartmentsPage() {
       fetchData();
       fetchStats();
     } catch (error: any) {
-      toast.error("Không thể xóa phòng ban này");
+      toast.error(t("delete_failed") || "Unable to delete department");
     } finally {
       setDeleteId(null);
     }
@@ -144,19 +146,17 @@ export default function DepartmentsPage() {
         <Card className="shadow-sm border-dashed">
           <CardContent className="flex h-96 flex-col items-center justify-center text-center">
             <Building2 className="h-12 w-12 text-muted-foreground/30 mb-4" />
-            <h3 className="font-semibold text-lg">Không tìm thấy dữ liệu</h3>
+                <h3 className="font-semibold text-lg">{t("empty.title")}</h3>
             <p className="text-sm text-muted-foreground">
-              {search
-                ? "Thử thay đổi từ khóa tìm kiếm."
-                : "Chưa có phòng ban nào trong hệ thống."}
+              {search ? t("empty.desc_search") : t("empty.desc_default")}
             </p>
             {search && (
-              <Button
+                <Button
                 variant="link"
                 onClick={() => setSearch("")}
                 className="mt-2 text-primary"
               >
-                Xóa bộ lọc
+                {t("toolbar.clear_filters")}
               </Button>
             )}
           </CardContent>
@@ -197,10 +197,10 @@ export default function DepartmentsPage() {
               </div>
               <div>
                 <h1 className="text-3xl font-bold tracking-tight bg-linear-to-r from-foreground to-foreground/70 bg-clip-text">
-                  Quản lý Phòng Ban
+                  {t("title")}
                 </h1>
                 <p className="text-sm text-muted-foreground mt-0.5">
-                  Cấu trúc tổ chức và phân quyền nhân sự
+                  {t("subtitle")}
                 </p>
               </div>
             </div>
@@ -209,7 +209,7 @@ export default function DepartmentsPage() {
             <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-lg border border-border/50">
               <Building2 className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">
-                {filteredTotalItems} Đơn vị (Hiển thị)
+                {t("grid.units_display", { count: filteredTotalItems })}
               </span>
             </div>
             {canCreate && <DepartmentDialog onSuccess={refreshAll} />}
@@ -224,7 +224,7 @@ export default function DepartmentsPage() {
             <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Tổng số Phòng ban
+                  {t("stats.total_departments")}
                 </CardTitle>
                 <div className="h-8 w-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
                   <Building2 className="h-4 w-4 text-purple-600 dark:text-purple-400" />
@@ -233,7 +233,7 @@ export default function DepartmentsPage() {
               <CardContent>
                 <div className="text-2xl font-bold">{statsTotalItems}</div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Đơn vị đang hoạt động
+                  {t("stats.active_units")}
                 </p>
               </CardContent>
             </Card>
@@ -251,7 +251,7 @@ export default function DepartmentsPage() {
                   <div className="relative w-full sm:max-w-xs">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="Tìm theo tên phòng ban..."
+                      placeholder={t("toolbar.search_placeholder")}
                       className="pl-9"
                       value={search}
                       onChange={handleSearchChange}

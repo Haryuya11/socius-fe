@@ -50,7 +50,7 @@
       "confirm": "Confirm"
     }
   },
-  "Dashboard": {
+  "Homepage": {
     "welcome": "Welcome back!",
     "email": "Email",
     "departments": "Departments",
@@ -58,6 +58,53 @@
     "token": "Token",
     "token_copied": "Token copied!",
     "logout": "Logout"
+  },
+  "Dashboard": {
+    "title": "Dashboard",
+    "greeting": "Hello {name}, what's new today?",
+    "roles": {
+      "leader": "LEADER",
+      "member": "MEMBER"
+    },
+    "stats": {
+      "overall_progress": "Overall Progress",
+      "done_of_total": "Done {completed} of {total} tasks",
+      "in_progress": "In Progress",
+      "ongoing_tasks": "Ongoing tasks",
+      "need_review": "Need Review",
+      "pending_from_staff": "Pending requests from staff",
+      "no_pending": "No new requests",
+      "achievement": "Achievement",
+      "tasks_completed": "Tasks completed successfully",
+      "status": "Health Status",
+      "stable": "Stable",
+      "at_risk": "At Risk",
+      "overdue_alert": "{count} tasks are overdue!"
+    },
+    "charts": {
+      "status_overview": "Status Overview",
+      "in_progress": "In Progress",
+      "pending": "Pending",
+      "completed": "Completed",
+      "overdue": "Overdue"
+    },
+    "urgent": {
+      "title": "Urgent Tasks",
+      "description": "Tasks approaching deadline or overdue",
+      "empty": "Great! No urgent tasks.",
+      "go_to_tasks": "Go to Management"
+    },
+    "calendar": {
+      "title": "Work Calendar",
+      "select_date": "Select date",
+      "empty": "No tasks due today.",
+      "view_all": "View all",
+      "task_count": "{count, plural, =0 {no tasks} one {1 task} other {# tasks}}",
+      "sender": "Sender",
+      "priority_high": "High",
+      "deadline": "Deadline",
+      "no_description": "No detailed description."
+    }
   },
   "Auth": {
     "help": "Help",
@@ -218,7 +265,136 @@
       "primary": "Primary",
       "leader": "Leader",
       "team_leader": "Team Leader"
+    },
+    "dialog": {
+      "cancel": "Cancel"
+    },
+    "add_dialog": {
+      "title": "Add New Employee",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "email": "Email",
+      "role": "Role",
+      "select_role": "Select role",
+      "salary": "Salary",
+      "save": "Save",
+      "success": "Employee created successfully!",
+      "failed": "Create failed"
+    },
+    "stats": {
+      "total_staff_title": "Total Employees",
+      "total_staff_desc": "Employees in the system",
+      "admins_title": "Administrators",
+      "admins_desc": "Has Admin/Manager roles",
+      "active_title": "Active",
+      "active_desc": "Accounts currently active"
     }
+  },
+  "Departments": {
+    "title": "Department Management",
+    "subtitle": "Organization structure and department administration",
+    "detail": {
+      "header_subtitle": "Department details",
+      "total_staff": {
+        "title": "Total staff",
+        "desc": "Includes {managerCount} Managers (MGR)"
+      },
+      "director": {
+        "title": "Director",
+        "desc": "Head of the department"
+      },
+      "director_unassigned": "Not appointed",
+      "teams": {
+        "title": "Teams",
+        "empty": "No teams in this department.",
+        "view_details": "View details"
+      },
+      "teams_count": {
+        "title": "Number of Teams",
+        "desc": "Teams under this department"
+      },
+      "members": {
+        "title": "Staff list",
+        "desc": "Manage members and role assignments."
+      }
+    },
+    "table": {
+      "employee": "Employee",
+      "role": "Role",
+      "status": "Status"
+    },
+    "total_label": "units",
+    "create": "Create Department",
+    "delete_success": "Department deleted successfully",
+    "delete_failed": "Unable to delete department",
+    "empty": {
+      "title": "No departments found",
+      "desc_search": "Try changing your search keyword.",
+      "desc_default": "No departments exist in the system yet."
+    },
+    "stats": {
+      "total_departments": "Total Departments",
+      "active_units": "Active units"
+    },
+    "toolbar": {
+      "search_placeholder": "Search by department name...",
+      "clear_filters": "Clear filters"
+    },
+    "grid": {
+      "manage_staff": "Manage staff",
+      "units_display": "{count} units (displayed)"
+    },
+    "dialog": {
+      "create_title": "Create Department",
+      "edit_title": "Edit Department",
+      "department_code": "Department Code",
+      "department_name": "Department Name",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "member": {
+      "update_role_success": "Role updated successfully",
+      "update_role_failed": "Failed to update role",
+      "remove_success": "Member removed from department",
+      "remove_failed": "Failed to remove member",
+      "empty": "No members found.",
+      "primary": "Primary",
+      "secondary": "Secondary",
+      "change_role": "Change role",
+      "transfer": "Transfer",
+      "remove": "Remove",
+      "confirm_title": "Remove member",
+      "confirm_desc_prefix": "Are you sure to remove",
+      "confirm_desc_suffix": "from the department?",
+      "confirm_action": "Remove member",
+      "add_success": "Member added successfully",
+      "add_failed": "Failed to add member",
+      "add_button": "Add member",
+      "add_title": "Add member to {code}",
+      "select_label": "Select employee",
+      "select_placeholder": "Search by name or email...",
+      "role_label": "Role",
+      "primary_label": "Primary department?",
+      "transfer_success": "Transfer successful!",
+      "transfer_failed": "Transfer failed",
+      "transfer_title": "Transfer member",
+      "transfer_desc_prefix": "Transfer",
+      "transfer_desc_suffix": "to another department.",
+      "to_department_label": "Target department",
+      "new_role_label": "New role",
+      "status_label": "Status",
+      "transfer_confirm": "Confirm"
+    },
+    "actions": {
+      "view": "View details",
+      "delete_confirm": "Delete department",
+      "delete_button": "Delete Department"
+    },
+    "actions_label": "Actions"
+  },
+  "Chat": {
+    "create_failed": "Unable to create conversation",
+    "connect_failed": "Connection error when creating conversation"
   },
   "Theme": {
     "toggle": "Toggle theme",
