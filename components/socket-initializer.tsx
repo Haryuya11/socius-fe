@@ -31,7 +31,7 @@ export default function SocketInitializer() {
       // Nếu logout -> ngắt kết nối
       socketManager.disconnect();
 
-      // 🔥 THAY ĐỔI: Xóa user khỏi store để tránh hiển thị sai khi login user khác
+      //  THAY ĐỔI: Xóa user khỏi store để tránh hiển thị sai khi login user khác
       // (Do đã dùng persist nên nếu không xóa, user cũ vẫn còn trong LocalStorage)
       setCurrentUser(null);
     }
