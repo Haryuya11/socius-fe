@@ -7,7 +7,6 @@ export enum MessageType {
   TEXT = "TEXT",
   IMAGE = "IMAGE",
   FILE = "FILE",
-  // SYSTEM = "SYSTEM", // Nếu có tin nhắn hệ thống
 }
 
 export interface Conversation {
@@ -21,7 +20,6 @@ export interface Conversation {
   createdAt: string;
 }
 
-// Backend trả về kèm theo lastMessage info
 export interface ConversationWithPreview extends Conversation {
   lastMessageContent?: string;
   lastMessageType?: MessageType;
@@ -29,21 +27,25 @@ export interface ConversationWithPreview extends Conversation {
   unreadCount?: number; 
 }
 
+
 export interface Participant {
   conversationId: string;
   employeeId: string;
-  role: "ADMIN" | "MEMBER";
-  joinedAt: string;
-  lastReadMessageId: string | null;
-  lastReadAt: string | null;
-  isMuted: boolean;
-  isPinned: boolean;
-  // Có thể cần join với bảng User để lấy tên/avatar hiển thị
+  role: string; 
+  
+  fullName: string;
+  imageUrl: string;
+  
+  joinedAt?: string;
+  isMuted?: boolean;
+  isPinned?: boolean;
+
   employeeDetails?: {
     fullName: string;
     avatarUrl: string;
-  };
+  }; 
 }
+
 
 export interface MessageMetadata {
   fileName: string;
@@ -56,7 +58,7 @@ export interface MessageMetadata {
 export interface MessageReaction {
   messageId: string;
   employeeId: string;
-  reaction: string; // e.g., "LIKE", "HAHA"
+  reaction: string; 
   createdAt: string;
 }
 
@@ -74,7 +76,6 @@ export interface Message {
   reactions?: MessageReaction[];
 }
 
-// API Responses
 export interface ConversationListResponse {
   data: Conversation[];
   nextCursor: string | null;

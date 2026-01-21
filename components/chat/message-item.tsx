@@ -75,8 +75,9 @@ export default function MessageItem({ message }: { message: Message }) {
   const senderInfo = participants.find(
     (p) => p.employeeId === message.senderId,
   );
-  const senderName = senderInfo?.employeeDetails?.fullName || "Thành viên";
-  const senderAvatar = getFullImageUrl(senderInfo?.employeeDetails?.avatarUrl);
+
+  const senderName = senderInfo?.fullName || "Thành viên";
+  const senderAvatar = getFullImageUrl(senderInfo?.imageUrl);
   const senderInitials = senderName.charAt(0).toUpperCase();
 
   const [viewerOpen, setViewerOpen] = useState(false);
@@ -91,7 +92,10 @@ export default function MessageItem({ message }: { message: Message }) {
   const [editContent, setEditContent] = useState(message.content);
   const [isReactionOpen, setIsReactionOpen] = useState(false);
 
-  const isDeleted = message.content === "Tin nhắn đã bị thu hồi";
+  // [UPDATE] Check thêm messageType DELETED từ API
+  const isDeleted =
+    message.messageType === ("DELETED" as MessageType) ||
+    message.content === "Tin nhắn đã bị thu hồi";
 
   const mediaFiles = isDeleted
     ? []
@@ -153,64 +157,58 @@ export default function MessageItem({ message }: { message: Message }) {
     }
   };
 
-const handleDownload = async () => {
-  const files = message.metadata || [];
-  if (files.length === 0) return;
+  const handleDownload = async () => {
+    const files = message.metadata || [];
+    if (files.length === 0) return;
 
-  const toastId = toast.loading("Đang chuẩn bị tải xuống...");
+    const toastId = toast.loading("Đang chuẩn bị tải xuống...");
 
-  try {
-    let blob: Blob;
-    let fileName: string;
+    try {
+      let blob: Blob;
+      let fileName: string;
 
-    if (files.length === 1) {
-      const file = files[0];
-      fileName = file.fileName;
+      if (files.length === 1) {
+        const file = files[0];
+        fileName = file.fileName;
+        blob = await chatService.downloadFile(
+          message.conversationId,
+          file.filePath || "",
+        );
+      } else {
+        fileName = `attachments-${new Date().getTime()}.zip`;
+        blob = await chatService.downloadZip(
+          message.conversationId,
+          files.map((f) => ({ filePath: f.filePath || "" })),
+        );
+      }
 
-      console.log("Downloading filePath:", file.filePath);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
 
-      blob = await chatService.downloadFile(
-        message.conversationId,
-        file.filePath || "", 
-      );
-    } else {
-      fileName = `attachments-${new Date().getTime()}.zip`;
-
-      blob = await chatService.downloadZip(
-        message.conversationId,
-        files.map((f) => ({ filePath: f.filePath || "" })),
-      );
-    }
-
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-
-    toast.success("Đã tải xuống", { id: toastId });
-  } catch (error: any) {
-    console.error("Download error:", error);
-
-    if (error.response?.data instanceof Blob) {
-      try {
-        const errorText = await error.response.data.text();
-        const errorJson = JSON.parse(errorText);
-        toast.error(`Lỗi: ${errorJson.message || "Server Error"}`, {
-          id: toastId,
-        });
-      } catch {
+      toast.success("Đã tải xuống", { id: toastId });
+    } catch (error: any) {
+      console.error("Download error:", error);
+      if (error.response?.data instanceof Blob) {
+        try {
+          const errorText = await error.response.data.text();
+          const errorJson = JSON.parse(errorText);
+          toast.error(`Lỗi: ${errorJson.message || "Server Error"}`, {
+            id: toastId,
+          });
+        } catch {
+          toast.error("Tải xuống thất bại", { id: toastId });
+        }
+      } else {
         toast.error("Tải xuống thất bại", { id: toastId });
       }
-    } else {
-      toast.error("Tải xuống thất bại", { id: toastId });
     }
-  }
-};
+  };
 
   const hasAttachments = message.metadata && message.metadata.length > 0;
 
@@ -218,7 +216,7 @@ const handleDownload = async () => {
     <>
       <div className={cn("flex flex-col gap-1 mb-2 w-full max-w-full")}>
         {/* REPLY CONTEXT */}
-        {parentMessage && (
+        {parentMessage && !isDeleted && (
           <div
             className={cn(
               "flex items-center gap-2 text-xs text-muted-foreground mb-1 opacity-80 max-w-full",
@@ -328,7 +326,7 @@ const handleDownload = async () => {
                 </Button>
               )}
 
-              {!isDeleted && (
+              {isMe && !isDeleted && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -415,11 +413,11 @@ const handleDownload = async () => {
               </div>
             ) : (
               <>
-                {/* 1. TEXT MESSAGE */}
-                {message.content && (
+                {/* 1. TEXT MESSAGE OR DELETED PLACEHOLDER */}
+                {(message.content || isDeleted) && (
                   <div
                     className={cn(
-                      "rounded-xl px-4 py-2 text-sm w-fit shadow-sm break-words whitespace-pre-wrap relative max-w-full",
+                      "rounded-xl px-4 py-2 text-sm w-fit shadow-sm wrap-break-word whitespace-pre-wrap relative max-w-full",
                       isMe
                         ? "bg-primary text-primary-foreground rounded-tr-none"
                         : "bg-muted/50 border rounded-tl-none",
@@ -427,7 +425,9 @@ const handleDownload = async () => {
                         "bg-background border-2 border-dashed border-muted-foreground/30 text-muted-foreground italic shadow-none",
                     )}
                   >
-                    <p>{message.content}</p>
+                    <p>
+                      {isDeleted ? "Tin nhắn đã bị thu hồi" : message.content}
+                    </p>
                     {/* Reaction Badge (Imported) */}
                     {!isDeleted && (
                       <ReactionBadge
@@ -497,7 +497,6 @@ const handleDownload = async () => {
                         );
                       })}
                     </div>
-                    {/* Reaction Badge cho Media */}
                     {!message.content && !isDeleted && (
                       <ReactionBadge
                         reactionCounts={reactionCounts}

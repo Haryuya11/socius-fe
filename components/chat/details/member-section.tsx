@@ -5,7 +5,7 @@ import { useState, useMemo } from "react";
 import { useChatStore } from "@/stores/use-chat-store";
 import { getFullImageUrl } from "@/utils/image-utils";
 import { chatService } from "@/services/chat-service";
-import { Trash2, UserPlus, MoreHorizontal, User } from "lucide-react"; 
+import { Trash2, UserPlus, MoreHorizontal, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -19,7 +19,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"; 
+} from "@/components/ui/dropdown-menu";
 import { MultiEmployeeSelector } from "@/components/common/multi-employee-selector";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -42,7 +42,7 @@ export function MemberSection({
     selectConversation,
   } = useChatStore();
 
-  const router = useRouter(); // [NEW]
+  const router = useRouter();
 
   const [newMemberIds, setNewMemberIds] = useState<string[]>([]);
 
@@ -116,12 +116,12 @@ export function MemberSection({
       <ScrollArea className="h-[250px] pr-3 -mr-3">
         <div className="space-y-1 mt-2">
           {participants.map((p) => {
-            const empName = p.employeeDetails?.fullName || "Người dùng";
-            const empAvatar = getFullImageUrl(p.employeeDetails?.avatarUrl);
+            const empName = p.fullName || "Người dùng";
+            const empAvatar = getFullImageUrl(p.imageUrl);
+
             const isUserMe = p.employeeId === currentUserId;
             const isRowAdmin = p.role === "ADMIN";
 
-            // [NEW] Logic check quyền xóa
             const canRemove = isGroup && isAdmin && !isUserMe;
 
             return (
@@ -132,7 +132,9 @@ export function MemberSection({
                 <div className="flex items-center gap-3 overflow-hidden">
                   <Avatar className="h-9 w-9 border">
                     <AvatarImage src={empAvatar} />
-                    <AvatarFallback>{empName.charAt(0)}</AvatarFallback>
+                    <AvatarFallback>
+                      {empName.charAt(0).toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col min-w-0">
                     <p className="text-sm font-medium truncate">
