@@ -1,12 +1,3 @@
-export const PERMISSION_SCOPE = {
-  GLOBAL: "GLOBAL",
-  DEPARTMENT: "DEPARTMENT",
-  TEAM: "TEAM",
-} as const;
-
-export type PermissionScope =
-  (typeof PERMISSION_SCOPE)[keyof typeof PERMISSION_SCOPE];
-
 export type PermissionCode =
   // SYSTEM
   | "system.full"
