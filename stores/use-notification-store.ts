@@ -8,7 +8,6 @@ import {
   WsNotificationPayload,
 } from "@/types/notification";
 import { notificationService } from "@/services/notification-service";
-import { getValidToken } from "@/lib/axios";
 
 const normalizeNotification = (rawItem: any): NotificationMessage => {
   const title = rawItem.title || rawItem.payload?.title || "No Title";
@@ -21,7 +20,7 @@ const normalizeNotification = (rawItem: any): NotificationMessage => {
     rawItem.payload?.linkUrl;
 
   return {
-    id: rawItem.id || rawItem.notificationId, 
+    id: rawItem.id || rawItem.notificationId,
     title: title,
     content: content,
     redirectUrl: redirectUrl,
@@ -29,14 +28,6 @@ const normalizeNotification = (rawItem: any): NotificationMessage => {
     createdAt: rawItem.createdAt || new Date().toISOString(),
     deliveryType: rawItem.deliveryType,
   };
-};
-
-// Helper: Get WS URL
-const getWebSocketUrl = () => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-  const protocol = apiUrl.startsWith("https") ? "wss://" : "ws://";
-  const domain = apiUrl.replace(/^https?:\/\//, "");
-  return `${protocol}${domain}/ws/hub`;
 };
 
 interface NotificationState {
@@ -47,20 +38,13 @@ interface NotificationState {
   nextCursor: string | undefined;
   isConnected: boolean;
 
-  // Actions
   fetchInitialData: () => Promise<void>;
   loadMore: () => Promise<void>;
   markRead: (id: number | string) => Promise<void>;
   markAllRead: () => Promise<void>;
 
-  // Socket Actions
-  connectSocket: () => void;
-  disconnectSocket: () => void;
   receiveSocketMessage: (msg: WebSocketMessage<WsNotificationPayload>) => void;
 }
-
-let socket: WebSocket | null = null;
-let pingInterval: NodeJS.Timeout;
 
 export const useNotificationStore = create<NotificationState>((set, get) => ({
   notifications: [],
@@ -79,7 +63,6 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     }
 
     const payload = wsMsg.data;
-
     const rawForMapper = { ...payload, id: payload.notificationId };
     const newNotification = normalizeNotification(rawForMapper);
 
@@ -153,9 +136,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       const res = await notificationService.getList(10, nextCursor);
       const rawList = (res as any).data || res;
       const apiListRaw = Array.isArray(rawList) ? rawList : [];
-
       const newList = apiListRaw.map(normalizeNotification);
-
       const newCursor = (res as any).nextCursor;
 
       set({
@@ -186,55 +167,5 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       unreadCount: 0,
     }));
     await notificationService.markAllRead();
-  },
-
-  connectSocket: async () => {
-    if (
-      socket &&
-      (socket.readyState === WebSocket.OPEN ||
-        socket.readyState === WebSocket.CONNECTING)
-    )
-      return;
-
-    const token = await getValidToken();
-    if (!token) return;
-
-    const wsUrl = getWebSocketUrl();
-    socket = new WebSocket(`${wsUrl}?token=${token}`);
-
-    socket.onopen = () => {
-      console.log("🟢 WS Connected");
-      set({ isConnected: true });
-    };
-
-    socket.onmessage = (event) => {
-      if (event.data === "pong") return;
-      try {
-        const message: WebSocketMessage<any> = JSON.parse(event.data);
-        if (message.domain === DomainTypes.NOTIFICATION) {
-          get().receiveSocketMessage(message);
-        }
-      } catch (e) {
-        console.error("WS Parse Error", e);
-      }
-    };
-
-    socket.onclose = () => {
-      console.log("🔴 WS Disconnected");
-      set({ isConnected: false });
-      socket = null;
-    };
-
-    clearInterval(pingInterval);
-    pingInterval = setInterval(() => {
-      if (socket?.readyState === WebSocket.OPEN) socket.send("ping");
-    }, 30000);
-  },
-
-  disconnectSocket: () => {
-    if (socket) socket.close();
-    socket = null;
-    clearInterval(pingInterval);
-    set({ isConnected: false });
   },
 }));

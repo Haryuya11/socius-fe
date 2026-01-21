@@ -1,16 +1,33 @@
-/**
- * Hàm parse chuỗi thời gian từ server về chuẩn UTC Date object
- * Giúp next-intl hiểu đúng giờ, không bị lệch +7
- */
-export function parseToUtcDate(dateString: string): Date {
+import { format, isToday, isYesterday } from "date-fns";
+export function parseToUtcDate(dateString: string | null | undefined): Date {
   if (!dateString) return new Date();
 
-  // Logic cũ của bạn: Thêm Z nếu thiếu để báo hiệu đây là giờ UTC
-  let normalizedDate = dateString;
-  if (!dateString.endsWith("Z") && !/[+\-]\d{2}:\d{2}$/.test(dateString)) {
-    normalizedDate += "Z";
+  let normalized = dateString;
+  if (!normalized.endsWith("Z") && !/[+\-]\d{2}:?\d{2}$/.test(normalized)) {
+    normalized += "Z";
   }
 
-  // Trả về đối tượng Date thay vì chuỗi text
-  return new Date(normalizedDate);
+  return new Date(normalized);
+}
+
+export function formatMessageTime(dateString: string | undefined): string {
+  const date = parseToUtcDate(dateString);
+  if (isNaN(date.getTime())) return "";
+  return format(date, "HH:mm");
+}
+
+export function formatRelativeTime(
+  dateString: string | undefined | null,
+): string {
+  if (!dateString) return "";
+  const date = parseToUtcDate(dateString);
+  if (isNaN(date.getTime())) return "";
+
+  if (isToday(date)) {
+    return format(date, "HH:mm");
+  }
+  if (isYesterday(date)) {
+    return "Hôm qua";
+  }
+  return format(date, "dd/MM");
 }
