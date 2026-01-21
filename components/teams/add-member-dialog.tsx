@@ -23,6 +23,7 @@ import { teamService } from "@/services/team-service";
 import { Employee } from "@/types/employee";
 import { getAvatarInfo } from "@/utils/avatar-utils";
 import { getFullImageUrl } from "@/utils/image-utils";
+import { usePermission } from "@/hooks/use-permission"; // [NEW]
 
 interface AddMemberDialogProps {
   teamCode: string;
@@ -41,6 +42,9 @@ export function AddMemberDialog({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { hasPermission } = usePermission();
+  const canAddMember = hasPermission("team.member.add", "TEAM", teamCode);
 
   const debouncedQuery = useDebounce(query, 300);
 
@@ -73,7 +77,7 @@ export function AddMemberDialog({
 
   const toggleSelection = (id: string) => {
     setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
   };
 
@@ -94,6 +98,9 @@ export function AddMemberDialog({
       setIsSubmitting(false);
     }
   };
+
+  // Nếu không có quyền, không render nút trigger
+  if (!canAddMember) return null;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

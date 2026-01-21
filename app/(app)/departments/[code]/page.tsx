@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -24,7 +24,6 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 
 import { departmentService } from "@/services/department-service";
 import { teamService } from "@/services/team-service";
@@ -40,6 +39,7 @@ export default function DepartmentDetailPage() {
   const params = useParams();
   const deptCode = params.code as string;
   const router = useRouter();
+
   const { hasPermission } = usePermission();
 
   const [dept, setDept] = useState<Department | null>(null);
@@ -47,9 +47,14 @@ export default function DepartmentDetailPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const loadData = async () => {
+  const canAddMember = hasPermission(
+    "department.member.add",
+    "DEPARTMENT",
+    deptCode,
+  );
+
+  const loadData = useCallback(async () => {
     try {
-      // Gọi song song API lấy chi tiết phòng ban, thành viên và teams trực thuộc
       const [d, m, teamsRes] = await Promise.all([
         departmentService.getDepartmentByCode(deptCode),
         departmentService.getMembers(deptCode),
@@ -62,28 +67,23 @@ export default function DepartmentDetailPage() {
 
       setDept(d);
       setMembers(m);
-      setTeams(teamsRes.data); // Lấy mảng data từ PaginatedResponse
+      setTeams(teamsRes.data);
     } catch (e) {
+      console.error(e);
       toast.error("Không thể tải thông tin phòng ban");
       router.push("/departments");
     } finally {
       setLoading(false);
     }
-  };
+  }, [deptCode, router]);
 
   useEffect(() => {
     loadData();
-  }, [deptCode]);
+  }, [loadData]);
 
   if (loading) return <DepartmentDetailSkeleton />;
 
   if (!dept) return null;
-
-  const canAddMember = hasPermission(
-    "department.member.add",
-    "DEPARTMENT",
-    deptCode,
-  );
 
   // Tìm Director và đếm số Manager
   const director = members.find((m) => m.roleCode === "DEPT_DIR");
@@ -119,7 +119,9 @@ export default function DepartmentDetailPage() {
         {/* Card 1: Tổng nhân sự */}
         <Card className="shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t("detail.total_staff.title")}</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("detail.total_staff.title")}
+            </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -162,7 +164,9 @@ export default function DepartmentDetailPage() {
         {/* Card 3: Số lượng Team */}
         <Card className="shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t("detail.teams_count.title")}</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("detail.teams_count.title")}
+            </CardTitle>
             <Layers className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -179,7 +183,8 @@ export default function DepartmentDetailPage() {
       {/* --- TEAMS LIST SECTION --- */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold flex items-center gap-2 text-foreground/90">
-          <Layers className="h-5 w-5 text-purple-600" /> {t("detail.teams.title")}
+          <Layers className="h-5 w-5 text-purple-600" />{" "}
+          {t("detail.teams.title")}
         </h3>
 
         {teams.length === 0 ? (
@@ -208,18 +213,18 @@ export default function DepartmentDetailPage() {
                     </span>
                   </CardDescription>
                 </CardHeader>
-                    <CardFooter className="pt-2 pb-4 px-4">
-                      <div className="text-xs font-medium text-muted-foreground group-hover:text-purple-600 flex items-center gap-1 transition-colors ml-auto">
-                        {t("detail.teams.view_details")} <ArrowRight className="h-3 w-3" />
-                      </div>
-                    </CardFooter>
+                <CardFooter className="pt-2 pb-4 px-4">
+                  <div className="text-xs font-medium text-muted-foreground group-hover:text-purple-600 flex items-center gap-1 transition-colors ml-auto">
+                    {t("detail.teams.view_details")}{" "}
+                    <ArrowRight className="h-3 w-3" />
+                  </div>
+                </CardFooter>
               </Card>
             ))}
           </div>
         )}
       </div>
 
-      {/* --- MEMBERS SECTION --- */}
       <Card className="shadow-sm border-border/60">
         <CardHeader className="flex flex-row items-center justify-between border-b bg-muted/20 py-4 px-6">
           <div>
@@ -228,6 +233,7 @@ export default function DepartmentDetailPage() {
               {t("detail.members.desc")}
             </CardDescription>
           </div>
+
           {canAddMember && (
             <AddDeptMemberDialog deptCode={deptCode} onSuccess={loadData} />
           )}

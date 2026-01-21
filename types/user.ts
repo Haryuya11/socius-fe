@@ -1,7 +1,12 @@
 import { Department } from "./department";
-import { Permission } from "./permission";
 import { SystemRole } from "./roles";
 import { TeamInfo } from "./teams";
+
+export interface UserPermissionGrant {
+  scope: "GLOBAL" | "DEPARTMENT" | "TEAM";
+  resourceCode: string; 
+  permissionCode: string; 
+}
 
 export interface UserProfile {
   clientId: string;
@@ -13,7 +18,7 @@ export interface UserProfile {
   imageUrl: string;
   departments: Department[];
   teams: TeamInfo[];
-  permissions: Permission[];
+  permissions: UserPermissionGrant[];
 }
 
 export interface BasicUserInfo {

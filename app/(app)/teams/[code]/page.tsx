@@ -19,20 +19,23 @@ import { Team, TeamMember } from "@/types/teams";
 import { teamService } from "@/services/team-service";
 import { TeamMemberTable } from "@/components/teams/team-member-table";
 import { AddMemberDialog } from "@/components/teams/add-member-dialog";
+import { usePermission } from "@/hooks/use-permission";
 
 export default function TeamDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const teamCode = params.code as string;
 
+  const { hasPermission } = usePermission();
+
   const [team, setTeam] = useState<Team | null>(null);
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch data
+  const canAddMember = hasPermission("team.member.add", "TEAM", teamCode);
+
   const loadData = useCallback(async () => {
     try {
-      // Gọi song song API lấy info và list member để tối ưu
       const [teamRes, membersRes] = await Promise.all([
         teamService.getTeamByCode(teamCode),
         teamService.getTeamMembers(teamCode),
@@ -43,7 +46,7 @@ export default function TeamDetailsPage() {
     } catch (error) {
       console.error(error);
       toast.error("Không thể tải thông tin team");
-      router.push("/teams"); // Redirect nếu lỗi (ví dụ 404)
+      router.push("/teams");
     } finally {
       setIsLoading(false);
     }
@@ -144,7 +147,9 @@ export default function TeamDetailsPage() {
               Quản lý danh sách thành viên và vai trò.
             </CardDescription>
           </div>
-          <AddMemberDialog teamCode={teamCode} onSuccess={loadData} />
+          {canAddMember && (
+            <AddMemberDialog teamCode={teamCode} onSuccess={loadData} />
+          )}
         </CardHeader>
         <CardContent>
           <TeamMemberTable

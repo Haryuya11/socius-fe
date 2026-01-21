@@ -24,12 +24,14 @@ import {
   RotateCcw,
   ChevronLeft,
   ArrowUpRight,
-} from "lucide-react"; // Thêm icon
+} from "lucide-react";
 import { TaskStatusBadge, TaskPriorityBadge } from "./task-badges";
 import { taskService } from "@/services/task-service";
 import { Task, TaskActivity } from "@/types/task";
 import { TaskWorkflowDialog } from "./task-workflow-dialog";
 import { CreateSubTaskDialog } from "./create-subtask-dialog";
+// Import hook
+import { usePermission } from "@/hooks/use-permission";
 
 interface TaskDetailSheetProps {
   taskId: number | null;
@@ -55,10 +57,12 @@ export function TaskDetailSheet({
   const [isSubTaskOpen, setIsSubTaskOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // [UPDATE 2] Khởi tạo hooks router
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  // 1. Hook Permission
+  const { hasPermission } = usePermission();
 
   useEffect(() => {
     if (!taskId || !open) return;
@@ -85,11 +89,9 @@ export function TaskDetailSheet({
     };
   }, [taskId, open, refreshKey]);
 
-  // [UPDATE 3] Hàm chuyển hướng sang Task khác (dùng cho subtask hoặc quay lại cha)
   const navigateToTask = (id: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("taskId", id.toString());
-    // Dùng push để lưu lịch sử, user có thể bấm Back browser để quay lại task cha
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
@@ -98,13 +100,30 @@ export function TaskDetailSheet({
   const isSender = task.senderId === currentUserId;
   const isReceiver = task.receiverId === currentUserId;
 
+  // 2. CHECK QUYỀN NÂNG CAO
+  // Quyền approve: User là Sender HOẶC có quyền approve tại Team đó
+  const canApprove =
+    isSender || hasPermission("task.approve", "TEAM", task.teamCode);
+
+  // Quyền cancel/delete: User là Sender HOẶC có quyền delete tại Team đó
+  const canCancel =
+    isSender || hasPermission("task.delete", "TEAM", task.teamCode);
+
+  // Quyền thêm Subtask: Người nhận hoặc Người gửi (trong luồng) HOẶC có quyền create tại Team đó
+  // Logic gốc: (isSender || isReceiver) && task.status === "IN_PROGRESS"
+  // Logic thêm: || hasPermission("task.create", "TEAM", task.teamCode)
+  const canAddSubtask =
+    (isSender ||
+      isReceiver ||
+      hasPermission("task.create", "TEAM", task.teamCode)) &&
+    task.status === "IN_PROGRESS";
+
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent className="sm:max-w-[600px] w-full flex flex-col p-0">
           <div className="p-6 border-b bg-muted/10">
             <SheetHeader className="mb-4">
-              {/* [UPDATE 4] Nếu có parentId (đây là subtask), hiện nút quay lại cha */}
               {task.parentId && (
                 <Button
                   variant="link"
@@ -142,7 +161,9 @@ export function TaskDetailSheet({
                   {t("detail.submit_complete")}
                 </Button>
               )}
-              {isSender && task.status === "PENDING" && (
+
+              {/* Nút Phê duyệt/Từ chối hiển thị khi PENDING và User có quyền */}
+              {task.status === "PENDING" && canApprove && (
                 <>
                   <Button
                     size="sm"
@@ -160,9 +181,11 @@ export function TaskDetailSheet({
                   </Button>
                 </>
               )}
-              {isSender &&
-                task.status !== "APPROVED" &&
-                task.status !== "CANCELLED" && (
+
+              {/* Nút Hủy Task */}
+              {task.status !== "APPROVED" &&
+                task.status !== "CANCELLED" &&
+                canCancel && (
                   <Button
                     size="sm"
                     variant="outline"
@@ -172,6 +195,7 @@ export function TaskDetailSheet({
                     {t("actions.cancel")}
                   </Button>
                 )}
+
               {(isSender || isReceiver) &&
                 (task.status === "OVERDUE" || task.status === "REJECTED") && (
                   <Button
@@ -201,6 +225,7 @@ export function TaskDetailSheet({
 
             <ScrollArea className="flex-1 p-6">
               <TabsContent value="info" className="mt-0 space-y-4">
+                {/* ... Nội dung tab Info giữ nguyên ... */}
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-muted-foreground block mb-1">
@@ -249,7 +274,6 @@ export function TaskDetailSheet({
                     )}
                 </div>
 
-                {/* [UPDATE 5] List Subtasks có khả năng click */}
                 {subTasks.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground text-sm">
                     {t("detail.no_subtasks")}
@@ -259,9 +283,7 @@ export function TaskDetailSheet({
                     {subTasks.map((sub) => (
                       <div
                         key={sub.id}
-                        // Thêm class hover và cursor-pointer
                         className="group border rounded-lg p-3 flex items-start justify-between bg-card hover:bg-accent/50 cursor-pointer transition-colors"
-                        // Gọi hàm chuyển trang khi click
                         onClick={() => navigateToTask(sub.id)}
                       >
                         <div>
@@ -286,6 +308,7 @@ export function TaskDetailSheet({
               </TabsContent>
 
               <TabsContent value="activity" className="mt-0">
+                {/* ... Nội dung tab Activity giữ nguyên ... */}
                 <div className="border-l-2 border-muted pl-4 space-y-6">
                   {activities.map((act) => (
                     <div key={act.id} className="relative">
@@ -316,7 +339,7 @@ export function TaskDetailSheet({
         </SheetContent>
       </Sheet>
 
-      {/* Dialogs giữ nguyên */}
+      {/* Dialogs */}
       {actionType && task && (
         <TaskWorkflowDialog
           open={!!actionType}

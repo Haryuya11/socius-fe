@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -5,7 +7,8 @@ import { useEffect, useState, useCallback } from "react";
 import { Building2, Search, LayoutGrid, List, X } from "lucide-react";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/use-debounce";
-import { usePermission } from "@/hooks/use-permission";
+import { usePermission } from "@/hooks/use-permission"; 
+import { useTranslations } from "next-intl";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,42 +16,36 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { PaginationControl } from "@/components/ui/pagination-control";
 
-// Skeletons
 import { DepartmentGridSkeleton } from "@/components/skeleton/departments/department-grid-skeleton";
 import { DepartmentsToolbarSkeleton } from "@/components/skeleton/departments/departments-toolbar-skeleton";
 import { DepartmentStatsSkeleton } from "@/components/skeleton/departments/department-stats-skeleton";
-
-// Components
 import { DepartmentDialog } from "@/components/departments/department-dialog";
 import { DepartmentTable } from "@/components/departments/department-table";
 import { DepartmentGrid } from "@/components/departments/department-grid";
 import { departmentService } from "@/services/department-service";
-import { useTranslations } from "next-intl";
 import { Department } from "@/types/department";
 
 export default function DepartmentsPage() {
   const t = useTranslations("Departments");
+
+  // 1. Sử dụng hook permission
   const { hasPermission } = usePermission();
 
   const [data, setData] = useState<Department[]>([]);
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
-
-  // Pagination & Count
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [filteredTotalItems, setFilteredTotalItems] = useState(0);
   const [statsTotalItems, setStatsTotalItems] = useState(0);
-
-  // Filter
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
-
-  // Loading States
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  // 1. Fetch Data (Grid/Table) - Có Filter
+  // 2. Check quyền tạo phòng ban
+  const canCreate = hasPermission("department.create");
+
   const fetchData = useCallback(async () => {
     setIsLoadingData(true);
     try {
@@ -68,14 +65,12 @@ export default function DepartmentsPage() {
     }
   }, [currentPage, debouncedSearch, viewMode]);
 
-  // 2. Fetch Stats (Overview) - Không Filter
   const fetchStats = useCallback(async () => {
     setIsLoadingStats(true);
     try {
-      // Gọi API với condition rỗng để lấy tổng số lượng
       const res = await departmentService.fetchDepartments({
         page: 1,
-        size: 1, // Chỉ cần lấy meta data
+        size: 1,
         condition: {},
       });
       setStatsTotalItems(res.totalItems);
@@ -86,32 +81,21 @@ export default function DepartmentsPage() {
     }
   }, []);
 
-  // --- EFFECTS ---
-
-  // Initial Load & Refresh Stats
   useEffect(() => {
     fetchStats();
   }, [fetchStats]);
-
-  // Data Load when params change
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
-  // Reset page on search
   useEffect(() => {
     setCurrentPage(1);
   }, [debouncedSearch]);
-
-  // --- HANDLERS ---
 
   const handleDelete = async () => {
     if (!deleteId) return;
     try {
       await departmentService.deleteDepartment(deleteId);
       toast.success("Đã xóa phòng ban");
-
-      // Refresh cả Data và Stats sau khi xóa
       fetchData();
       fetchStats();
     } catch (error: any) {
@@ -121,37 +105,25 @@ export default function DepartmentsPage() {
     }
   };
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-  };
-
   const refreshAll = () => {
     fetchData();
     fetchStats();
   };
 
-  const canCreate = hasPermission("department.create");
-
   const renderContent = () => {
-    if (isLoadingData) {
-      return viewMode === "grid" ? (
-        <DepartmentGridSkeleton />
-      ) : (
-        <DepartmentGridSkeleton />
-      );
-    }
+    if (isLoadingData) return <DepartmentGridSkeleton />;
 
     if (data.length === 0) {
       return (
         <Card className="shadow-sm border-dashed">
           <CardContent className="flex h-96 flex-col items-center justify-center text-center">
             <Building2 className="h-12 w-12 text-muted-foreground/30 mb-4" />
-                <h3 className="font-semibold text-lg">{t("empty.title")}</h3>
+            <h3 className="font-semibold text-lg">{t("empty.title")}</h3>
             <p className="text-sm text-muted-foreground">
               {search ? t("empty.desc_search") : t("empty.desc_default")}
             </p>
             {search && (
-                <Button
+              <Button
                 variant="link"
                 onClick={() => setSearch("")}
                 className="mt-2 text-primary"
@@ -174,7 +146,6 @@ export default function DepartmentsPage() {
       );
     }
 
-    // Grid View (Sử dụng component tách biệt nếu có, hoặc inline như bạn gửi)
     return (
       <DepartmentGrid
         data={data}
@@ -188,7 +159,6 @@ export default function DepartmentsPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-background via-background to-muted/20 p-6 space-y-6 animate-in fade-in duration-500">
       <div className="max-w-[1600px] mx-auto space-y-6">
-        {/* --- HEADER --- */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-border/50">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
@@ -212,11 +182,12 @@ export default function DepartmentsPage() {
                 {t("grid.units_display", { count: filteredTotalItems })}
               </span>
             </div>
+            {/* 3. Chỉ hiện nút Tạo nếu có quyền */}
             {canCreate && <DepartmentDialog onSuccess={refreshAll} />}
           </div>
         </div>
 
-        {/* --- STATS --- */}
+        {/* Stats Section */}
         {isLoadingStats ? (
           <DepartmentStatsSkeleton />
         ) : (
@@ -240,7 +211,7 @@ export default function DepartmentsPage() {
           </div>
         )}
 
-        {/* --- TOOLBAR --- */}
+        {/* Toolbar */}
         {isLoadingData && data.length === 0 ? (
           <DepartmentsToolbarSkeleton />
         ) : (
@@ -254,7 +225,7 @@ export default function DepartmentsPage() {
                       placeholder={t("toolbar.search_placeholder")}
                       className="pl-9"
                       value={search}
-                      onChange={handleSearchChange}
+                      onChange={(e) => setSearch(e.target.value)}
                     />
                   </div>
                   {search && (
@@ -268,8 +239,6 @@ export default function DepartmentsPage() {
                     </Button>
                   )}
                 </div>
-
-                {/* VIEW MODE TOGGLE */}
                 <div className="flex bg-muted/30 rounded-lg border border-border/50 p-1 gap-1">
                   <Button
                     variant={viewMode === "table" ? "secondary" : "ghost"}
@@ -293,10 +262,8 @@ export default function DepartmentsPage() {
           </Card>
         )}
 
-        {/* --- CONTENT --- */}
         <div className="min-h-[300px]">{renderContent()}</div>
 
-        {/* --- PAGINATION --- */}
         {!isLoadingData && data.length > 0 && (
           <Card className="shadow-sm border-border/50">
             <CardContent className="p-4">

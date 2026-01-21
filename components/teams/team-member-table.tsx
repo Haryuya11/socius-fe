@@ -36,6 +36,7 @@ import { getAvatarInfo } from "@/utils/avatar-utils";
 import { getFullImageUrl } from "@/utils/image-utils";
 import { TransferMemberDialog } from "./transfer-member-dialog";
 import { ConfirmDialog } from "../confirm-dialog";
+import { usePermission } from "@/hooks/use-permission"; // [NEW]
 
 interface TeamMemberTableProps {
   members: TeamMember[];
@@ -49,14 +50,18 @@ export function TeamMemberTable({
   onRefresh,
 }: TeamMemberTableProps) {
   const [transferMember, setTransferMember] = useState<TeamMember | null>(null);
-
   const [memberToPromote, setMemberToPromote] = useState<TeamMember | null>(
-    null
+    null,
   );
   const [isPromoting, setIsPromoting] = useState(false);
-
   const [memberToRemove, setMemberToRemove] = useState<TeamMember | null>(null);
   const [isRemoving, setIsRemoving] = useState(false);
+
+  const { hasPermission } = usePermission();
+
+  const canPromote = hasPermission("team.member.role.update", "TEAM", teamCode);
+  const canRemove = hasPermission("team.member.remove", "TEAM", teamCode);
+  const canTransfer = canRemove;
 
   const handleRemove = async () => {
     if (!memberToRemove) return;
@@ -81,10 +86,10 @@ export function TeamMemberTable({
     try {
       await teamService.changeLeader(
         teamCode,
-        memberToPromote.employee.clientId
+        memberToPromote.employee.clientId,
       );
       toast.success(
-        `Đã bổ nhiệm ${memberToPromote.employee.firstName} làm Leader`
+        `Đã bổ nhiệm ${memberToPromote.employee.firstName} làm Leader`,
       );
       setMemberToPromote(null);
       onRefresh();
@@ -94,6 +99,8 @@ export function TeamMemberTable({
       setIsPromoting(false);
     }
   };
+
+  const hasAnyAction = canPromote || canTransfer || canRemove;
 
   return (
     <>
@@ -159,40 +166,51 @@ export function TeamMemberTable({
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          {!member.isLeader && (
-                            <DropdownMenuItem
-                              onClick={() => setMemberToPromote(member)}
+                      {hasAnyAction && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
                             >
-                              <ShieldAlert className="mr-2 h-4 w-4" /> Bổ nhiệm
-                              Leader
-                            </DropdownMenuItem>
-                          )}
-                          <DropdownMenuItem
-                            onClick={() => setTransferMember(member)}
-                          >
-                            <ArrowRightLeft className="mr-2 h-4 w-4" /> Điều
-                            chuyển (Transfer)
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-destructive focus:text-destructive"
-                            onClick={() => setMemberToRemove(member)}
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" /> Xóa khỏi nhóm
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {/* Chỉ hiện Bổ nhiệm nếu user có quyền VÀ member này chưa phải Leader */}
+                            {canPromote && !member.isLeader && (
+                              <DropdownMenuItem
+                                onClick={() => setMemberToPromote(member)}
+                              >
+                                <ShieldAlert className="mr-2 h-4 w-4" /> Bổ
+                                nhiệm Leader
+                              </DropdownMenuItem>
+                            )}
+
+                            {canTransfer && (
+                              <DropdownMenuItem
+                                onClick={() => setTransferMember(member)}
+                              >
+                                <ArrowRightLeft className="mr-2 h-4 w-4" /> Điều
+                                chuyển
+                              </DropdownMenuItem>
+                            )}
+
+                            {canTransfer && <DropdownMenuSeparator />}
+
+                            {canRemove && (
+                              <DropdownMenuItem
+                                className="text-destructive focus:text-destructive"
+                                onClick={() => setMemberToRemove(member)}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" /> Xóa khỏi
+                                nhóm
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
                     </TableCell>
                   </TableRow>
                 );
@@ -232,7 +250,6 @@ export function TeamMemberTable({
         onConfirm={handlePromote}
       />
 
-      {/* Dialog Xóa thành viên */}
       <ConfirmDialog
         open={!!memberToRemove}
         onOpenChange={(open) => !open && setMemberToRemove(null)}

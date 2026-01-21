@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-// [FIX] Import thêm useMemo
 import { useEffect, useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -45,6 +44,7 @@ import { Task } from "@/types/task";
 import { EmployeeSelector } from "@/components/common/employee-selector";
 import { usePermission } from "@/hooks/use-permission";
 import { useAuth } from "@/hooks/use-auth";
+import { teamService } from "@/services/team-service";
 
 interface TaskFormDialogProps {
   open: boolean;
@@ -68,8 +68,10 @@ export function TaskFormDialog({
   const { user } = useAuth();
   const { getTeamsWithPermission } = usePermission();
 
+  // 1. Lấy danh sách team mà user có quyền task.create
   const allowedTeamCodes = getTeamsWithPermission("task.create");
 
+  // 2. Lọc danh sách team của user để hiển thị trong Select
   const selectableTeams = useMemo(() => {
     return (
       user?.teams.filter((t) => allowedTeamCodes.includes(t.teamCode)) || []
@@ -94,14 +96,32 @@ export function TaskFormDialog({
 
   useEffect(() => {
     if (watchTeamCode && !isEdit) {
-      if (user && user.departments && user.departments.length > 0) {
-        form.setValue("departmentCode", user.departments[0].departmentCode);
-      }
+      const fetchTeamDetails = async () => {
+        try {
+          const res = await teamService.fetchTeams({
+            page: 1,
+            size: 1,
+            condition: { teamCode: watchTeamCode },
+          });
+
+          if (res.data && res.data.length > 0) {
+            const teamDetail = res.data[0];
+            if (teamDetail.departmentCode) {
+              form.setValue("departmentCode", teamDetail.departmentCode);
+            }
+          }
+        } catch (error) {
+          console.error("Không thể lấy thông tin phòng ban của team", error);
+        }
+      };
+
+      fetchTeamDetails();
     }
-  }, [watchTeamCode, isEdit, user, selectableTeams, form]);
+  }, [watchTeamCode, isEdit, form]);
 
   useEffect(() => {
     if (open && initialData) {
+      // Logic binding dữ liệu cũ
       form.reset({
         title: initialData.title,
         description: initialData.description || "",
@@ -113,12 +133,13 @@ export function TaskFormDialog({
         dueDate: new Date(initialData.dueDate),
       });
     } else if (open) {
+      // Reset form khi tạo mới
       form.reset({
         title: "",
         description: "",
         receiverId: "",
         teamCode: "",
-        departmentCode: "", // Sẽ được useEffect trên điền nếu chọn team
+        departmentCode: "",
         priority: "MEDIUM",
         startDate: new Date(),
         dueDate: undefined,
@@ -159,6 +180,7 @@ export function TaskFormDialog({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* ... Các field khác giữ nguyên ... */}
             <FormField
               control={form.control}
               name="title"
@@ -195,11 +217,18 @@ export function TaskFormDialog({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {selectableTeams.map((t) => (
-                          <SelectItem key={t.teamCode} value={t.teamCode}>
-                            {t.teamName}
+                        {/* Render danh sách team đã lọc quyền */}
+                        {selectableTeams.length > 0 ? (
+                          selectableTeams.map((t) => (
+                            <SelectItem key={t.teamCode} value={t.teamCode}>
+                              {t.teamName}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="none" disabled>
+                            Bạn chưa có quyền tạo việc ở team nào
                           </SelectItem>
-                        ))}
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -220,7 +249,7 @@ export function TaskFormDialog({
                 )}
               />
             </div>
-
+            {/* COPY TIẾP PHẦN CÒN LẠI CỦA FORM */}
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}

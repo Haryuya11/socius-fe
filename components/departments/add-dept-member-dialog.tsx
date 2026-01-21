@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
+import { usePermission } from "@/hooks/use-permission"; 
 
 import {
   Dialog,
@@ -38,9 +40,6 @@ import {
   AddMemberFormValues,
   addMemberSchema,
 } from "@/lib/validations/department";
-import { useTranslations } from "next-intl";
-
-// Schema Validation
 
 export function AddDeptMemberDialog({
   deptCode,
@@ -51,12 +50,19 @@ export function AddDeptMemberDialog({
 }) {
   const t = useTranslations("Departments");
   const [open, setOpen] = useState(false);
+  const { hasPermission } = usePermission();
+
+  const canAddMember = hasPermission(
+    "department.member.add",
+    "DEPARTMENT",
+    deptCode,
+  );
 
   const form = useForm<AddMemberFormValues>({
     resolver: zodResolver(addMemberSchema),
     defaultValues: {
       employeeId: "",
-      roleCode: DEPT_ROLES.MEMBER, 
+      roleCode: DEPT_ROLES.MEMBER,
       isPrimary: false,
     },
   });
@@ -85,13 +91,19 @@ export function AddDeptMemberDialog({
       setOpen(false);
       onSuccess();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || t("member.add_failed") || "Failed to add member");
+      toast.error(
+        error?.response?.data?.message ||
+          t("member.add_failed") ||
+          "Failed to add member",
+      );
     }
   };
 
+  if (!canAddMember) return null;
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
+      <DialogTrigger asChild>
         <Button className="gap-2 shadow-sm">
           <UserPlus className="h-4 w-4" /> {t("member.add_button")}
         </Button>
@@ -106,18 +118,22 @@ export function AddDeptMemberDialog({
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4 py-2"
           >
-            {/* Chọn Nhân viên */}
             <FormField
               control={form.control}
               name="employeeId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("member.select_label") || "Select employee"}</FormLabel>
+                  <FormLabel>
+                    {t("member.select_label") || "Select employee"}
+                  </FormLabel>
                   <FormControl>
                     <EmployeeSelector
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder={t("member.select_placeholder") || "Search by name or email..."}
+                      placeholder={
+                        t("member.select_placeholder") ||
+                        "Search by name or email..."
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -126,7 +142,6 @@ export function AddDeptMemberDialog({
             />
 
             <div className="grid grid-cols-2 gap-4">
-              {/* Chọn Vai trò */}
               <FormField
                 control={form.control}
                 name="roleCode"
@@ -152,7 +167,6 @@ export function AddDeptMemberDialog({
                 )}
               />
 
-              {/* Chọn Phòng chính */}
               <div className="flex flex-col justify-end pb-2">
                 <FormField
                   control={form.control}

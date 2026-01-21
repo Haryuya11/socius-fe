@@ -29,6 +29,7 @@ import { Team } from "@/types/teams";
 import { teamService } from "@/services/team-service";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useMounted } from "@/hooks/use-mounted";
+import { usePermission } from "@/hooks/use-permission"; 
 
 // Components
 import { TeamStats } from "@/components/teams/team-stats";
@@ -55,6 +56,7 @@ interface TeamSearchCondition {
 
 export default function TeamsPage() {
   const mounted = useMounted();
+  const { hasPermission } = usePermission();
 
   const [viewMode, setViewMode] = useState<"grid" | "table" | "tree">("grid");
 
@@ -80,6 +82,8 @@ export default function TeamsPage() {
 
   const [teamToDelete, setTeamToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const canCreate = hasPermission("team.create");
 
   const debouncedCondition = useDebounce(searchCondition, 200);
 
@@ -152,7 +156,6 @@ export default function TeamsPage() {
     }
   };
 
-  // --- FILTER HANDLERS ---
   const handleQuickSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setSearchCondition((prev) => ({ ...prev, teamName: val }));
@@ -172,7 +175,6 @@ export default function TeamsPage() {
     setIsFilterOpen(false);
   };
 
-  // --- RENDER HELPERS ---
   const renderContent = () => {
     if (isLoading) {
       if (viewMode === "table") return <TeamTableSkeleton />;
@@ -253,16 +255,19 @@ export default function TeamsPage() {
               <Users className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">{filteredTotalItems}</span>
             </div>
-            <TeamDialog
-              onSuccess={() => {
-                fetchTeams();
-                fetchStats();
-              }}
-            >
-              <Button className="gap-2 shadow-sm">
-                <Users className="h-4 w-4" /> Thêm Team
-              </Button>
-            </TeamDialog>
+
+            {canCreate && (
+              <TeamDialog
+                onSuccess={() => {
+                  fetchTeams();
+                  fetchStats();
+                }}
+              >
+                <Button className="gap-2 shadow-sm">
+                  <Users className="h-4 w-4" /> Thêm Team
+                </Button>
+              </TeamDialog>
+            )}
           </div>
         </div>
 
