@@ -7,8 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon, Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-
+import { cn } from "@/lib/utils";import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -60,6 +59,9 @@ export function TaskFormDialog({
   initialData,
   onSuccess,
 }: TaskFormDialogProps) {
+  const t = useTranslations("Tasks.form");
+  const tMessages = useTranslations("Tasks.messages");
+  const tPriority = useTranslations("Tasks.priority");
   const isEdit = !!initialData;
   const [loading, setLoading] = useState(false);
 
@@ -135,15 +137,15 @@ export function TaskFormDialog({
 
       if (isEdit && initialData) {
         await taskService.updateTask(initialData.id, payload);
-        toast.success("Cập nhật thành công");
+        toast.success(tMessages("update_success"));
       } else {
         await taskService.createTask(payload);
-        toast.success("Tạo task thành công");
+        toast.success(tMessages("create_success"));
       }
       onOpenChange(false);
       onSuccess();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
+      toast.error(error?.response?.data?.message || tMessages("error"));
     } finally {
       setLoading(false);
     }
@@ -153,7 +155,7 @@ export function TaskFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Cập nhật Task" : "Tạo Task mới"}</DialogTitle>
+          <DialogTitle>{isEdit ? t("title_edit") : t("title_create")}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -163,10 +165,10 @@ export function TaskFormDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Tiêu đề <span className="text-red-500">*</span>
+                    {t("title_label")} <span className="text-red-500">{t("required")}</span>
                   </FormLabel>
                   <FormControl>
-                    <Input placeholder="Nhập tiêu đề task" {...field} />
+                    <Input placeholder={t("title_placeholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -180,7 +182,7 @@ export function TaskFormDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Team <span className="text-red-500">*</span>
+                      {t("team_label")} <span className="text-red-500">{t("required")}</span>
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
@@ -189,7 +191,7 @@ export function TaskFormDialog({
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Chọn team..." />
+                          <SelectValue placeholder={t("team_placeholder")} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -209,7 +211,7 @@ export function TaskFormDialog({
                 name="departmentCode"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Dept Code</FormLabel>
+                    <FormLabel>{t("dept_label")}</FormLabel>
                     <FormControl>
                       <Input {...field} disabled />
                     </FormControl>
@@ -226,13 +228,13 @@ export function TaskFormDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Người nhận <span className="text-red-500">*</span>
+                      {t("receiver_label")} <span className="text-red-500">{t("required")}</span>
                     </FormLabel>
                     <FormControl>
                       <EmployeeSelector
                         value={field.value}
                         onChange={field.onChange}
-                        placeholder="Chọn người nhận"
+                        placeholder={t("receiver_placeholder")}
                         defaultLabel={initialData?.receiverName}
                       />
                     </FormControl>
@@ -245,20 +247,20 @@ export function TaskFormDialog({
                 name="priority"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Độ ưu tiên</FormLabel>
+                    <FormLabel>{t("priority_label")}</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Chọn độ ưu tiên" />
+                          <SelectValue placeholder={t("priority_placeholder")} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="LOW">Thấp</SelectItem>
-                        <SelectItem value="MEDIUM">Trung bình</SelectItem>
-                        <SelectItem value="HIGH">Cao</SelectItem>
+                        <SelectItem value="LOW">{tPriority("LOW")}</SelectItem>
+                        <SelectItem value="MEDIUM">{tPriority("MEDIUM")}</SelectItem>
+                        <SelectItem value="HIGH">{tPriority("HIGH")}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -273,7 +275,7 @@ export function TaskFormDialog({
                 name="startDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Ngày bắt đầu</FormLabel>
+                    <FormLabel>{t("start_date_label")}</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -287,7 +289,7 @@ export function TaskFormDialog({
                             {field.value ? (
                               format(field.value, "dd/MM/yyyy")
                             ) : (
-                              <span>Chọn ngày</span>
+                              <span>{t("select_date")}</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -312,7 +314,7 @@ export function TaskFormDialog({
                 name="dueDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Hạn hoàn thành</FormLabel>
+                    <FormLabel>{t("due_date_label")}</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -326,7 +328,7 @@ export function TaskFormDialog({
                             {field.value ? (
                               format(field.value, "dd/MM/yyyy")
                             ) : (
-                              <span>Chọn ngày</span>
+                              <span>{t("select_date")}</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -353,10 +355,10 @@ export function TaskFormDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mô tả chi tiết</FormLabel>
+                  <FormLabel>{t("description_label")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Mô tả công việc..."
+                      placeholder={t("description_placeholder")}
                       className="resize-none"
                       {...field}
                     />
@@ -372,11 +374,11 @@ export function TaskFormDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
               >
-                Hủy
+                {t("cancel")}
               </Button>
               <Button type="submit" disabled={loading}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                <Save className="mr-2 h-4 w-4" /> Lưu lại
+                <Save className="mr-2 h-4 w-4" /> {t("save")}
               </Button>
             </div>
           </form>

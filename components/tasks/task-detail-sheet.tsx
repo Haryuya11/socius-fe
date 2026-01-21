@@ -2,6 +2,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
+import { useTranslations } from "next-intl";
 // [UPDATE 1] Import hooks điều hướng
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
@@ -45,6 +46,7 @@ export function TaskDetailSheet({
   onUpdate,
   currentUserId,
 }: TaskDetailSheetProps) {
+  const t = useTranslations("Tasks");
   const [task, setTask] = useState<Task | null>(null);
   const [subTasks, setSubTasks] = useState<Task[]>([]);
   const [activities, setActivities] = useState<TaskActivity[]>([]);
@@ -109,7 +111,7 @@ export function TaskDetailSheet({
                   className="p-0 h-auto mb-2 text-muted-foreground hover:text-primary justify-start w-fit"
                   onClick={() => navigateToTask(task.parentId!)}
                 >
-                  <ChevronLeft className="h-4 w-4 mr-1" /> Quay lại Task cha #
+                  <ChevronLeft className="h-4 w-4 mr-1" /> {t("detail.back_to_parent")} #
                   {task.parentId}
                 </Button>
               )}
@@ -124,11 +126,11 @@ export function TaskDetailSheet({
               </SheetTitle>
               <SheetDescription className="flex items-center gap-4 mt-2 text-xs">
                 <span className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" /> Hạn:{" "}
+                  <Clock className="h-3 w-3" /> {t("detail.deadline")}{" "}
                   {format(new Date(task.dueDate), "dd/MM/yyyy")}
                 </span>
                 <span className="flex items-center gap-1">
-                  <User className="h-3 w-3" /> Giao bởi: {task.senderName}
+                  <User className="h-3 w-3" /> {t("detail.assigned_by")} {task.senderName}
                 </span>
               </SheetDescription>
             </SheetHeader>
@@ -137,7 +139,7 @@ export function TaskDetailSheet({
             <div className="flex flex-wrap gap-2">
               {isReceiver && task.status === "IN_PROGRESS" && (
                 <Button size="sm" onClick={() => setActionType("SUBMIT")}>
-                  Gửi duyệt hoàn thành
+                  {t("detail.submit_complete")}
                 </Button>
               )}
               {isSender && task.status === "PENDING" && (
@@ -147,14 +149,14 @@ export function TaskDetailSheet({
                     className="bg-green-600 hover:bg-green-700"
                     onClick={() => setActionType("APPROVE")}
                   >
-                    Phê duyệt
+                    {t("actions.approve")}
                   </Button>
                   <Button
                     size="sm"
                     variant="destructive"
                     onClick={() => setActionType("REJECT")}
                   >
-                    Từ chối
+                    {t("actions.reject")}
                   </Button>
                 </>
               )}
@@ -167,7 +169,7 @@ export function TaskDetailSheet({
                     className="text-destructive border-destructive/50"
                     onClick={() => setActionType("CANCEL")}
                   >
-                    Hủy Task
+                    {t("actions.cancel")}
                   </Button>
                 )}
               {(isSender || isReceiver) &&
@@ -177,7 +179,7 @@ export function TaskDetailSheet({
                     variant="outline"
                     onClick={() => setActionType("REOPEN")}
                   >
-                    <RotateCcw className="h-3.5 w-3.5 mr-1" /> Mở lại
+                    <RotateCcw className="h-3.5 w-3.5 mr-1" /> {t("actions.reopen")}
                   </Button>
                 )}
             </div>
@@ -189,11 +191,11 @@ export function TaskDetailSheet({
           >
             <div className="px-6 pt-2">
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="info">Thông tin</TabsTrigger>
+                <TabsTrigger value="info">{t("detail.tabs.info")}</TabsTrigger>
                 <TabsTrigger value="subtasks">
-                  Việc phụ ({subTasks.length})
+                  {t("detail.tabs.subtasks")} ({subTasks.length})
                 </TabsTrigger>
-                <TabsTrigger value="activity">Lịch sử</TabsTrigger>
+                <TabsTrigger value="activity">{t("detail.tabs.activity")}</TabsTrigger>
               </TabsList>
             </div>
 
@@ -202,7 +204,7 @@ export function TaskDetailSheet({
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-muted-foreground block mb-1">
-                      Người nhận
+                      {t("detail.receiver_label")}
                     </span>
                     <div className="font-medium flex items-center gap-2">
                       <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-xs">
@@ -213,7 +215,7 @@ export function TaskDetailSheet({
                   </div>
                   <div>
                     <span className="text-muted-foreground block mb-1">
-                      Ngày bắt đầu
+                      {t("detail.start_date")}
                     </span>
                     <div className="font-medium">
                       {format(new Date(task.startDate), "dd/MM/yyyy")}
@@ -222,9 +224,9 @@ export function TaskDetailSheet({
                 </div>
                 <Separator />
                 <div>
-                  <h4 className="font-medium mb-2">Mô tả</h4>
+                  <h4 className="font-medium mb-2">{t("detail.description")}</h4>
                   <p className="text-sm text-muted-foreground whitespace-pre-line">
-                    {task.description || "Không có mô tả."}
+                    {task.description || t("detail.no_description")}
                   </p>
                 </div>
               </TabsContent>
@@ -232,7 +234,7 @@ export function TaskDetailSheet({
               <TabsContent value="subtasks" className="mt-0 space-y-4">
                 <div className="flex justify-between items-center">
                   <h4 className="font-medium text-sm">
-                    Danh sách công việc phụ
+                    {t("detail.subtasks_list")}
                   </h4>
                   {(isSender || isReceiver) &&
                     task.status === "IN_PROGRESS" && (
@@ -242,7 +244,7 @@ export function TaskDetailSheet({
                         className="h-8"
                         onClick={() => setIsSubTaskOpen(true)}
                       >
-                        <Plus className="h-4 w-4 mr-1" /> Thêm
+                        <Plus className="h-4 w-4 mr-1" /> {t("detail.add_subtask")}
                       </Button>
                     )}
                 </div>
@@ -250,7 +252,7 @@ export function TaskDetailSheet({
                 {/* [UPDATE 5] List Subtasks có khả năng click */}
                 {subTasks.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground text-sm">
-                    Chưa có công việc phụ nào
+                    {t("detail.no_subtasks")}
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -295,7 +297,7 @@ export function TaskDetailSheet({
                         <p className="text-sm font-medium">
                           {act.actorName}{" "}
                           <span className="font-normal text-muted-foreground">
-                            đã
+                            {t("activity.past_verb")}
                           </span>{" "}
                           {act.activityType}
                         </p>

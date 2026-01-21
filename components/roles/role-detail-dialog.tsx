@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -46,6 +47,7 @@ export function RoleDetailDialog({
   open,
   onOpenChange,
 }: RoleDetailDialogProps) {
+  const t = useTranslations("Roles");
   const [searchQuery, setSearchQuery] = useState("");
 
   if (!open && searchQuery) setSearchQuery("");
@@ -72,7 +74,7 @@ export function RoleDetailDialog({
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(JSON.stringify(role.permissions, null, 2));
-    toast.success("Đã copy JSON quyền hạn vào clipboard");
+    toast.success(t("detail.copy_success"));
   };
 
   const RoleIcon = ROLE_ICON_MAP[role.roleType] ?? ROLE_ICON_MAP.DEFAULT;
@@ -120,7 +122,7 @@ export function RoleDetailDialog({
               <div className="relative w-full md:w-64">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Tìm quyền hạn..."
+                  placeholder={t("detail.search_placeholder")}
                   className="pl-9 bg-background h-9"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -139,7 +141,7 @@ export function RoleDetailDialog({
                 <Badge variant="secondary" className="px-1.5 rounded-sm">
                   {filteredPermissions.length}
                 </Badge>
-                kết quả
+                {t("detail.results")}
               </div>
             </div>
           </div>
@@ -150,7 +152,7 @@ export function RoleDetailDialog({
           {Object.keys(groupedPermissions).length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-muted-foreground opacity-50">
               <Search className="h-12 w-12 mb-2" />
-              <p>Không tìm thấy quyền nào phù hợp.</p>
+              <p>{t("detail.no_results")}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -196,7 +198,7 @@ export function RoleDetailDialog({
                               </span>
 
                               <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-                                {p.description || "Quyền hạn hệ thống."}
+                                {p.description || t("detail.default_permission_description")}
                               </p>
 
                               <code className="mt-2 inline-block text-[10px] font-mono bg-muted/50 px-1.5 py-0.5 rounded border">
@@ -226,9 +228,9 @@ export function RoleDetailDialog({
               className="gap-2"
             >
               <Copy className="h-4 w-4" />
-              Copy JSON
+              {t("detail.copy_json")}
             </Button>
-            <Button onClick={() => onOpenChange(false)}>Đóng</Button>
+            <Button onClick={() => onOpenChange(false)}>{t("detail.close")}</Button>
           </div>
         </DialogFooter>
       </DialogContent>

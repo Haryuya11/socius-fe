@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Shield,
   LayoutGrid,
@@ -27,6 +28,7 @@ import { Role } from "@/types/permission";
 import { RoleDetailDialog } from "@/components/roles/role-detail-dialog";
 
 export default function RolesPage() {
+  const t = useTranslations("Roles");
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -98,14 +100,14 @@ export default function RolesPage() {
                   variant="outline"
                   className="shrink-0 bg-background shadow-xs"
                 >
-                  {role.permissions.length} quyền
+                  {t("card.permissions_count", { count: role.permissions.length })}
                 </Badge>
               </div>
             </CardHeader>
 
             <CardContent className="flex-1 pb-4">
               <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed h-10 mb-4">
-                {role.description || "Chưa có mô tả cho vai trò này."}
+                {role.description || t("card.no_description")}
               </p>
 
               {/* Mini Permissions Preview */}
@@ -132,7 +134,7 @@ export default function RolesPage() {
 
             <CardFooter className="pt-0 pb-4">
               <div className="w-full text-xs font-medium text-muted-foreground group-hover:text-primary flex items-center justify-end gap-1 transition-colors">
-                Xem chi tiết <span className="text-lg leading-3">›</span>
+                {t("card.view_details")} <span className="text-lg leading-3">›</span>
               </div>
             </CardFooter>
           </Card>
@@ -152,11 +154,10 @@ export default function RolesPage() {
             <div className="p-2 bg-primary/10 rounded-lg">
               <Shield className="h-6 w-6 text-primary" />
             </div>
-            Phân quyền (Roles)
+            {t("title")}
           </h1>
           <p className="text-muted-foreground mt-2 max-w-2xl text-base">
-            Quản lý danh sách vai trò và quyền hạn chi tiết trong hệ thống. Kiểm
-            tra kỹ trước khi phân quyền cho nhân sự.
+            {t("subtitle")}
           </p>
         </div>
 
@@ -164,7 +165,7 @@ export default function RolesPage() {
         <div className="relative w-full md:w-72">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Tìm kiếm Role, Code..."
+            placeholder={t("search_placeholder")}
             className="pl-9 bg-background shadow-sm"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -175,12 +176,12 @@ export default function RolesPage() {
       {/* Main Tabs */}
       <Tabs defaultValue="SYSTEM" className="w-full space-y-6">
         <TabsList className="grid w-full grid-cols-3 lg:w-[500px] h-11 p-1 bg-muted/50 border">
-          <TabsTrigger
+            <TabsTrigger
             value="SYSTEM"
             className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md transition-all"
           >
             <LayoutGrid className="h-4 w-4" />
-            <span className="font-semibold">Hệ thống</span>
+            <span className="font-semibold">{t("tabs.system")}</span>
             <Badge
               variant="secondary"
               className="ml-1 px-1 py-0 h-4 text-[9px] min-w-4 justify-center"
@@ -188,12 +189,12 @@ export default function RolesPage() {
               {systemRoles.length}
             </Badge>
           </TabsTrigger>
-          <TabsTrigger
+            <TabsTrigger
             value="DEPARTMENT"
             className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md transition-all"
           >
             <Building2 className="h-4 w-4" />
-            <span className="font-semibold">Phòng ban</span>
+            <span className="font-semibold">{t("tabs.department")}</span>
             <Badge
               variant="secondary"
               className="ml-1 px-1 py-0 h-4 text-[9px] min-w-4 justify-center"
@@ -201,12 +202,12 @@ export default function RolesPage() {
               {deptRoles.length}
             </Badge>
           </TabsTrigger>
-          <TabsTrigger
+            <TabsTrigger
             value="TEAM"
             className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md transition-all"
           >
             <Users className="h-4 w-4" />
-            <span className="font-semibold">Đội nhóm</span>
+            <span className="font-semibold">{t("tabs.team")}</span>
             <Badge
               variant="secondary"
               className="ml-1 px-1 py-0 h-4 text-[9px] min-w-4 justify-center"
@@ -220,7 +221,7 @@ export default function RolesPage() {
         <TabsContent value="SYSTEM" className="outline-none">
           {renderRoleList(
             systemRoles,
-            "Không tìm thấy Role hệ thống nào.",
+            t("empty.system"),
             "bg-red-500",
           )}
         </TabsContent>
@@ -229,7 +230,7 @@ export default function RolesPage() {
         <TabsContent value="DEPARTMENT" className="outline-none">
           {renderRoleList(
             deptRoles,
-            "Không tìm thấy Role phòng ban nào.",
+            t("empty.department"),
             "bg-amber-500",
           )}
         </TabsContent>
@@ -238,7 +239,7 @@ export default function RolesPage() {
         <TabsContent value="TEAM" className="outline-none">
           {renderRoleList(
             teamRoles,
-            "Không tìm thấy Role đội nhóm nào.",
+            t("empty.team"),
             "bg-blue-500",
           )}
         </TabsContent>
