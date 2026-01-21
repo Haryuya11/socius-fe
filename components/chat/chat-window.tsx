@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useChatStore } from "@/stores/use-chat-store";
 import { MessageType } from "@/types/chat";
 import { Button } from "@/components/ui/button";
@@ -15,12 +15,14 @@ import {
   Info,
   ArrowDown,
   Reply,
+  Image as ImageIcon,
 } from "lucide-react";
 import MessageItem from "./message-item";
 import { useDropzone } from "react-dropzone";
 import { ChatDetails } from "./chat-details";
 import { useInView } from "react-intersection-observer";
 import { getFullImageUrl } from "@/utils/image-utils";
+import { formatFileSize } from "@/utils/file-utils"; // Import hàm format
 
 export default function ChatWindow() {
   const {
@@ -40,7 +42,15 @@ export default function ChatWindow() {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [showScrollBottom, setShowScrollBottom] = useState(false);
 
+  // [NEW] State để quản lý trạng thái đang gửi (loading upload)
+  const [isSending, setIsSending] = useState(false);
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // [NEW] Tính tổng dung lượng file
+  const totalSize = useMemo(() => {
+    return selectedFiles.reduce((acc, file) => acc + file.size, 0);
+  }, [selectedFiles]);
 
   const { ref: loadMoreRef, inView } = useInView({
     threshold: 0,
@@ -75,6 +85,7 @@ export default function ChatWindow() {
   };
 
   const handleQuickReply = (text: string) => {
+    // Quick reply thường chỉ là text, không cần loading state phức tạp
     sendMessage(text, MessageType.TEXT, []);
   };
 
@@ -156,24 +167,27 @@ export default function ChatWindow() {
   };
 
   const handleSend = async () => {
-    if (!inputText.trim() && selectedFiles.length === 0) return;
+    if ((!inputText.trim() && selectedFiles.length === 0) || isSending) return;
 
-    let type = MessageType.TEXT;
-    if (selectedFiles.length > 0) {
-      const allImages = selectedFiles.every((f) => f.type.startsWith("image/"));
-      type = allImages ? MessageType.IMAGE : MessageType.FILE;
+    // [NEW] Bắt đầu trạng thái gửi
+    setIsSending(true);
+
+    try {
+      const content = inputText;
+      const files = selectedFiles;
+      const parentId = replyingTo?.messageId;
+
+      setInputText("");
+      setSelectedFiles([]);
+      setReplyingTo(null);
+      handleScrollToBottom();
+
+      await sendMessage(content, MessageType.TEXT, files, parentId);
+    } catch (error) {
+      console.error("Gửi thất bại", error);
+    } finally {
+      setIsSending(false);
     }
-
-    const content = inputText;
-    const files = selectedFiles;
-    const parentId = replyingTo?.messageId;
-
-    setInputText("");
-    setSelectedFiles([]);
-    setReplyingTo(null);
-    handleScrollToBottom();
-
-    await sendMessage(content, type, files, parentId);
   };
 
   if (!activeConversationId && messages.length === 0) {
@@ -298,56 +312,79 @@ export default function ChatWindow() {
           </div>
         )}
 
-        {/* File Preview */}
         {selectedFiles.length > 0 && (
-          <div className="flex gap-3 px-4 py-3 overflow-x-auto border-b bg-muted/30">
-            {selectedFiles.map((file, idx) => {
-              const isImage = file.type.startsWith("image/");
-              const previewUrl = URL.createObjectURL(file);
+          <div className="flex flex-col bg-muted/30 border-b">
+            <div className="px-4 py-1 flex justify-between items-center text-[10px] text-muted-foreground bg-muted/50 border-b border-border/50">
+              <span>Đã chọn {selectedFiles.length} file</span>
+              <span className="font-medium">
+                Tổng: {formatFileSize(totalSize)}
+              </span>
+            </div>
 
-              return (
-                <div
-                  key={idx}
-                  className="relative group shrink-0 w-20 h-20 rounded-md border bg-background overflow-hidden"
-                >
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeFile(idx);
-                    }}
-                    className="absolute top-0.5 right-0.5 z-10 bg-destructive text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+            <div className="flex gap-3 px-4 py-3 overflow-x-auto">
+              {selectedFiles.map((file, idx) => {
+                const isImage = file.type.startsWith("image/");
+                const previewUrl = URL.createObjectURL(file);
+
+                return (
+                  <div
+                    key={idx}
+                    className="relative group shrink-0 w-24 h-24 rounded-lg border bg-background overflow-hidden flex flex-col shadow-sm"
                   >
-                    <X className="h-3 w-3" />
-                  </button>
+                    {/* Nút xóa */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFile(idx);
+                      }}
+                      className="absolute top-1 right-1 z-10 bg-black/50 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
 
-                  {isImage ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={previewUrl}
-                      alt="preview"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center p-1">
-                      <FileIcon className="h-6 w-6 text-muted-foreground mb-1" />
-                      <span className="text-[8px] truncate max-w-full px-1">
-                        {file.name}
-                      </span>
+                    <div className="flex-1 relative w-full overflow-hidden bg-checkerboard">
+                      {isImage ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={previewUrl}
+                          alt="preview"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-muted">
+                          <FileIcon className="h-8 w-8 text-muted-foreground/50" />
+                        </div>
+                      )}
+
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[9px] px-1 py-0.5 truncate text-center backdrop-blur-[1px]">
+                        {formatFileSize(file.size)}
+                      </div>
                     </div>
-                  )}
-                </div>
-              );
-            })}
+
+                    {!isImage && (
+                      <div className="h-6 px-1 flex items-center justify-center bg-card border-t">
+                        <span
+                          className="text-[9px] truncate w-full text-center"
+                          title={file.name}
+                        >
+                          {file.name}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 
-        {/* Input Area */}
         <div className="p-4 flex items-end gap-2">
           <Button
             size="icon"
             variant="ghost"
             onClick={() => document.getElementById("manual-upload")?.click()}
             title="Đính kèm file"
+            disabled={isSending}
           >
             <Paperclip className="h-5 w-5" />
             <input
@@ -365,16 +402,24 @@ export default function ChatWindow() {
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-            placeholder="Nhập tin nhắn..."
+            placeholder={isSending ? "Đang gửi..." : "Nhập tin nhắn..."}
             className="flex-1 min-h-10"
+            disabled={isSending}
           />
 
           <Button
             size="icon"
             onClick={handleSend}
-            disabled={!inputText.trim() && selectedFiles.length === 0}
+            disabled={
+              (!inputText.trim() && selectedFiles.length === 0) || isSending
+            }
+            className={isSending ? "cursor-not-allowed opacity-80" : ""}
           >
-            <Send className="h-5 w-5" />
+            {isSending ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <Send className="h-5 w-5" />
+            )}
           </Button>
         </div>
       </div>

@@ -5,7 +5,7 @@ import { useState, useMemo } from "react";
 import { useChatStore } from "@/stores/use-chat-store";
 import { getFullImageUrl } from "@/utils/image-utils";
 import { chatService } from "@/services/chat-service";
-import { Trash2, UserPlus } from "lucide-react";
+import { Trash2, UserPlus, MoreHorizontal, User } from "lucide-react"; 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -14,9 +14,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"; 
 import { MultiEmployeeSelector } from "@/components/common/multi-employee-selector";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useRouter } from "next/navigation";
 
 interface MemberSectionProps {
   isAddMemberOpen: boolean;
@@ -34,6 +41,8 @@ export function MemberSection({
     conversations,
     selectConversation,
   } = useChatStore();
+
+  const router = useRouter(); // [NEW]
 
   const [newMemberIds, setNewMemberIds] = useState<string[]>([]);
 
@@ -97,14 +106,13 @@ export function MemberSection({
             <MultiEmployeeSelector
               value={newMemberIds}
               onChange={setNewMemberIds}
-              excludeIds={existingParticipantIds} // Truyền prop này vào
+              excludeIds={existingParticipantIds}
             />
           </div>
           <Button onClick={handleAddMembers}>Xác nhận</Button>
         </DialogContent>
       </Dialog>
 
-      {/*  FIX SCROLL: Giới hạn chiều cao và bọc trong ScrollArea */}
       <ScrollArea className="h-[250px] pr-3 -mr-3">
         <div className="space-y-1 mt-2">
           {participants.map((p) => {
@@ -112,6 +120,9 @@ export function MemberSection({
             const empAvatar = getFullImageUrl(p.employeeDetails?.avatarUrl);
             const isUserMe = p.employeeId === currentUserId;
             const isRowAdmin = p.role === "ADMIN";
+
+            // [NEW] Logic check quyền xóa
+            const canRemove = isGroup && isAdmin && !isUserMe;
 
             return (
               <div
@@ -141,16 +152,37 @@ export function MemberSection({
                   </div>
                 </div>
 
-                {isGroup && isAdmin && !isUserMe && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => handleRemoveMember(p.employeeId)}
-                    title="Xóa khỏi nhóm"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                {!isUserMe && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={() =>
+                          router.push(`/employees/${p.employeeId}`)
+                        }
+                        className="cursor-pointer"
+                      >
+                        <User className="h-4 w-4 mr-2" /> Xem hồ sơ
+                      </DropdownMenuItem>
+
+                      {canRemove && (
+                        <DropdownMenuItem
+                          onClick={() => handleRemoveMember(p.employeeId)}
+                          className="text-destructive focus:text-destructive cursor-pointer"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" /> Xóa khỏi nhóm
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 )}
               </div>
             );

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -17,6 +18,7 @@ import {
   Edit2,
   Reply,
   SmilePlus,
+  Download,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -47,13 +49,14 @@ import {
 
 import { MediaViewer } from "./media-viewer";
 
-// --- IMPORTS MỚI ---
 import {
   CODE_TO_ICON,
   ICON_TO_CODE,
   DISPLAY_ICONS,
-} from "@/constants/reaction-icons"; // Hãy đảm bảo đường dẫn đúng
-import { ReactionBadge } from "./reaction-badge"; // Hãy đảm bảo đường dẫn đúng
+} from "@/constants/reaction-icons";
+import { ReactionBadge } from "./reaction-badge";
+import { toast } from "sonner";
+import { chatService } from "@/services/chat-service";
 
 export default function MessageItem({ message }: { message: Message }) {
   const {
@@ -150,6 +153,67 @@ export default function MessageItem({ message }: { message: Message }) {
     }
   };
 
+const handleDownload = async () => {
+  const files = message.metadata || [];
+  if (files.length === 0) return;
+
+  const toastId = toast.loading("Đang chuẩn bị tải xuống...");
+
+  try {
+    let blob: Blob;
+    let fileName: string;
+
+    if (files.length === 1) {
+      const file = files[0];
+      fileName = file.fileName;
+
+      console.log("Downloading filePath:", file.filePath);
+
+      blob = await chatService.downloadFile(
+        message.conversationId,
+        file.filePath || "", 
+      );
+    } else {
+      fileName = `attachments-${new Date().getTime()}.zip`;
+
+      blob = await chatService.downloadZip(
+        message.conversationId,
+        files.map((f) => ({ filePath: f.filePath || "" })),
+      );
+    }
+
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+    toast.success("Đã tải xuống", { id: toastId });
+  } catch (error: any) {
+    console.error("Download error:", error);
+
+    if (error.response?.data instanceof Blob) {
+      try {
+        const errorText = await error.response.data.text();
+        const errorJson = JSON.parse(errorText);
+        toast.error(`Lỗi: ${errorJson.message || "Server Error"}`, {
+          id: toastId,
+        });
+      } catch {
+        toast.error("Tải xuống thất bại", { id: toastId });
+      }
+    } else {
+      toast.error("Tải xuống thất bại", { id: toastId });
+    }
+  }
+};
+
+  const hasAttachments = message.metadata && message.metadata.length > 0;
+
   return (
     <>
       <div className={cn("flex flex-col gap-1 mb-2 w-full max-w-full")}>
@@ -233,19 +297,14 @@ export default function MessageItem({ message }: { message: Message }) {
                           onClick={() => handleReaction(icon)}
                           className={cn(
                             "h-9 w-9 rounded-full flex items-center justify-center text-xl transition-all duration-200 outline-none focus-visible:ring-2 ring-ring/50 relative",
-
-                            "active:scale-90", 
-
-                            !isActive && [
-                              "hover:bg-muted hover:scale-110", 
-                            ],
-
+                            "active:scale-90",
+                            !isActive && ["hover:bg-muted hover:scale-110"],
                             isActive && [
-                              "z-10", 
-                              "bg-blue-100 dark:bg-blue-900/50", 
-                              "border-2 border-blue-400 dark:border-blue-500", 
-                              "scale-110 shadow-sm", 
-                              "hover:scale-125", 
+                              "z-10",
+                              "bg-blue-100 dark:bg-blue-900/50",
+                              "border-2 border-blue-400 dark:border-blue-500",
+                              "scale-110 shadow-sm",
+                              "hover:scale-125",
                             ],
                           )}
                         >
@@ -269,7 +328,7 @@ export default function MessageItem({ message }: { message: Message }) {
                 </Button>
               )}
 
-              {isMe && !isDeleted && (
+              {!isDeleted && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -281,18 +340,37 @@ export default function MessageItem({ message }: { message: Message }) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align={isMe ? "end" : "start"}>
-                    {message.messageType === MessageType.TEXT && (
-                      <DropdownMenuItem onClick={() => setIsEditing(true)}>
-                        <Edit2 className="h-4 w-4 mr-2" /> Chỉnh sửa
+                    {hasAttachments && (
+                      <DropdownMenuItem onClick={handleDownload}>
+                        <Download className="h-4 w-4 mr-2" />
+                        {message.metadata && message.metadata.length > 1
+                          ? "Tải xuống tất cả (.zip)"
+                          : "Tải xuống"}
                       </DropdownMenuItem>
                     )}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => setIsDeleteDialogOpen(true)}
-                      className="text-destructive focus:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" /> Thu hồi
-                    </DropdownMenuItem>
+
+                    {isMe && (
+                      <>
+                        {hasAttachments && <DropdownMenuSeparator />}
+
+                        {message.messageType === MessageType.TEXT && (
+                          <DropdownMenuItem onClick={() => setIsEditing(true)}>
+                            <Edit2 className="h-4 w-4 mr-2" /> Chỉnh sửa
+                          </DropdownMenuItem>
+                        )}
+
+                        {message.messageType === MessageType.TEXT && (
+                          <DropdownMenuSeparator />
+                        )}
+
+                        <DropdownMenuItem
+                          onClick={() => setIsDeleteDialogOpen(true)}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" /> Thu hồi
+                        </DropdownMenuItem>
+                      </>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
