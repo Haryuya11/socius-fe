@@ -12,7 +12,6 @@ import { getFullImageUrl } from "@/utils/image-utils";
 import { Users, MessageSquare, PlusCircle, Search, X } from "lucide-react";
 import { MessageType, ConversationWithPreview } from "@/types/chat";
 import { CreateGroupDialog } from "./create-group-dialog";
-// [FIX] Thêm useMemo vào import
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -46,19 +45,14 @@ export default function ChatSidebar() {
     return () => clearTimeout(timer);
   }, [keyword, searchConversations, clearSearch]);
 
-  // [FIX QUAN TRỌNG] Sử dụng useMemo để lọc bỏ các conversation trùng lặp ID
-  // Điều này bảo vệ UI khỏi crash kể cả khi Store có dữ liệu bẩn (do persist cũ)
   const displayConversations = useMemo(() => {
     const sourceList = keyword.trim() ? searchResults : conversations;
-
-    // Dùng Map để giữ lại item đầu tiên gặp được theo ID (loại bỏ trùng)
     const uniqueMap = new Map();
     sourceList.forEach((conv) => {
       if (!uniqueMap.has(conv.conversationId)) {
         uniqueMap.set(conv.conversationId, conv);
       }
     });
-
     return Array.from(uniqueMap.values());
   }, [keyword, searchResults, conversations]);
 
@@ -71,7 +65,10 @@ export default function ChatSidebar() {
 
   const ConversationItem = ({ conv }: { conv: ConversationWithPreview }) => {
     const displayName = conv.name || "Cuộc trò chuyện";
-    const displayAvatar = getFullImageUrl(conv.avatarUrl);
+
+    const imageType = conv.type === "GROUP" ? "conversation" : "user";
+    const displayAvatar = getFullImageUrl(conv.avatarUrl, imageType);
+
     const initial = displayName.charAt(0).toUpperCase();
 
     const isMe = conv.lastSenderId === currentUserId;

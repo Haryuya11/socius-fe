@@ -59,11 +59,11 @@ export const chatService = {
   },
 
   updateConversation: async (
-    id: string,
+    conversationId: string,
     data: { name?: string; avatarUrl?: string },
   ) => {
     const res = await http.put<{ data: Conversation }>(
-      `/api/conversations/${id}`,
+      `/api/conversations/${conversationId}`,
       data,
     );
     return res.data.data;
@@ -215,7 +215,7 @@ export const chatService = {
     const res = await http.post(
       `/api/conversations/${conversationId}/files/download`,
       { filePath },
-      { responseType: "blob" }, 
+      { responseType: "blob" },
     );
     return res.data;
   },
@@ -227,7 +227,7 @@ export const chatService = {
     const res = await http.post(
       `/api/conversations/${conversationId}/files/download-zip`,
       { files },
-      { responseType: "blob" }, 
+      { responseType: "blob" },
     );
     return res.data;
   },
@@ -237,6 +237,21 @@ export const chatService = {
       "/api/conversations/search",
       {
         params: { keyword, limit },
+      },
+    );
+    return res.data.data;
+  },
+  uploadAvatar: async (conversationId: string, file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await http.post<{ data: { path: string; url: string } }>(
+      `/api/conversations/${conversationId}/avatar`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       },
     );
     return res.data.data;
