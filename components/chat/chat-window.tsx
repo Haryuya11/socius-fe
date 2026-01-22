@@ -22,7 +22,7 @@ import { useDropzone } from "react-dropzone";
 import { ChatDetails } from "./chat-details";
 import { useInView } from "react-intersection-observer";
 import { getFullImageUrl } from "@/utils/image-utils";
-import { formatFileSize } from "@/utils/file-utils"; // Import hàm format
+import { formatFileSize } from "@/utils/file-utils";
 
 export default function ChatWindow() {
   const {
@@ -41,13 +41,10 @@ export default function ChatWindow() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [showScrollBottom, setShowScrollBottom] = useState(false);
-
-  // [NEW] State để quản lý trạng thái đang gửi (loading upload)
   const [isSending, setIsSending] = useState(false);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // [NEW] Tính tổng dung lượng file
   const totalSize = useMemo(() => {
     return selectedFiles.reduce((acc, file) => acc + file.size, 0);
   }, [selectedFiles]);
@@ -85,7 +82,6 @@ export default function ChatWindow() {
   };
 
   const handleQuickReply = (text: string) => {
-    // Quick reply thường chỉ là text, không cần loading state phức tạp
     sendMessage(text, MessageType.TEXT, []);
   };
 
@@ -93,7 +89,10 @@ export default function ChatWindow() {
     if (!currentConversation) return null;
 
     const isGroup = currentConversation.type === "GROUP";
-    const avatarUrl = getFullImageUrl(currentConversation.avatarUrl);
+
+    const imageType = isGroup ? "conversation" : "user";
+    const avatarUrl = getFullImageUrl(currentConversation.avatarUrl, imageType);
+
     const name = currentConversation.name || "Người dùng";
     const initials = name.charAt(0).toUpperCase();
 
@@ -169,7 +168,6 @@ export default function ChatWindow() {
   const handleSend = async () => {
     if ((!inputText.trim() && selectedFiles.length === 0) || isSending) return;
 
-    // [NEW] Bắt đầu trạng thái gửi
     setIsSending(true);
 
     try {
@@ -331,7 +329,6 @@ export default function ChatWindow() {
                     key={idx}
                     className="relative group shrink-0 w-24 h-24 rounded-lg border bg-background overflow-hidden flex flex-col shadow-sm"
                   >
-                    {/* Nút xóa */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();

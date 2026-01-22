@@ -4,7 +4,7 @@ import * as React from "react";
 import { Check, ChevronsUpDown, Loader2, X } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import {  buttonVariants } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
@@ -104,12 +104,13 @@ export function MultiEmployeeSelector({
   return (
     <Popover open={open} onOpenChange={setOpen} modal={true}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-full justify-between pl-3 font-normal min-h-10 h-auto"
-          disabled={disabled}
+        <div
+          role="button"
+          tabIndex={0}
+          className={cn(
+            buttonVariants({ variant: "outline" }), 
+            "w-full justify-between h-auto min-h-10 cursor-pointer", 
+          )}
         >
           <div className="flex flex-wrap gap-1 items-center text-left">
             {selectedEmployees.length > 0 ? (
@@ -144,7 +145,7 @@ export function MultiEmployeeSelector({
             )}
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
+        </div>
       </PopoverTrigger>
       <PopoverContent
         className="w-[400px] p-0"

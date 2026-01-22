@@ -78,8 +78,12 @@ export const useChatStore = create<ChatState>()(
       receiveSocketMessage: (wsMsg) => {
         if (wsMsg.domain !== DomainTypes.MESSAGE) return;
         const { activeConversationId, conversations, messages } = get();
-        const rawData = wsMsg.data;
-        const messageSource = rawData.message || rawData;
+
+        // [FIX] Khai báo eventData ở đây để dùng chung cho switch case
+        const eventData = wsMsg.data;
+
+        // Payload tin nhắn (dùng cho NEW_MESSAGE, UPDATE, DELETE)
+        const messageSource = eventData.message || eventData;
 
         const payload: Message = {
           messageId: messageSource.messageId,
@@ -110,9 +114,8 @@ export const useChatStore = create<ChatState>()(
               ? 0
               : (existingConv.unreadCount || 0) + 1;
 
-            // 2. Tạo object mới
             const newConvData: ConversationWithPreview = {
-              ...existingConv, // Kế thừa dữ liệu cũ (Tên, Avatar chuẩn)
+              ...existingConv,
               lastMessageAt: payload.createdAt,
               lastMessageId: payload.messageId,
               lastMessageContent:
@@ -127,7 +130,6 @@ export const useChatStore = create<ChatState>()(
               unreadCount: newUnreadCount,
             };
 
-            // 3. Lọc bỏ hội thoại cũ và đưa cái mới lên đầu
             const otherConversations = conversations.filter(
               (c) => c.conversationId !== payload.conversationId,
             );
@@ -180,19 +182,23 @@ export const useChatStore = create<ChatState>()(
           }
 
           case EventTypes.REACTION_ADDED: {
-            const reactionData = wsMsg.data;
+            // [FIX] Sử dụng eventData đã khai báo ở trên
+            const { conversationId, messageId, reaction } = eventData;
+
+            if (activeConversationId !== conversationId) return;
+
             set({
               messages: messages.map((m) => {
-                if (m.messageId === reactionData.messageId) {
+                if (m.messageId === messageId) {
                   const exists = m.reactions?.some(
                     (r) =>
-                      r.employeeId === reactionData.employeeId &&
-                      r.reaction === reactionData.reaction,
+                      r.employeeId === reaction.employeeId &&
+                      r.reaction === reaction.reaction,
                   );
                   if (exists) return m;
                   return {
                     ...m,
-                    reactions: [...(m.reactions || []), reactionData],
+                    reactions: [...(m.reactions || []), reaction],
                   };
                 }
                 return m;
@@ -202,7 +208,12 @@ export const useChatStore = create<ChatState>()(
           }
 
           case EventTypes.REACTION_REMOVED: {
-            const { messageId, employeeId, reaction } = wsMsg.data;
+            // [FIX] Sử dụng eventData đã khai báo ở trên
+            const { conversationId, messageId, employeeId, reactionType } =
+              eventData;
+
+            if (activeConversationId !== conversationId) return;
+
             set({
               messages: messages.map((m) =>
                 m.messageId === messageId
@@ -212,7 +223,7 @@ export const useChatStore = create<ChatState>()(
                         (r) =>
                           !(
                             r.employeeId === employeeId &&
-                            r.reaction === reaction
+                            r.reaction === reactionType
                           ),
                       ),
                     }
@@ -411,14 +422,11 @@ export const useChatStore = create<ChatState>()(
         get().markConversationAsRead(id);
 
         try {
-          // 1. Fetch tin nhắn và thành viên trước
           const [msgsRes, partsRes] = await Promise.all([
             chatService.getMessages(id, 20),
             chatService.getParticipants(id),
           ]);
 
-          // 2. Logic cập nhật sidebar (Tự động tính tên/avatar nếu thiếu)
-          // [FIX] Phần này quan trọng để hiển thị đúng info người chat
           const existingConv = get().conversations.find(
             (c) => c.conversationId === id,
           );
